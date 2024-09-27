@@ -1,6 +1,5 @@
 import {
 	IInsightFacade,
-	InsightDataset,
 	InsightDatasetKind,
 	InsightError,
 	InsightResult,
@@ -27,52 +26,44 @@ describe("InsightFacade", function () {
 
 	// Declare datasets used in tests. You should add more datasets like this!
 	let sections: string;
-	let empty_zip: string;
-	let course_not_in_courses: string;
-	let minimal_example: string;
-	let no_courses_folder: string;
-	let one_course_no_section: string;
-	let empty_courses_folder: string;
-	let one_course_one_section: string;
-	let no_audit: string;
-	let no_avg: string;
-	let no_course: string;
-	let no_fail: string;
-	let no_id: string;
-	let no_pass: string;
-	let no_prof: string;
-	let no_subj: string;
-	let no_title: string;
-	let no_year: string;
+	let emptyZip: string;
+	let courseNotInCourses: string;
+	let minimalExample: string;
+	let noCoursesFolder: string;
+	let oneCourseNoSection: string;
+	let emptyCoursesFolder: string;
+	let oneCourseOneSection: string;
+	let noAudit: string;
+	let noAvg: string;
+	let noCourse: string;
+	let noFail: string;
+	let noId: string;
+	let noPass: string;
+	let noProf: string;
+	let noSubj: string;
+	let noTitle: string;
+	let noYear: string;
 
 	before(async function () {
 		// This block runs once and loads the datasets.
 		sections = await getContentFromArchives("pair.zip");
-		empty_zip = await getContentFromArchives("empty_zip.zip");
-		course_not_in_courses = await getContentFromArchives(
-			"course_not_in_courses.zip"
-		);
-		minimal_example = await getContentFromArchives("minimal_example.zip");
-		no_courses_folder = await getContentFromArchives("no_courses_folder.zip");
-		one_course_no_section = await getContentFromArchives(
-			"one_course_no_sections.zip"
-		);
-		empty_courses_folder = await getContentFromArchives(
-			"empty_courses_folder.zip"
-		);
-		one_course_one_section = await getContentFromArchives(
-			"one_course_one_section.zip"
-		);
-		no_audit = await getContentFromArchives("no_audit.zip");
-		no_avg = await getContentFromArchives("no_avg.zip");
-		no_course = await getContentFromArchives("no_course.zip");
-		no_fail = await getContentFromArchives("no_fail.zip");
-		no_id = await getContentFromArchives("no_id.zip");
-		no_pass = await getContentFromArchives("no_pass.zip");
-		no_prof = await getContentFromArchives("no_prof.zip");
-		no_subj = await getContentFromArchives("no_subj.zip");
-		no_title = await getContentFromArchives("no_title.zip");
-		no_year = await getContentFromArchives("no_year.zip");
+		emptyZip = await getContentFromArchives("empty_zip.zip");
+		courseNotInCourses = await getContentFromArchives("course_not_in_courses.zip");
+		minimalExample = await getContentFromArchives("minimal_example.zip");
+		noCoursesFolder = await getContentFromArchives("no_courses_folder.zip");
+		oneCourseNoSection = await getContentFromArchives("one_course_no_sections.zip");
+		emptyCoursesFolder = await getContentFromArchives("empty_courses_folder.zip");
+		oneCourseOneSection = await getContentFromArchives("one_course_one_section.zip");
+		noAudit = await getContentFromArchives("no_audit.zip");
+		noAvg = await getContentFromArchives("no_avg.zip");
+		noCourse = await getContentFromArchives("no_course.zip");
+		noFail = await getContentFromArchives("no_fail.zip");
+		noId = await getContentFromArchives("no_id.zip");
+		noPass = await getContentFromArchives("no_pass.zip");
+		noProf = await getContentFromArchives("no_prof.zip");
+		noSubj = await getContentFromArchives("no_subj.zip");
+		noTitle = await getContentFromArchives("no_title.zip");
+		noYear = await getContentFromArchives("no_year.zip");
 
 		// Just in case there is anything hanging around from a previous run of the test suite
 		await clearDisk();
@@ -92,238 +83,146 @@ describe("InsightFacade", function () {
 		});
 
 		it("should reject with an empty dataset id", async function () {
-			const result = facade.addDataset(
-				"",
-				sections,
-				InsightDatasetKind.Sections
-			);
+			const result = facade.addDataset("", sections, InsightDatasetKind.Sections);
 
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
 		it("should reject with an underscore in dataset id", async function () {
-			const result = facade.addDataset(
-				"a_b",
-				sections,
-				InsightDatasetKind.Sections
-			);
+			const result = facade.addDataset("a_b", sections, InsightDatasetKind.Sections);
 
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
 		it("should reject with only whitespace dataset id", async function () {
-			const result = facade.addDataset(
-				" ",
-				sections,
-				InsightDatasetKind.Sections
-			);
+			const result = facade.addDataset(" ", sections, InsightDatasetKind.Sections);
 
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
 		it("should successfully add a dataset", function () {
-			const result = facade.addDataset(
-				"ubc",
-				sections,
-				InsightDatasetKind.Sections
-			);
+			const result = facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
 
 			return expect(result).to.eventually.have.members(["ubc"]);
 		});
 
-		it("should reject a duplicate id", function () {
+		it("should reject a duplicate id", async function () {
 			return facade
 				.addDataset("ubc", sections, InsightDatasetKind.Sections)
-				.then((res) => {
+				.then(async (res) => {
 					expect(res).to.have.members(["ubc"]);
-					return facade.addDataset(
-						"ubc",
-						sections,
-						InsightDatasetKind.Sections
-					);
+					return facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
 				})
 				.then(
-					(res2) => Promise.reject(new Error("Expected method to reject.")),
+					async (_res2) => Promise.reject(new Error("Expected method to reject.")),
 					(err) => expect(err).to.be.instanceOf(InsightError)
 				);
 		});
 
 		it("should reject Room Kind", function () {
-			const result = facade.addDataset(
-				"ubc",
-				sections,
-				InsightDatasetKind.Rooms
-			);
+			const result = facade.addDataset("ubc", sections, InsightDatasetKind.Rooms);
 
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
 		it("should reject empty zip content", function () {
-			const result = facade.addDataset(
-				"ubc",
-				empty_zip,
-				InsightDatasetKind.Sections
-			);
+			const result = facade.addDataset("ubc", emptyZip, InsightDatasetKind.Sections);
 
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
 		it("should reject course not in courses folder", function () {
-			const result = facade.addDataset(
-				"ubc",
-				course_not_in_courses,
-				InsightDatasetKind.Sections
-			);
+			const result = facade.addDataset("ubc", courseNotInCourses, InsightDatasetKind.Sections);
 
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
 		it("should reject with no courses folder in zip", function () {
-			const result = facade.addDataset(
-				"ubc",
-				no_courses_folder,
-				InsightDatasetKind.Sections
-			);
+			const result = facade.addDataset("ubc", noCoursesFolder, InsightDatasetKind.Sections);
 
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
 		it("should accept only one course with multiple sections", function () {
-			const result = facade.addDataset(
-				"ubc",
-				minimal_example,
-				InsightDatasetKind.Sections
-			);
+			const result = facade.addDataset("ubc", minimalExample, InsightDatasetKind.Sections);
 
 			return expect(result).to.eventually.have.members(["ubc"]);
 		});
 
 		it("should reject content with no courses", function () {
-			const result = facade.addDataset(
-				"ubc",
-				empty_courses_folder,
-				InsightDatasetKind.Sections
-			);
+			const result = facade.addDataset("ubc", emptyCoursesFolder, InsightDatasetKind.Sections);
 
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
 		it("should accept only one course with one section", function () {
-			const result = facade.addDataset(
-				"ubc",
-				one_course_one_section,
-				InsightDatasetKind.Sections
-			);
+			const result = facade.addDataset("ubc", oneCourseOneSection, InsightDatasetKind.Sections);
 
 			return expect(result).to.eventually.have.members(["ubc"]);
 		});
 
 		it("should reject content with one course and no sections", function () {
-			const result = facade.addDataset(
-				"ubc",
-				one_course_no_section,
-				InsightDatasetKind.Sections
-			);
+			const result = facade.addDataset("ubc", oneCourseNoSection, InsightDatasetKind.Sections);
 
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
 		it("should reject content with no_audit", function () {
-			const result = facade.addDataset(
-				"ubc",
-				no_audit,
-				InsightDatasetKind.Sections
-			);
+			const result = facade.addDataset("ubc", noAudit, InsightDatasetKind.Sections);
 
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
 		it("should reject content with no_avg", function () {
-			const result = facade.addDataset(
-				"ubc",
-				no_avg,
-				InsightDatasetKind.Sections
-			);
+			const result = facade.addDataset("ubc", noAvg, InsightDatasetKind.Sections);
 
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
 		it("should reject content with no_course", function () {
-			const result = facade.addDataset(
-				"ubc",
-				no_course,
-				InsightDatasetKind.Sections
-			);
+			const result = facade.addDataset("ubc", noCourse, InsightDatasetKind.Sections);
 
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
 		it("should reject content with no_fail", function () {
-			const result = facade.addDataset(
-				"ubc",
-				no_fail,
-				InsightDatasetKind.Sections
-			);
+			const result = facade.addDataset("ubc", noFail, InsightDatasetKind.Sections);
 
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
 		it("should reject content with no_id", function () {
-			const result = facade.addDataset(
-				"ubc",
-				no_id,
-				InsightDatasetKind.Sections
-			);
+			const result = facade.addDataset("ubc", noId, InsightDatasetKind.Sections);
 
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
 		it("should reject content with no_pass", function () {
-			const result = facade.addDataset(
-				"ubc",
-				no_pass,
-				InsightDatasetKind.Sections
-			);
+			const result = facade.addDataset("ubc", noPass, InsightDatasetKind.Sections);
 
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
 		it("should reject content with no_prof", function () {
-			const result = facade.addDataset(
-				"ubc",
-				no_prof,
-				InsightDatasetKind.Sections
-			);
+			const result = facade.addDataset("ubc", noProf, InsightDatasetKind.Sections);
 
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
 		it("should reject content with no_subj", function () {
-			const result = facade.addDataset(
-				"ubc",
-				no_subj,
-				InsightDatasetKind.Sections
-			);
+			const result = facade.addDataset("ubc", noSubj, InsightDatasetKind.Sections);
 
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
 		it("should reject content with no_title", function () {
-			const result = facade.addDataset(
-				"ubc",
-				no_title,
-				InsightDatasetKind.Sections
-			);
+			const result = facade.addDataset("ubc", noTitle, InsightDatasetKind.Sections);
 
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
 		it("should reject content with no_year", function () {
-			const result = facade.addDataset(
-				"ubc",
-				no_year,
-				InsightDatasetKind.Sections
-			);
+			const result = facade.addDataset("ubc", noYear, InsightDatasetKind.Sections);
 
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
@@ -348,89 +247,80 @@ describe("InsightFacade", function () {
 			return expect(result).to.eventually.be.rejectedWith(NotFoundError);
 		});
 
-		it("should successfully remove the only dataset", function () {
+		it("should successfully remove the only dataset", async function () {
 			return facade
 				.addDataset("ubc", sections, InsightDatasetKind.Sections)
-				.then((res) => {
+				.then(async (res) => {
 					expect(res).to.have.members(["ubc"]);
 					return facade.removeDataset("ubc");
 				})
-				.then((res2) => {
+				.then(async (res2) => {
 					expect(res2).to.equal("ubc");
 					return facade.listDatasets();
 				})
 				.then(
 					(res3) => expect(res3).to.be.empty,
-					(err) => Promise.reject(new Error("List did not succeed"))
+					async (_err) => Promise.reject(new Error("List did not succeed"))
 				);
 		});
 
-		it("should return an error with empty id", function () {
+		it("should return an error with empty id", async function () {
 			return facade
 				.addDataset("ubc", sections, InsightDatasetKind.Sections)
-				.then((res) => {
+				.then(async (res) => {
 					expect(res).to.have.members(["ubc"]);
 					return facade.removeDataset("");
 				})
 				.then(
-					(res2) => Promise.reject(new Error("Expected method to reject.")),
+					async (_res2) => Promise.reject(new Error("Expected method to reject.")),
 					(err) => expect(err).to.be.instanceOf(InsightError)
 				);
 		});
 
-		it("should return an error with a whitespace id", function () {
+		it("should return an error with a whitespace id", async function () {
 			return facade
 				.addDataset("ubc", sections, InsightDatasetKind.Sections)
-				.then((res) => {
+				.then(async (res) => {
 					expect(res).to.have.members(["ubc"]);
 					return facade.removeDataset(" ");
 				})
 				.then(
-					(res2) => Promise.reject(new Error("Expected method to reject.")),
+					async (_res2) => Promise.reject(new Error("Expected method to reject.")),
 					(err) => expect(err).to.be.instanceOf(InsightError)
 				);
 		});
 
-		it("should fail to remove dataset with the wrong name", function () {
+		it("should fail to remove dataset with the wrong name", async function () {
 			return facade
 				.addDataset("ubc", sections, InsightDatasetKind.Sections)
-				.then((res) => {
+				.then(async (res) => {
 					expect(res).to.have.members(["ubc"]);
 					return facade.removeDataset("ubc2");
 				})
 				.then(
-					(res2) => Promise.reject(new Error("Expected method to reject.")),
+					async (_res2) => Promise.reject(new Error("Expected method to reject.")),
 					(err) => expect(err).to.be.instanceOf(NotFoundError)
 				);
 		});
 
-		it("should successfully remove one of multiple datasets", function () {
-			let added: InsightDataset;
-			added = { id: "ubc2", kind: InsightDatasetKind.Sections, numRows: 1 };
+		it("should successfully remove one of multiple datasets", async function () {
 			return facade
 				.addDataset("ubc", sections, InsightDatasetKind.Sections)
-				.then((res) => {
+				.then(async (res) => {
 					expect(res).to.have.members(["ubc"]);
-					return facade.addDataset(
-						"ubc2",
-						one_course_one_section,
-						InsightDatasetKind.Sections
-					);
+					return facade.addDataset("ubc2", oneCourseOneSection, InsightDatasetKind.Sections);
 				})
-				.then((res2) => {
+				.then(async (res2) => {
 					expect(res2).to.have.members(["ubc", "ubc2"]);
 					return facade.removeDataset("ubc");
 				})
-				.then((res3) => {
+				.then(async (res3) => {
 					expect(res3).to.equal("ubc");
 					return facade.listDatasets();
 				})
 				.then(
-					(res4) =>
-						expect(res4).to.deep.equal([
-							{ id: "ubc2", kind: InsightDatasetKind.Sections, numRows: 1 },
-						]),
-					(err) => Promise.reject(new Error("List did not succeed"))
+					(res4) => expect(res4).to.deep.equal([{ id: "ubc2", kind: InsightDatasetKind.Sections, numRows: 1 }]),
+					async (_err) => Promise.reject(new Error("List did not succeed"))
 				);
 		});
 	});
@@ -454,34 +344,27 @@ describe("InsightFacade", function () {
 			return expect(result).to.be.empty;
 		});
 
-		it("should list singular item", function () {
+		it("should list singular item", async function () {
 			return facade
-				.addDataset("ubc", one_course_one_section, InsightDatasetKind.Sections)
-				.then((res) => {
+				.addDataset("ubc", oneCourseOneSection, InsightDatasetKind.Sections)
+				.then(async (res) => {
 					expect(res).to.have.members(["ubc"]);
 					return facade.listDatasets();
 				})
 				.then(
-					(res2) =>
-						expect(res2).to.deep.equal([
-							{ id: "ubc", kind: InsightDatasetKind.Sections, numRows: 1 },
-						]),
-					(err) => Promise.reject(new Error("List did not succeed"))
+					(res2) => expect(res2).to.deep.equal([{ id: "ubc", kind: InsightDatasetKind.Sections, numRows: 1 }]),
+					async (_err) => Promise.reject(new Error("List did not succeed"))
 				);
 		});
 
-		it("should list multiple items", function () {
+		it("should list multiple items", async function () {
 			return facade
-				.addDataset("ubc", one_course_one_section, InsightDatasetKind.Sections)
-				.then((res) => {
+				.addDataset("ubc", oneCourseOneSection, InsightDatasetKind.Sections)
+				.then(async (res) => {
 					expect(res).to.have.members(["ubc"]);
-					return facade.addDataset(
-						"ubc2",
-						minimal_example,
-						InsightDatasetKind.Sections
-					);
+					return facade.addDataset("ubc2", minimalExample, InsightDatasetKind.Sections);
 				})
-				.then((res2) => {
+				.then(async (res2) => {
 					expect(res2).to.have.members(["ubc", "ubc2"]);
 					return facade.listDatasets();
 				})
@@ -491,35 +374,28 @@ describe("InsightFacade", function () {
 							{ id: "ubc", kind: InsightDatasetKind.Sections, numRows: 1 },
 							{ id: "ubc2", kind: InsightDatasetKind.Sections, numRows: 2 },
 						]),
-					(err) => Promise.reject(new Error("List did not succeed"))
+					async (_err) => Promise.reject(new Error("List did not succeed"))
 				);
 		});
 
-		it("should list items after remove", function () {
+		it("should list items after remove", async function () {
 			return facade
-				.addDataset("ubc", one_course_one_section, InsightDatasetKind.Sections)
-				.then((res) => {
+				.addDataset("ubc", oneCourseOneSection, InsightDatasetKind.Sections)
+				.then(async (res) => {
 					expect(res).to.have.members(["ubc"]);
-					return facade.addDataset(
-						"ubc2",
-						sections,
-						InsightDatasetKind.Sections
-					);
+					return facade.addDataset("ubc2", sections, InsightDatasetKind.Sections);
 				})
-				.then((res) => {
+				.then(async (res) => {
 					expect(res).to.have.members(["ubc", "ubc2"]);
 					return facade.removeDataset("ubc2");
 				})
-				.then((res2) => {
+				.then(async (res2) => {
 					expect(res2).to.equal("ubc2");
 					return facade.listDatasets();
 				})
 				.then(
-					(res3) =>
-						expect(res3).to.deep.equal([
-							{ id: "ubc", kind: InsightDatasetKind.Sections, numRows: 1 },
-						]),
-					(err) => Promise.reject(new Error("List did not succeed"))
+					(res3) => expect(res3).to.deep.equal([{ id: "ubc", kind: InsightDatasetKind.Sections, numRows: 1 }]),
+					async (_err) => Promise.reject(new Error("List did not succeed"))
 				);
 		});
 	});
@@ -539,9 +415,7 @@ describe("InsightFacade", function () {
 				);
 			}
 			// Destructuring assignment to reduce property accesses
-			const { input, expected, errorExpected } = await loadTestQuery(
-				this.test.title
-			);
+			const { input, expected, errorExpected } = await loadTestQuery(this.test.title);
 			let result: InsightResult[];
 			try {
 				result = await facade.performQuery(input);
@@ -554,11 +428,11 @@ describe("InsightFacade", function () {
 				if (!errorExpected) {
 					expect.fail(`performQuery threw unexpected error: ${err}`);
 				}
-				if (expected == "InsightError") {
+				if (expected === "InsightError") {
 					expect(err).to.be.instanceOf(InsightError);
-				} else if (expected == "ResultTooLargeError") {
+				} else if (expected === "ResultTooLargeError") {
 					expect(err).to.be.instanceOf(ResultTooLargeError);
-				} else if (expected == "NotFoundError") {
+				} else if (expected === "NotFoundError") {
 					expect(err).to.be.instanceOf(NotFoundError);
 				} else {
 					// TODO: replace with your assertions
@@ -574,19 +448,13 @@ describe("InsightFacade", function () {
 			// Will *fail* if there is a problem reading ANY dataset.
 			const loadDatasetPromises: Promise<string[]>[] = [
 				facade.addDataset("sections", sections, InsightDatasetKind.Sections),
-				facade.addDataset(
-					"sections2",
-					one_course_one_section,
-					InsightDatasetKind.Sections
-				),
+				facade.addDataset("sections2", oneCourseOneSection, InsightDatasetKind.Sections),
 			];
 
 			try {
 				await Promise.all(loadDatasetPromises);
 			} catch (err) {
-				throw new Error(
-					`In PerformQuery Before hook, dataset(s) failed to be added. \n${err}`
-				);
+				throw new Error(`In PerformQuery Before hook, dataset(s) failed to be added. \n${err}`);
 			}
 		});
 
@@ -599,19 +467,10 @@ describe("InsightFacade", function () {
 		it("[valid/simple.json] SELECT dept, avg WHERE avg > 97", checkQuery);
 		it("[invalid/invalid.json] Query missing WHERE", checkQuery);
 		it("[invalid/non_object_query.json] Query not an object", checkQuery);
-		it(
-			"[invalid/multiple_datasets.json] Query contains multiple datasets",
-			checkQuery
-		);
-		it(
-			"[invalid/results_too_large.json] Query returns too many results",
-			checkQuery
-		);
+		it("[invalid/multiple_datasets.json] Query contains multiple datasets", checkQuery);
+		it("[invalid/results_too_large.json] Query returns too many results", checkQuery);
 		it("[invalid/no_options.json] Query with no options", checkQuery);
-		it(
-			"[invalid/invalid_filter_format.json] Invalid filter format",
-			checkQuery
-		);
+		it("[invalid/invalid_filter_format.json] Invalid filter format", checkQuery);
 		it("[valid/return_no_results.json] return no results", checkQuery);
 		it("[valid/simple_or.json] simple or", checkQuery);
 		it("[valid/simple_and.json] simple and", checkQuery);
@@ -623,41 +482,23 @@ describe("InsightFacade", function () {
 		it("[valid/scomp_empty.json] empty scomp", checkQuery);
 		it("[valid/two_asterisks_alone.json] two asterisks alone", checkQuery);
 
-		it(
-			"[valid/valid_repeated_columns.json] valid_repeated_columns",
-			checkQuery
-		);
-		it(
-			"[invalid/invalid_order_key_not_in_columns.json] invalid_order_key_not_in_columns",
-			checkQuery
-		);
+		it("[valid/valid_repeated_columns.json] valid_repeated_columns", checkQuery);
+		it("[invalid/invalid_order_key_not_in_columns.json] invalid_order_key_not_in_columns", checkQuery);
 		it("[valid/successful_mcomp_eq.json] successful_mcomp_eq", checkQuery);
 		it("[valid/pre_wildcard_success.json] pre_wildcard_success", checkQuery);
 		it("[valid/post_wildcard_success.json] post_wildcard_success", checkQuery);
 		it("[valid/successful_mcomp_lt.json] successful_mcomp_lt", checkQuery);
-		it(
-			"[valid/valid_all_possible_keys.json] valid_all_possible_keys",
-			checkQuery
-		);
+		it("[valid/valid_all_possible_keys.json] valid_all_possible_keys", checkQuery);
 		it("[invalid/invalid_empty_logic.json] invalid_empty_logic", checkQuery);
 		it("[valid/valid_order_by_skey.json] valid_order_by_skey", checkQuery);
 		it("[valid/no_wildcard_success.json] no_wildcard_success", checkQuery);
 		it("[invalid/invalid_only_order.json] invalid_only_order", checkQuery);
 		it("[invalid/scomp_use_mkey.json] scomp_use_mkey", checkQuery);
 		it("[valid/not_basic_test.json] not_basic_test", checkQuery);
-		it(
-			"[invalid/invalid_column_no_keys.json] invalid_column_no_keys",
-			checkQuery
-		);
+		it("[invalid/invalid_column_no_keys.json] invalid_column_no_keys", checkQuery);
 		it("[invalid/invalid_not.json] invalid_not", checkQuery);
-		it(
-			"[valid/double_wildcard_success.json] double_wildcard_success",
-			checkQuery
-		);
+		it("[valid/double_wildcard_success.json] double_wildcard_success", checkQuery);
 		it("[invalid/scomp_use_number.json] scomp_use_number", checkQuery);
-		it(
-			"[invalid/invalid_multiple_underscore.json] invalid_multiple_underscore",
-			checkQuery
-		);
+		it("[invalid/invalid_multiple_underscore.json] invalid_multiple_underscore", checkQuery);
 	});
 });
