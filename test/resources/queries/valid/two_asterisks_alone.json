@@ -1,0 +1,22 @@
+{
+	"title": "two asterisks",
+	"input": {
+		"WHERE": {
+			"IS": {
+				"sections2_dept": "**"
+			}
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"sections2_avg"
+			],
+			"ORDER": "sections2_avg"
+		}
+	},
+	"errorExpected": false,
+	"expected": [
+		{
+			"sections2_avg": 92.06
+		}
+	]
+}

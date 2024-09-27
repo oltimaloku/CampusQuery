@@ -1,0 +1,18 @@
+{
+	"title": "invalid_multiple_underscore",
+	"input": {
+		"WHERE": {
+			"GT": {
+				"sections_avg": 97
+			}
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"secti_ons_avg"
+			],
+			"ORDER": "secti_ons_avg"
+		}
+	},
+	"errorExpected": true,
+	"expected": "InsightError"
+}
