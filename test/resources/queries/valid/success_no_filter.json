@@ -1,0 +1,19 @@
+{
+	"title": "success no filter",
+	"input": {
+		"WHERE": {
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"sections2_avg"
+			],
+			"ORDER": "sections2_avg"
+		}
+	},
+	"errorExpected": false,
+	"expected": [
+		{
+			"sections2_avg": 92.06
+		}
+	]
+}
