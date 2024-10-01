@@ -29,6 +29,19 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public validateQuery(query: unknown): Boolean {
+		// Recursive check if it is a filter
+		let isFilter = function(obj: unknown): Boolean {
+			return true;
+		}
+
+		// Check for {}
+		let isEmpty = function(obj: unknown): Boolean {
+			if ((typeof obj === "object") && (obj !== null)) {
+				return (Object.keys(obj).length === 0)
+			}
+			return false;
+		}
+
 		let where: unknown = {};
 		let options: unknown = {};
 		// Check query has body and options
@@ -36,7 +49,11 @@ export default class InsightFacade implements IInsightFacade {
 			where = query.WHERE;
 			options = query.OPTIONS;
 		} else {
-			return false
+			return false;
+		}
+		// Validate where
+		if (!isEmpty(where) && !isFilter(where)) {
+			return false;
 		}
 		return true;
 	}
