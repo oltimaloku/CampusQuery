@@ -10,7 +10,6 @@ export default class Section {
 	private readonly fail: number;
 	private readonly audit: number;
 
-	// TODO: add constructor logic
 	public constructor(
 		uuid: string,
 		id: string,
