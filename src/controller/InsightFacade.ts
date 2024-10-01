@@ -1,4 +1,5 @@
 import { IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, InsightResult } from "./IInsightFacade";
+import SectionsDataset from "./SectionsDataset";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -6,10 +7,22 @@ import { IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, Insig
  *
  */
 export default class InsightFacade implements IInsightFacade {
+	datasets: Map<string, InsightDataset> = new Map<string, InsightDataset>();
+
 	public async addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
 		try {
 			if (!this.isValidId(id)) {
 				throw new InsightError("Invalid id");
+			}
+
+			if (this.datasets.has(id)) {
+				throw new InsightError("Dataset already exists");
+			}
+
+			if (kind === InsightDatasetKind.Sections) {
+				const newSectionsDataset = new SectionsDataset(id, content);
+			} else {
+				throw new Error("Rooms dataset has not been implemented yet");
 			}
 		} catch (error) {
 			throw new InsightError("Error adding dataset" + error);
