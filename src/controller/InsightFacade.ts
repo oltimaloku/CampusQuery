@@ -36,7 +36,7 @@ export default class InsightFacade implements IInsightFacade {
 			where = query.WHERE;
 			options = query.OPTIONS;
 		} else {
-			throw new InsightError();
+			return false
 		}
 		return true;
 	}

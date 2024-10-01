@@ -89,24 +89,12 @@ describe("InsightFacade", function () {
 			try {
 				result = facade.validateQuery(input);
 				if (errorExpected) {
-					expect.fail("Should have thrown an error");
+					expect(result).to.be.false;
 				} else {
 					expect(result).to.be.true;
 				}
 			} catch (err) {
-				if (!errorExpected) {
-					expect.fail(`performQuery threw unexpected error: ${err}`);
-				}
-				if (expected === "InsightError") {
-					expect(err).to.be.instanceOf(InsightError);
-				} else if (expected === "ResultTooLargeError") {
-					expect(err).to.be.instanceOf(ResultTooLargeError);
-				} else if (expected === "NotFoundError") {
-					expect(err).to.be.instanceOf(NotFoundError);
-				} else {
-					// TODO: replace with your assertions
-					expect.fail(`performQuery threw unexpected error: ${err}`);
-				}
+				expect.fail(`validateQuery threw unexpected error: ${err}`);
 			}
 		}
 
