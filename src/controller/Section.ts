@@ -11,5 +11,5 @@ export default class Section {
 	private readonly audit: number;
 
 	// TODO: add constructor logic
-	public constructor() {}
+	// public constructor() {}
 }
