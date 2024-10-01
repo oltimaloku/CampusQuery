@@ -1,4 +1,4 @@
-import { IInsightFacade, InsightDataset, InsightDatasetKind, InsightResult } from "./IInsightFacade";
+import { IInsightFacade, InsightDataset, InsightDatasetKind, InsightResult, InsightError } from "./IInsightFacade";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -26,5 +26,18 @@ export default class InsightFacade implements IInsightFacade {
 	public async listDatasets(): Promise<InsightDataset[]> {
 		// TODO: Remove this once you implement the methods!
 		throw new Error(`InsightFacadeImpl::listDatasets is unimplemented!`);
+	}
+
+	public validateQuery(query: unknown): Boolean {
+		let where: unknown = {};
+		let options: unknown = {};
+		// Check query has body and options
+		if (typeof query == 'object' && query && "WHERE" in query && "OPTIONS" in query) {
+			where = query.WHERE;
+			options = query.OPTIONS;
+		} else {
+			throw new InsightError();
+		}
+		return true;
 	}
 }
