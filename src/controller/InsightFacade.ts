@@ -1,5 +1,6 @@
+import JSZip from "jszip";
 import { IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, InsightResult } from "./IInsightFacade";
-import SectionsDataset from "./SectionsDataset";
+import Section from "./Section";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -7,7 +8,7 @@ import SectionsDataset from "./SectionsDataset";
  *
  */
 export default class InsightFacade implements IInsightFacade {
-	datasets: Map<string, InsightDataset> = new Map<string, InsightDataset>();
+	private datasets: Map<string, Section[]> = new Map<string, Section[]>();
 
 	public async addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
 		try {
@@ -20,21 +21,78 @@ export default class InsightFacade implements IInsightFacade {
 			}
 
 			if (kind === InsightDatasetKind.Sections) {
-				const newSectionsDataset = new SectionsDataset(id, content);
+				const processedContent = await this.processContent(content);
+
+				if (processedContent.length === 0) {
+					throw new InsightError("No valid sections found");
+				}
+
+				this.datasets.set(id, processedContent);
 			} else {
 				throw new Error("Rooms dataset has not been implemented yet");
 			}
+
+			return Array.from(this.datasets.keys());
 		} catch (error) {
 			throw new InsightError("Error adding dataset" + error);
 		}
-
-		throw new Error(
-			`InsightFacadeImpl::addDataset() is unimplemented! - id=${id}; content=${content?.length}; kind=${kind}`
-		);
 	}
 
 	private isValidId(id: string): boolean {
-		return /^[^_]+$/.test(id);
+		return /^[^_]+$/.test(id) && id.trim().length > 0;
+	}
+
+	private async processContent(content: string): Promise<Section[]> {
+		try {
+			// https://betterstack.com/community/questions/how-to-do-base64-encoding-in-node-js/
+			const buf = Buffer.from(content, "base64");
+			// https://stuk.github.io/jszip/documentation/howto/read_zip.html
+			const zip = new JSZip();
+
+			const zipContent: JSZip = await zip.loadAsync(buf); // Load zip data
+
+			let sections: Section[] = [];
+			let promises: Promise<void>[] = [];
+
+			// https://stuk.github.io/jszip/documentation/api_jszip/for_each.html
+			zipContent.forEach((relativePath: string, file: any) => {
+				// https://stuk.github.io/jszip/documentation/api_zipobject/async.html
+				// Use .then to handle async forEach
+				const promise = file
+					.async("string")
+					.then((fileContent: string) => {
+						// Checks if file does not contain any content and skips it
+						if (fileContent.trim().length === 0) {
+							return;
+						}
+						// Checks if file is a course file
+						if (relativePath.startsWith("courses/")) {
+							for (const course of JSON.parse(fileContent).result) {
+								const section = Section.createSection(course);
+
+								if (section) {
+									sections.push(section);
+								}
+							}
+						}
+					})
+					.catch((e: any) => {
+						throw new InsightError("Error reading file: " + e);
+					});
+
+				promises.push(promise);
+			});
+
+			await Promise.all(promises);
+
+			if (sections.length === 0) {
+				throw new InsightError("No valid sections found");
+			}
+
+			return sections;
+		} catch (e) {
+			throw new InsightError("Error processing content: " + e);
+		}
 	}
 
 	public async removeDataset(id: string): Promise<string> {
