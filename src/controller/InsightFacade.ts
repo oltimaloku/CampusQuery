@@ -51,39 +51,7 @@ export default class InsightFacade implements IInsightFacade {
 
 			const zipContent: JSZip = await zip.loadAsync(buf); // Load zip data
 
-			let sections: Section[] = [];
-			let promises: Promise<void>[] = [];
-
-			// https://stuk.github.io/jszip/documentation/api_jszip/for_each.html
-			zipContent.forEach((relativePath: string, file: any) => {
-				// https://stuk.github.io/jszip/documentation/api_zipobject/async.html
-				// Use .then to handle async forEach
-				const promise = file
-					.async("string")
-					.then((fileContent: string) => {
-						// Checks if file does not contain any content and skips it
-						if (fileContent.trim().length === 0) {
-							return;
-						}
-						// Checks if file is a course file
-						if (relativePath.startsWith("courses/")) {
-							for (const course of JSON.parse(fileContent).result) {
-								const section = Section.createSection(course);
-
-								if (section) {
-									sections.push(section);
-								}
-							}
-						}
-					})
-					.catch((e: any) => {
-						throw new InsightError("Error reading file: " + e);
-					});
-
-				promises.push(promise);
-			});
-
-			await Promise.all(promises);
+			const sections = await this.validateZip(zipContent);
 
 			if (sections.length === 0) {
 				throw new InsightError("No valid sections found");
@@ -93,6 +61,35 @@ export default class InsightFacade implements IInsightFacade {
 		} catch (e) {
 			throw new InsightError("Error processing content: " + e);
 		}
+	}
+
+	private async validateZip(zipContent: JSZip): Promise<Section[]> {
+		const sections: Section[] = [];
+		const promises: Promise<void>[] = [];
+
+		// https://stuk.github.io/jszip/documentation/api_jszip/for_each.html
+		zipContent.forEach((relativePath: string, file: any) => {
+			// https://stuk.github.io/jszip/documentation/api_zipobject/async.html
+			const promise = file.async("string").then((fileContent: string) => {
+				if (fileContent.trim().length === 0) {
+					return;
+				}
+				if (relativePath.startsWith("courses/")) {
+					for (const course of JSON.parse(fileContent).result) {
+						const section = Section.createSection(course);
+
+						if (section) {
+							sections.push(section);
+						}
+					}
+				}
+			});
+
+			promises.push(promise);
+		});
+
+		await Promise.all(promises);
+		return sections;
 	}
 
 	public async removeDataset(id: string): Promise<string> {
