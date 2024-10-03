@@ -51,7 +51,7 @@ export default class InsightFacade implements IInsightFacade {
 
 			const zipContent: JSZip = await zip.loadAsync(buf); // Load zip data
 
-			const sections = await this.validateZip(zipContent);
+			const sections = await this.createValidSectionsFromZip(zipContent);
 
 			if (sections.length === 0) {
 				throw new InsightError("No valid sections found");
@@ -63,7 +63,7 @@ export default class InsightFacade implements IInsightFacade {
 		}
 	}
 
-	private async validateZip(zipContent: JSZip): Promise<Section[]> {
+	private async createValidSectionsFromZip(zipContent: JSZip): Promise<Section[]> {
 		const sections: Section[] = [];
 		const promises: Promise<void>[] = [];
 
