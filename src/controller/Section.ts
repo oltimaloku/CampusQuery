@@ -17,16 +17,16 @@ export default class Section {
 	private readonly high: number | null;
 	private readonly low: number | null;
 
-	private readonly tier_eighty_five: number | null;
-	private readonly tier_ninety: number | null;
-	private readonly tier_seventy_two: number | null;
-	private readonly tier_sixty_four: number | null;
-	private readonly tier_seventy_six: number | null;
-	private readonly tier_thirty: number | null;
-	private readonly tier_fifty: number | null;
-	private readonly tier_forty: number | null;
-	private readonly tier_twenty: number | null;
-	private readonly tier_ten: number | null;
+	private readonly tierEightyFive: number | null;
+	private readonly tierNinety: number | null;
+	private readonly tierSeventyTwo: number | null;
+	private readonly tierSixtyFour: number | null;
+	private readonly tierSeventySix: number | null;
+	private readonly tierThirty: number | null;
+	private readonly tierFifty: number | null;
+	private readonly tierForty: number | null;
+	private readonly tierTwenty: number | null;
+	private readonly tierTen: number | null;
 
 	public constructor(
 		uuid: number,
@@ -46,16 +46,16 @@ export default class Section {
 		withdrew: number | null,
 		high: number | null,
 		low: number | null,
-		tier_eighty_five: number | null,
-		tier_ninety: number | null,
-		tier_seventy_two: number | null,
-		tier_sixty_four: number | null,
-		tier_seventy_six: number | null,
-		tier_thirty: number | null,
-		tier_fifty: number | null,
-		tier_forty: number | null,
-		tier_twenty: number | null,
-		tier_ten: number | null
+		tierEightyFive: number | null,
+		tierNinety: number | null,
+		tierSeventyTwo: number | null,
+		tierSixtyFour: number | null,
+		tierSeventySix: number | null,
+		tierThirty: number | null,
+		tierFifty: number | null,
+		tierForty: number | null,
+		tierTwenty: number | null,
+		tierTen: number | null
 	) {
 		this.uuid = uuid;
 		this.id = id;
@@ -76,16 +76,16 @@ export default class Section {
 		this.low = low;
 
 		// Tiers
-		this.tier_eighty_five = tier_eighty_five;
-		this.tier_ninety = tier_ninety;
-		this.tier_seventy_two = tier_seventy_two;
-		this.tier_sixty_four = tier_sixty_four;
-		this.tier_seventy_six = tier_seventy_six;
-		this.tier_thirty = tier_thirty;
-		this.tier_fifty = tier_fifty;
-		this.tier_forty = tier_forty;
-		this.tier_twenty = tier_twenty;
-		this.tier_ten = tier_ten;
+		this.tierEightyFive = tierEightyFive;
+		this.tierNinety = tierNinety;
+		this.tierSeventyTwo = tierSeventyTwo;
+		this.tierSixtyFour = tierSixtyFour;
+		this.tierSeventySix = tierSeventySix;
+		this.tierThirty = tierThirty;
+		this.tierFifty = tierFifty;
+		this.tierForty = tierForty;
+		this.tierTwenty = tierTwenty;
+		this.tierTen = tierTen;
 	}
 
 	public static createSection(course: any): Section | null {
@@ -136,16 +136,16 @@ export default class Section {
 			const high = course.High ?? null;
 			const low = course.Low ?? null;
 
-			const tier_eighty_five = course.Tier_eighty_five ?? null;
-			const tier_ninety = course.Tier_ninety ?? null;
-			const tier_seventy_two = course.Tier_seventy_two ?? null;
-			const tier_sixty_four = course.Tier_sixty_four ?? null;
-			const tier_seventy_six = course.Tier_seventy_six ?? null;
-			const tier_thirty = course.Tier_thirty ?? null;
-			const tier_fifty = course.Tier_fifty ?? null;
-			const tier_forty = course.Tier_forty ?? null;
-			const tier_twenty = course.Tier_twenty ?? null;
-			const tier_ten = course.Tier_ten ?? null;
+			const tierEightyFive = course.tierEightyFive ?? null;
+			const tierNinety = course.tierNinety ?? null;
+			const tierSeventyTwo = course.tierSeventyTwo ?? null;
+			const tierSixtyFour = course.tierSixtyFour ?? null;
+			const tierSeventySix = course.tierSeventySix ?? null;
+			const tierThirty = course.tierThirty ?? null;
+			const tierFifty = course.tierFifty ?? null;
+			const tierForty = course.tierForty ?? null;
+			const tierTwenty = course.tierTwenty ?? null;
+			const tierTen = course.tierTen ?? null;
 
 			return new Section(
 				uuid,
@@ -165,16 +165,16 @@ export default class Section {
 				withdrew,
 				high,
 				low,
-				tier_eighty_five,
-				tier_ninety,
-				tier_seventy_two,
-				tier_sixty_four,
-				tier_seventy_six,
-				tier_thirty,
-				tier_fifty,
-				tier_forty,
-				tier_twenty,
-				tier_ten
+				tierEightyFive,
+				tierNinety,
+				tierSeventyTwo,
+				tierSixtyFour,
+				tierSeventySix,
+				tierThirty,
+				tierFifty,
+				tierForty,
+				tierTwenty,
+				tierTen
 			);
 		} catch (error) {
 			console.error("Error creating section: ", error);
