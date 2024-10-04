@@ -104,8 +104,10 @@ export default class InsightFacade implements IInsightFacade {
 			throw new InsightError("Invalid id");
 		}
 
+		const isDeleted = this.datasets["delete"](id);
+
 		// delete returns true if the key was found and deleted, false otherwise
-		if (this.datasets.delete(id)) {
+		if (isDeleted) {
 			return id;
 		} else {
 			throw new NotFoundError("Dataset not found");
@@ -118,7 +120,7 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public async listDatasets(): Promise<InsightDataset[]> {
-		let datasets: InsightDataset[] = [];
+		const datasets: InsightDataset[] = [];
 
 		for (const [id, sections] of this.datasets) {
 			const dataset: InsightDataset = {
