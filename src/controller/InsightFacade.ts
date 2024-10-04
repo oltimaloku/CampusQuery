@@ -110,6 +110,29 @@ export default class InsightFacade implements IInsightFacade {
 	public validateQuery(query: unknown): Boolean {
 		// Recursive check if it is a filter
 		let isFilter = function(obj: unknown): Boolean {
+			if ((typeof obj === "object") && (obj !== null)) {
+				console.log(Object.keys(obj));
+				if (Object.keys(obj).length != 1) return false;
+				// Validate NOT
+				if ("NOT" in obj) return isFilter(obj.NOT);
+
+				// Validate AND and OR the same way
+				if (("AND" in obj) || ("OR" in obj)) {
+					// Check if the value is an array
+					if (Object.values(obj).length == 1) {
+						let val = Object.values(obj)[0]
+						if (Array.isArray(val)) {
+							let arr: unknown[] = val;
+							// Check that no object is not a filter
+							return !(val.some(item =>{
+								!(isFilter(item))
+							}))
+						}
+					}
+					return false;
+				}
+
+			}
 			return true;
 		}
 
