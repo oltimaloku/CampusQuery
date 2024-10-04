@@ -107,54 +107,103 @@ export default class InsightFacade implements IInsightFacade {
 		throw new Error(`InsightFacadeImpl::listDatasets is unimplemented!`);
 	}
 
-	public validateQuery(query: unknown): Boolean {
-		// Recursive check if it is a filter
-		let isFilter = function(obj: unknown): Boolean {
-			if ((typeof obj === "object") && (obj !== null)) {
-				console.log(Object.keys(obj));
-				if (Object.keys(obj).length != 1) return false;
-				// Validate NOT
-				if ("NOT" in obj) return isFilter(obj.NOT);
-
-				// Validate AND and OR the same way
-				if (("AND" in obj) || ("OR" in obj)) {
-					// Check if the value is an array
-					if (Object.values(obj).length == 1) {
-						let val = Object.values(obj)[0]
-						if (Array.isArray(val)) {
-							let arr: unknown[] = val;
-							// Check that no object is not a filter
-							return !(val.some(item =>{
-								!(isFilter(item))
-							}))
-						}
-					}
-					return false;
-				}
-
+	// Recursive check if it is a filter
+	public isFilter(obj: unknown): Boolean {
+		if (typeof obj === "object" && obj !== null) {
+			//console.log(Object.keys(obj));
+			if (Object.keys(obj).length !== 1) {
+				return false;
 			}
-			return true;
+			// Validate NOT
+			if ("NOT" in obj) {
+				return this.isFilter(obj.NOT);
+			}
+
+			// Validate AND and OR the same way
+			if ("AND" in obj || "OR" in obj) {
+				// Check if the value is an array
+				if (Object.values(obj).length === 1) {
+					const val = Object.values(obj)[0];
+					if (Array.isArray(val)) {
+						// Check that no object is not a filter
+						return !val.some((item) => {
+							return !this.isFilter(item);
+						});
+					}
+				}
+				return false;
+			}
 		}
+		return true;
+	}
+
+	public validateQuery(query: unknown): Boolean {
+		const mfields: string[] = ["avg", "pass", "fail", "audit", "year"];
+		const sfields: string[] = ["dept", "id", "instructor", "title", "uuid"];
 
 		// Check for {}
-		let isEmpty = function(obj: unknown): Boolean {
-			if ((typeof obj === "object") && (obj !== null)) {
-				return (Object.keys(obj).length === 0)
+		const isEmpty = function (obj: unknown): Boolean {
+			if (typeof obj === "object" && obj !== null) {
+				return Object.keys(obj).length === 0;
 			}
 			return false;
-		}
+		};
 
 		let where: unknown = {};
 		let options: unknown = {};
 		// Check query has body and options
-		if (typeof query == 'object' && query && "WHERE" in query && "OPTIONS" in query) {
+		if (typeof query === "object" && query && "WHERE" in query && "OPTIONS" in query) {
 			where = query.WHERE;
 			options = query.OPTIONS;
 		} else {
 			return false;
 		}
+
+		// Validate options
+		// TODO: check order
+		let onlyID: string;
+		const keySections = 2;
+		if (typeof options === "object" && options !== null) {
+			if ("COLUMNS" in options) {
+				const cols = options.COLUMNS;
+				if (Array.isArray(cols)) {
+					if (cols.length === 0) {
+						return false;
+					}
+					if (typeof cols[0] !== "string") {
+						return false;
+					}
+					onlyID = cols[0].split("_")[0];
+					for (const val of cols) {
+						if (typeof val === "string") {
+							//console.log(val);
+							if (val.split("_", keySections)[0] !== onlyID) {
+								return false;
+							}
+							if (val.split("_", keySections).length < keySections) {
+								return false;
+							}
+							if (
+								!mfields.includes(val.split("_", keySections)[1]) &&
+								!sfields.includes(val.split("_", keySections)[1])
+							) {
+								return false;
+							}
+						} else {
+							return false;
+						}
+					}
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
 		// Validate where
-		if (!isEmpty(where) && !isFilter(where)) {
+		if (!isEmpty(where) && !this.isFilter(where)) {
 			return false;
 		}
 		return true;

@@ -1,13 +1,5 @@
-import {
-	IInsightFacade,
-	InsightDatasetKind,
-	InsightError,
-	InsightResult,
-	NotFoundError,
-	ResultTooLargeError,
-} from "../../src/controller/IInsightFacade";
 import InsightFacade from "../../src/controller/InsightFacade";
-import { clearDisk, getContentFromArchives, loadTestQuery } from "../TestUtil";
+import { clearDisk, loadTestQuery } from "../TestUtil";
 
 import { expect, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
@@ -22,76 +14,29 @@ export interface ITestQuery {
 }
 
 describe("InsightFacade", function () {
-    let facade: InsightFacade;
+	let facade: InsightFacade;
 
-    	// Declare datasets used in tests. You should add more datasets like this!
-	let sections: string;
-	let emptyZip: string;
-	let courseNotInCourses: string;
-	let minimalExample: string;
-	let noCoursesFolder: string;
-	let oneCourseNoSection: string;
-	let emptyCoursesFolder: string;
-	let oneCourseOneSection: string;
-	let noAudit: string;
-	let noAvg: string;
-	let noCourse: string;
-	let noFail: string;
-	let noId: string;
-	let noPass: string;
-	let noProf: string;
-	let noSubj: string;
-	let noTitle: string;
-	let noYear: string;
-
-    before(async function () {
-		// This block runs once and loads the datasets.
-		sections = await getContentFromArchives("pair.zip");
-		emptyZip = await getContentFromArchives("empty_zip.zip");
-		courseNotInCourses = await getContentFromArchives("course_not_in_courses.zip");
-		minimalExample = await getContentFromArchives("minimal_example.zip");
-		noCoursesFolder = await getContentFromArchives("no_courses_folder.zip");
-		oneCourseNoSection = await getContentFromArchives("one_course_no_sections.zip");
-		emptyCoursesFolder = await getContentFromArchives("empty_courses_folder.zip");
-		oneCourseOneSection = await getContentFromArchives("one_course_one_section.zip");
-		noAudit = await getContentFromArchives("no_audit.zip");
-		noAvg = await getContentFromArchives("no_avg.zip");
-		noCourse = await getContentFromArchives("no_course.zip");
-		noFail = await getContentFromArchives("no_fail.zip");
-		noId = await getContentFromArchives("no_id.zip");
-		noPass = await getContentFromArchives("no_pass.zip");
-		noProf = await getContentFromArchives("no_prof.zip");
-		noSubj = await getContentFromArchives("no_subj.zip");
-		noTitle = await getContentFromArchives("no_title.zip");
-		noYear = await getContentFromArchives("no_year.zip");
-
+	before(async function () {
 		// Just in case there is anything hanging around from a previous run of the test suite
 		await clearDisk();
 	});
 
 	describe("PerformQuery", function () {
-		/**
-		 * Loads the TestQuery specified in the test name and asserts the behaviour of performQuery.
-		 *
-		 * Note: the 'this' parameter is automatically set by Mocha and contains information about the test.
-		 */
 		async function checkValidateQuery(this: Mocha.Context) {
 			if (!this.test) {
 				throw new Error(
-					"Invalid call to checkValidateQuery." +
-						"Usage: 'checkValidateQuery' must be passed as the second parameter of Mocha's it(..) function." +
-						"Do not invoke the function directly."
+					"Invalid call to checkValidateQuery."
 				);
 			}
 			// Destructuring assignment to reduce property accesses
-			const { input, expected, errorExpected } = await loadTestQuery(this.test.title);
+			const { input, errorExpected } = await loadTestQuery(this.test.title);
 			let result: Boolean;
 			try {
 				result = facade.validateQuery(input);
 				if (errorExpected) {
-					expect(result).to.be.false;
+					return expect(result).to.be["false"];
 				} else {
-					expect(result).to.be.true;
+					return expect(result).to.be["true"];
 				}
 			} catch (err) {
 				expect.fail(`validateQuery threw unexpected error: ${err}`);
@@ -100,21 +45,6 @@ describe("InsightFacade", function () {
 
 		before(async function () {
 			facade = new InsightFacade();
-
-			// Add the datasets to InsightFacade once.
-			// Will *fail* if there is a problem reading ANY dataset.
-            /*
-			const loadDatasetPromises: Promise<string[]>[] = [
-				facade.addDataset("sections", sections, InsightDatasetKind.Sections),
-				facade.addDataset("sections2", oneCourseOneSection, InsightDatasetKind.Sections),
-			];
-
-			try {
-				await Promise.all(loadDatasetPromises);
-			} catch (err) {
-				throw new Error(`In PerformQuery Before hook, dataset(s) failed to be added. \n${err}`);
-			}
-            */
 		});
 
 		after(async function () {
