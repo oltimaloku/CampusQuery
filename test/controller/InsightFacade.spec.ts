@@ -406,7 +406,7 @@ describe("InsightFacade", function () {
 		 *
 		 * Note: the 'this' parameter is automatically set by Mocha and contains information about the test.
 		 */
-		async function checkQuery(this: Mocha.Context) {
+		async function checkQuery(this: Mocha.Context): Promise<void> {
 			if (!this.test) {
 				throw new Error(
 					"Invalid call to checkQuery." +
