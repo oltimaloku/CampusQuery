@@ -1,4 +1,3 @@
-import { on } from "events";
 import JSZip from "jszip";
 import { IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, InsightResult } from "./IInsightFacade";
 import Section from "./Section";
@@ -108,8 +107,85 @@ export default class InsightFacade implements IInsightFacade {
 		throw new Error(`InsightFacadeImpl::listDatasets is unimplemented!`);
 	}
 
+	public isSCOMP(filter: unknown, sfields: string[], idVal: string): Boolean {
+		const keySections = 2;
+		const match = new RegExp("^[*]?[^*]*[*]?$");
+		if (typeof filter === "object" && filter !== null) {
+			if (Object.keys(filter).length === 1) {
+				const skey: string = Object.keys(filter)[0];
+				if (skey.split("_").length === keySections) {
+					const splitKey: string[] = skey.split("_");
+					if (splitKey[0] !== idVal) {
+						return false;
+					}
+					if (!sfields.includes(splitKey[1])) {
+						return false;
+					}
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
+			if (Object.values(filter).length === 1 && typeof Object.values(filter)[0] === "string") {
+				const sval: string = Object.values(filter)[0];
+				return match.test(sval);
+			}
+		}
+		return false;
+	}
+
+	public isMCOMP(filter: unknown, mfields: string[], idVal: string): Boolean {
+		const keySections = 2;
+		if (typeof filter === "object" && filter !== null) {
+			if (Object.keys(filter).length === 1) {
+				const mkey: string = Object.keys(filter)[0];
+				if (mkey.split("_").length === keySections) {
+					const splitKey: string[] = mkey.split("_");
+					if (splitKey[0] !== idVal) {
+						return false;
+					}
+					if (!mfields.includes(splitKey[1])) {
+						return false;
+					}
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
+			if (Object.values(filter).length === 1 && typeof Object.values(filter)[0] === "number") {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public isSMComp(filter: unknown, mfields: string[], sfields: string[], idVal: string): Boolean {
+		if (typeof filter === "object" && filter !== null) {
+			if ("IS" in filter) {
+				const scomp: unknown = filter.IS;
+				return this.isSCOMP(scomp, sfields, idVal);
+			}
+			if ("LT" in filter) {
+				const mcomp: unknown = filter.LT;
+				return this.isMCOMP(mcomp, mfields, idVal);
+			}
+			if ("GT" in filter) {
+				const mcomp: unknown = filter.GT;
+				return this.isMCOMP(mcomp, mfields, idVal);
+			}
+			if ("EQ" in filter) {
+				const mcomp: unknown = filter.EQ;
+				return this.isMCOMP(mcomp, mfields, idVal);
+			}
+			return false;
+		}
+		return false;
+	}
+
 	// Recursive check if it is a filter
-	public isFilter(obj: unknown, colVals: string[]): Boolean {
+	public isFilter(obj: unknown, colVals: string[], mfields: string[], sfields: string[]): Boolean {
 		if (typeof obj === "object" && obj !== null) {
 			//console.log(Object.keys(obj));
 			if (Object.keys(obj).length !== 1) {
@@ -117,7 +193,7 @@ export default class InsightFacade implements IInsightFacade {
 			}
 			// Validate NOT
 			if ("NOT" in obj) {
-				return this.isFilter(obj.NOT, colVals);
+				return this.isFilter(obj.NOT, colVals, mfields, sfields);
 			}
 
 			// Validate AND and OR the same way
@@ -126,13 +202,19 @@ export default class InsightFacade implements IInsightFacade {
 				if (Object.values(obj).length === 1) {
 					const val = Object.values(obj)[0];
 					if (Array.isArray(val)) {
+						if (val.length < 1) {
+							return false;
+						}
 						// Check that no object is not a filter
 						return !val.some((item) => {
-							return !this.isFilter(item, colVals);
+							return !this.isFilter(item, colVals, mfields, sfields);
 						});
 					}
 				}
 				return false;
+			} else {
+				const idVal: string = colVals[0].split("_")[0];
+				return this.isSMComp(obj, mfields, sfields, idVal);
 			}
 		}
 		return true;
@@ -142,32 +224,29 @@ export default class InsightFacade implements IInsightFacade {
 		let onlyID: string;
 		const keySections = 2;
 		if (Array.isArray(cols)) {
-			if ((cols.length === 0) || (typeof cols[0] !== "string")) {
-				throw new Error('Incorrect format');
+			if (cols.length === 0 || typeof cols[0] !== "string") {
+				throw new Error("Incorrect format");
 			}
 			onlyID = cols[0].split("_")[0];
 			for (const val of cols) {
 				if (typeof val === "string") {
 					//console.log(val);
 					if (val.split("_", keySections)[0] !== onlyID) {
-						throw new Error('More than one id');
+						throw new Error("More than one id");
 					}
 					if (val.split("_", keySections).length < keySections) {
-						throw new Error('No cols after underscore');
+						throw new Error("No cols after underscore");
 					}
-					if (
-						!mfields.includes(val.split("_", keySections)[1]) &&
-						!sfields.includes(val.split("_", keySections)[1])
-					) {
-						throw new Error('Not a key');
+					if (!mfields.includes(val.split("_", keySections)[1]) && !sfields.includes(val.split("_", keySections)[1])) {
+						throw new Error("Not a key");
 					}
 				} else {
-					throw new Error('Not a string');
+					throw new Error("Not a string");
 				}
 			}
 			return cols;
 		} else {
-			throw new Error('Incorrect col format');
+			throw new Error("Incorrect col format");
 		}
 	}
 
@@ -188,8 +267,8 @@ export default class InsightFacade implements IInsightFacade {
 		return false;
 	}
 
-	public validateWhere(where: unknown, colVals: string[]): Boolean {
-		if (!this.isEmpty(where) && !this.isFilter(where, colVals)) {
+	public validateWhere(where: unknown, colVals: string[], mfields: string[], sfields: string[]): Boolean {
+		if (!this.isEmpty(where) && !this.isFilter(where, colVals, mfields, sfields)) {
 			return false;
 		}
 		return true;
@@ -225,12 +304,12 @@ export default class InsightFacade implements IInsightFacade {
 				const order: unknown = options.ORDER;
 				if (!this.validateOrder(order, colVals)) {
 					return false;
-				};
+				}
 			}
 		} else {
 			return false;
 		}
 		// Validate where
-		return this.validateWhere(where, colVals);
+		return this.validateWhere(where, colVals, mfields, sfields);
 	}
 }

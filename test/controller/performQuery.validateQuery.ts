@@ -24,9 +24,7 @@ describe("InsightFacade", function () {
 	describe("PerformQuery", function () {
 		async function checkValidateQuery(this: Mocha.Context): Promise<void> {
 			if (!this.test) {
-				throw new Error(
-					"Invalid call to checkValidateQuery."
-				);
+				throw new Error("Invalid call to checkValidateQuery.");
 			}
 			// Destructuring assignment to reduce property accesses
 			const { input, errorExpected } = await loadTestQuery(this.test.title);
