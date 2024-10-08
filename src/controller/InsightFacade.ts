@@ -137,18 +137,50 @@ export default class InsightFacade implements IInsightFacade {
 		return true;
 	}
 
+	public validateCols(cols: unknown, mfields: string[], sfields: string[]): string {
+		let onlyID: string;
+		const keySections = 2;
+		if (Array.isArray(cols)) {
+			if ((cols.length === 0) || (typeof cols[0] !== "string")) {
+				throw new Error('Incorrect format');
+			}
+			onlyID = cols[0].split("_")[0];
+			for (const val of cols) {
+				if (typeof val === "string") {
+					//console.log(val);
+					if (val.split("_", keySections)[0] !== onlyID) {
+						throw new Error('More than one id');
+					}
+					if (val.split("_", keySections).length < keySections) {
+						throw new Error('No cols after underscore');
+					}
+					if (
+						!mfields.includes(val.split("_", keySections)[1]) &&
+						!sfields.includes(val.split("_", keySections)[1])
+					) {
+						throw new Error('Not a key');
+					}
+				} else {
+					throw new Error('Not a string');
+				}
+			}
+			return onlyID;
+		} else {
+			throw new Error('Incorrect col format');
+		}
+	}
+
+	// Check for {}
+	public isEmpty(obj: unknown): Boolean {
+		if (typeof obj === "object" && obj !== null) {
+			return Object.keys(obj).length === 0;
+		}
+		return false;
+	}
+
 	public validateQuery(query: unknown): Boolean {
 		const mfields: string[] = ["avg", "pass", "fail", "audit", "year"];
 		const sfields: string[] = ["dept", "id", "instructor", "title", "uuid"];
-
-		// Check for {}
-		const isEmpty = function (obj: unknown): Boolean {
-			if (typeof obj === "object" && obj !== null) {
-				return Object.keys(obj).length === 0;
-			}
-			return false;
-		};
-
 		let where: unknown = {};
 		let options: unknown = {};
 		// Check query has body and options
@@ -158,7 +190,6 @@ export default class InsightFacade implements IInsightFacade {
 		} else {
 			return false;
 		}
-
 		// Validate options
 		// TODO: check order
 		let onlyID: string;
@@ -166,34 +197,9 @@ export default class InsightFacade implements IInsightFacade {
 		if (typeof options === "object" && options !== null) {
 			if ("COLUMNS" in options) {
 				const cols = options.COLUMNS;
-				if (Array.isArray(cols)) {
-					if (cols.length === 0) {
-						return false;
-					}
-					if (typeof cols[0] !== "string") {
-						return false;
-					}
-					onlyID = cols[0].split("_")[0];
-					for (const val of cols) {
-						if (typeof val === "string") {
-							//console.log(val);
-							if (val.split("_", keySections)[0] !== onlyID) {
-								return false;
-							}
-							if (val.split("_", keySections).length < keySections) {
-								return false;
-							}
-							if (
-								!mfields.includes(val.split("_", keySections)[1]) &&
-								!sfields.includes(val.split("_", keySections)[1])
-							) {
-								return false;
-							}
-						} else {
-							return false;
-						}
-					}
-				} else {
+				try {
+					onlyID = this.validateCols(cols, mfields, sfields);
+				} catch {
 					return false;
 				}
 			} else {
@@ -203,7 +209,7 @@ export default class InsightFacade implements IInsightFacade {
 			return false;
 		}
 		// Validate where
-		if (!isEmpty(where) && !this.isFilter(where)) {
+		if (!this.isEmpty(where) && !this.isFilter(where)) {
 			return false;
 		}
 		return true;

@@ -22,7 +22,7 @@ describe("InsightFacade", function () {
 	});
 
 	describe("PerformQuery", function () {
-		async function checkValidateQuery(this: Mocha.Context) {
+		async function checkValidateQuery(this: Mocha.Context): Promise<void> {
 			if (!this.test) {
 				throw new Error(
 					"Invalid call to checkValidateQuery."
@@ -34,9 +34,9 @@ describe("InsightFacade", function () {
 			try {
 				result = facade.validateQuery(input);
 				if (errorExpected) {
-					return expect(result).to.be["false"];
+					expect(result).to.be.false;
 				} else {
-					return expect(result).to.be["true"];
+					expect(result).to.be.true;
 				}
 			} catch (err) {
 				expect.fail(`validateQuery threw unexpected error: ${err}`);
