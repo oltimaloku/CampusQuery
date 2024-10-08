@@ -1,3 +1,4 @@
+import { on } from "events";
 import JSZip from "jszip";
 import { IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, InsightResult } from "./IInsightFacade";
 import Section from "./Section";
@@ -108,7 +109,7 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	// Recursive check if it is a filter
-	public isFilter(obj: unknown): Boolean {
+	public isFilter(obj: unknown, colVals: string[]): Boolean {
 		if (typeof obj === "object" && obj !== null) {
 			//console.log(Object.keys(obj));
 			if (Object.keys(obj).length !== 1) {
@@ -116,7 +117,7 @@ export default class InsightFacade implements IInsightFacade {
 			}
 			// Validate NOT
 			if ("NOT" in obj) {
-				return this.isFilter(obj.NOT);
+				return this.isFilter(obj.NOT, colVals);
 			}
 
 			// Validate AND and OR the same way
@@ -127,7 +128,7 @@ export default class InsightFacade implements IInsightFacade {
 					if (Array.isArray(val)) {
 						// Check that no object is not a filter
 						return !val.some((item) => {
-							return !this.isFilter(item);
+							return !this.isFilter(item, colVals);
 						});
 					}
 				}
@@ -137,7 +138,7 @@ export default class InsightFacade implements IInsightFacade {
 		return true;
 	}
 
-	public validateCols(cols: unknown, mfields: string[], sfields: string[]): string {
+	public validateCols(cols: unknown, mfields: string[], sfields: string[]): string[] {
 		let onlyID: string;
 		const keySections = 2;
 		if (Array.isArray(cols)) {
@@ -164,7 +165,7 @@ export default class InsightFacade implements IInsightFacade {
 					throw new Error('Not a string');
 				}
 			}
-			return onlyID;
+			return cols;
 		} else {
 			throw new Error('Incorrect col format');
 		}
@@ -176,6 +177,22 @@ export default class InsightFacade implements IInsightFacade {
 			return Object.keys(obj).length === 0;
 		}
 		return false;
+	}
+
+	public validateOrder(order: unknown, colVals: string[]): Boolean {
+		if (typeof order === "string") {
+			if (colVals.includes(order)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public validateWhere(where: unknown, colVals: string[]): Boolean {
+		if (!this.isEmpty(where) && !this.isFilter(where, colVals)) {
+			return false;
+		}
+		return true;
 	}
 
 	public validateQuery(query: unknown): Boolean {
@@ -192,26 +209,28 @@ export default class InsightFacade implements IInsightFacade {
 		}
 		// Validate options
 		// TODO: check order
-		let onlyID: string;
-		const keySections = 2;
+		let colVals: string[];
 		if (typeof options === "object" && options !== null) {
 			if ("COLUMNS" in options) {
 				const cols = options.COLUMNS;
 				try {
-					onlyID = this.validateCols(cols, mfields, sfields);
+					colVals = this.validateCols(cols, mfields, sfields);
 				} catch {
 					return false;
 				}
 			} else {
 				return false;
 			}
+			if ("ORDER" in options) {
+				const order: unknown = options.ORDER;
+				if (!this.validateOrder(order, colVals)) {
+					return false;
+				};
+			}
 		} else {
 			return false;
 		}
 		// Validate where
-		if (!this.isEmpty(where) && !this.isFilter(where)) {
-			return false;
-		}
-		return true;
+		return this.validateWhere(where, colVals);
 	}
 }
