@@ -104,7 +104,7 @@ export default class InsightFacade implements IInsightFacade {
 			throw new InsightError("Invalid id");
 		}
 
-		const isDeleted = this.datasets["delete"](id);
+		const isDeleted = this.datasets.delete(id);
 
 		// delete returns true if the key was found and deleted, false otherwise
 		if (isDeleted) {
