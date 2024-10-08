@@ -32,9 +32,9 @@ describe("InsightFacade", function () {
 			try {
 				result = facade.validateQuery(input);
 				if (errorExpected) {
-					expect(result).to.be.false;
+					expect(result).to.equal(false);
 				} else {
-					expect(result).to.be.true;
+					expect(result).to.equal(true);
 				}
 			} catch (err) {
 				expect.fail(`validateQuery threw unexpected error: ${err}`);
