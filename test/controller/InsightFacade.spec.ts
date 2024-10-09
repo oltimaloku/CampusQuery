@@ -1,3 +1,4 @@
+import { Context } from "mocha";
 import {
 	IInsightFacade,
 	InsightDatasetKind,
@@ -401,44 +402,43 @@ describe("InsightFacade", function () {
 	});
 
 	describe("PerformQuery", function () {
-		/**
-		 * Loads the TestQuery specified in the test name and asserts the behaviour of performQuery.
-		 *
-		 * Note: the 'this' parameter is automatically set by Mocha and contains information about the test.
-		 */
-		async function checkQuery(this: Mocha.Context): Promise<void> {
-			if (!this.test) {
-				throw new Error(
-					"Invalid call to checkQuery." +
-						"Usage: 'checkQuery' must be passed as the second parameter of Mocha's it(..) function." +
-						"Do not invoke the function directly."
-				);
-			}
-			// Destructuring assignment to reduce property accesses
-			const { input, expected, errorExpected } = await loadTestQuery(this.test.title);
-			let result: InsightResult[];
-			try {
-				result = await facade.performQuery(input);
-				if (errorExpected) {
-					expect.fail("Should have thrown an error");
-				} else {
-					expect(result).to.deep.equal(expected);
+		function checkQuery(useDeepEquals: boolean) {
+			return async function (this: Mocha.Context): Promise<void> {
+				if (!this.test) {
+					throw new Error(
+						"Invalid call to checkQuery." +
+							"Usage: 'checkQuery' must be passed as the second parameter of Mocha's it(..) function." +
+							"Do not invoke the function directly."
+					);
 				}
-			} catch (err) {
-				if (!errorExpected) {
-					expect.fail(`performQuery threw unexpected error: ${err}`);
+				const { input, expected, errorExpected } = await loadTestQuery(this.test.title);
+				let result: InsightResult[];
+				try {
+					result = await facade.performQuery(input);
+					if (errorExpected) {
+						expect.fail("Should have thrown an error");
+					} else {
+						if (useDeepEquals) {
+							expect(result).to.deep.equal(expected);
+						} else {
+							expect(result).to.have.deep.members(expected);
+						}
+					}
+				} catch (err) {
+					if (!errorExpected) {
+						expect.fail(`performQuery threw unexpected error: ${err}`);
+					}
+					if (expected === "InsightError") {
+						expect(err).to.be.instanceOf(InsightError);
+					} else if (expected === "ResultTooLargeError") {
+						expect(err).to.be.instanceOf(ResultTooLargeError);
+					} else if (expected === "NotFoundError") {
+						expect(err).to.be.instanceOf(NotFoundError);
+					} else {
+						expect.fail(`performQuery threw unexpected error: ${err}`);
+					}
 				}
-				if (expected === "InsightError") {
-					expect(err).to.be.instanceOf(InsightError);
-				} else if (expected === "ResultTooLargeError") {
-					expect(err).to.be.instanceOf(ResultTooLargeError);
-				} else if (expected === "NotFoundError") {
-					expect(err).to.be.instanceOf(NotFoundError);
-				} else {
-					// TODO: replace with your assertions
-					expect.fail(`performQuery threw unexpected error: ${err}`);
-				}
-			}
+			};
 		}
 
 		before(async function () {
@@ -464,44 +464,44 @@ describe("InsightFacade", function () {
 
 		// Examples demonstrating how to test performQuery using the JSON Test Queries.
 		// The relative path to the query file must be given in square brackets.
-		it("[valid/simple.json] SELECT dept, avg WHERE avg > 97", checkQuery);
-		it("[invalid/invalid.json] Query missing WHERE", checkQuery);
-		it("[invalid/non_object_query.json] Query not an object", checkQuery);
-		it("[invalid/multiple_datasets.json] Query contains multiple datasets", checkQuery);
-		it("[invalid/results_too_large.json] Query returns too many results", checkQuery);
-		it("[invalid/no_options.json] Query with no options", checkQuery);
-		it("[invalid/invalid_filter_format.json] Invalid filter format", checkQuery);
-		it("[valid/return_no_results.json] return no results", checkQuery);
-		it("[valid/simple_or.json] simple or", checkQuery);
-		it("[valid/simple_and.json] simple and", checkQuery);
-		it("[valid/success_no_filter.json] success no filter", checkQuery);
-		it("[invalid/invalid_logic_comp.json] invalid logic comp", checkQuery);
-		it("[invalid/mcomp_use_skey.json] mcomp use skey", checkQuery);
-		it("[invalid/mcomp_use_string.json] mcomp use string", checkQuery);
-		it("[invalid/scomp_middle_asterisk.json] middle asterisk", checkQuery);
-		it("[valid/scomp_empty.json] empty scomp", checkQuery);
-		it("[valid/two_asterisks_alone.json] two asterisks alone", checkQuery);
+		it("[valid/simple.json] SELECT dept, avg WHERE avg > 97", checkQuery(true));
+		it("[invalid/invalid.json] Query missing WHERE", checkQuery(true));
+		it("[invalid/non_object_query.json] Query not an object", checkQuery(true));
+		it("[invalid/multiple_datasets.json] Query contains multiple datasets", checkQuery(true));
+		it("[invalid/results_too_large.json] Query returns too many results", checkQuery(true));
+		it("[invalid/no_options.json] Query with no options", checkQuery(true));
+		it("[invalid/invalid_filter_format.json] Invalid filter format", checkQuery(true));
+		it("[valid/return_no_results.json] return no results", checkQuery(true));
+		it("[valid/simple_or.json] simple or", checkQuery(true));
+		it("[valid/simple_and.json] simple and", checkQuery(true));
+		it("[valid/success_no_filter.json] success no filter", checkQuery(true));
+		it("[invalid/invalid_logic_comp.json] invalid logic comp", checkQuery(true));
+		it("[invalid/mcomp_use_skey.json] mcomp use skey", checkQuery(true));
+		it("[invalid/mcomp_use_string.json] mcomp use string", checkQuery(true));
+		it("[invalid/scomp_middle_asterisk.json] middle asterisk", checkQuery(true));
+		it("[valid/scomp_empty.json] empty scomp", checkQuery(true));
+		it("[valid/two_asterisks_alone.json] two asterisks alone", checkQuery(true));
 
-		it("[valid/valid_repeated_columns.json] valid_repeated_columns", checkQuery);
-		it("[invalid/invalid_order_key_not_in_columns.json] invalid_order_key_not_in_columns", checkQuery);
-		it("[valid/successful_mcomp_eq.json] successful_mcomp_eq", checkQuery);
-		it("[valid/pre_wildcard_success.json] pre_wildcard_success", checkQuery);
-		it("[valid/post_wildcard_success.json] post_wildcard_success", checkQuery);
-		it("[valid/successful_mcomp_lt.json] successful_mcomp_lt", checkQuery);
-		it("[valid/valid_all_possible_keys.json] valid_all_possible_keys", checkQuery);
-		it("[invalid/invalid_empty_logic.json] invalid_empty_logic", checkQuery);
-		it("[valid/valid_order_by_skey.json] valid_order_by_skey", checkQuery);
-		it("[valid/no_wildcard_success.json] no_wildcard_success", checkQuery);
-		it("[invalid/invalid_only_order.json] invalid_only_order", checkQuery);
-		it("[invalid/scomp_use_mkey.json] scomp_use_mkey", checkQuery);
-		it("[valid/not_basic_test.json] not_basic_test", checkQuery);
-		it("[invalid/invalid_column_no_keys.json] invalid_column_no_keys", checkQuery);
-		it("[invalid/invalid_not.json] invalid_not", checkQuery);
-		it("[valid/double_wildcard_success.json] double_wildcard_success", checkQuery);
-		it("[invalid/scomp_use_number.json] scomp_use_number", checkQuery);
-		it("[invalid/invalid_multiple_underscore.json] invalid_multiple_underscore", checkQuery);
-		it("[invalid/invalid_order_key_not_skey_mkey.json] invalid_order_key_not_skey_mkey", checkQuery);
-		it("[invalid/invalid_order_ref_different_dataset.json] invalid_order_ref_different_dataset", checkQuery);
-		it("[invalid/invalid_order_type.json] invalid_order_type", checkQuery);
+		it("[valid/valid_repeated_columns.json] valid_repeated_columns", checkQuery(true));
+		it("[invalid/invalid_order_key_not_in_columns.json] invalid_order_key_not_in_columns", checkQuery(true));
+		it("[valid/successful_mcomp_eq.json] successful_mcomp_eq", checkQuery(true));
+		it("[valid/pre_wildcard_success.json] pre_wildcard_success", checkQuery(true));
+		it("[valid/post_wildcard_success.json] post_wildcard_success", checkQuery(true));
+		it("[valid/successful_mcomp_lt.json] successful_mcomp_lt", checkQuery(true));
+		it("[valid/valid_all_possible_keys.json] valid_all_possible_keys", checkQuery(true));
+		it("[invalid/invalid_empty_logic.json] invalid_empty_logic", checkQuery(true));
+		it("[valid/valid_order_by_skey.json] valid_order_by_skey", checkQuery(true));
+		it("[valid/no_wildcard_success.json] no_wildcard_success", checkQuery(true));
+		it("[invalid/invalid_only_order.json] invalid_only_order", checkQuery(true));
+		it("[invalid/scomp_use_mkey.json] scomp_use_mkey", checkQuery(true));
+		it("[valid/not_basic_test.json] not_basic_test", checkQuery(true));
+		it("[invalid/invalid_column_no_keys.json] invalid_column_no_keys", checkQuery(true));
+		it("[invalid/invalid_not.json] invalid_not", checkQuery(true));
+		it("[valid/double_wildcard_success.json] double_wildcard_success", checkQuery(true));
+		it("[invalid/scomp_use_number.json] scomp_use_number", checkQuery(true));
+		it("[invalid/invalid_multiple_underscore.json] invalid_multiple_underscore", checkQuery(true));
+		it("[invalid/invalid_order_key_not_skey_mkey.json] invalid_order_key_not_skey_mkey", checkQuery(true));
+		it("[invalid/invalid_order_ref_different_dataset.json] invalid_order_ref_different_dataset", checkQuery(true));
+		it("[invalid/invalid_order_type.json] invalid_order_type", checkQuery(true));
 	});
 });
