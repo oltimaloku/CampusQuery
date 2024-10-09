@@ -8,6 +8,7 @@ import {
 	NotFoundError,
 } from "./IInsightFacade";
 import Section from "./Section";
+import {validateQuery, validateCols} from "./ValidationHelpers"
 
 /**
  * This is the main programmatic entry point for the project.
@@ -115,8 +116,130 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public async performQuery(query: unknown): Promise<InsightResult[]> {
-		// TODO: Remove this once you implement the methods!
-		throw new Error(`InsightFacadeImpl::performQuery() is unimplemented! - query=${query};`);
+		const mfields: string[] = ["avg", "pass", "fail", "audit", "year"];
+		const sfields: string[] = ["dept", "id", "instructor", "title", "uuid"];
+		let where: unknown;
+		let options: unknown;
+		if (!validateQuery(query)) {
+			throw new InsightError(`Invalid format for query`);
+		}
+		if (typeof query === "object" && query && "WHERE" in query && "OPTIONS" in query) {
+			where = query.WHERE;
+			options = query.OPTIONS;
+		}
+		let onlyID = '';
+		if (typeof options === "object" && options !== null) {
+			let colVals: string[];
+			if ("COLUMNS" in options) {
+				const cols = options.COLUMNS;
+				try {
+					colVals = validateCols(cols, mfields, sfields);
+					onlyID = colVals[0].split("_")[0];
+				} catch {
+					throw new InsightError(`No cols`);
+				}
+			}
+			if ("ORDER" in options) {
+				// TODO: implement order
+			}
+		}
+		const sections: Section[] | undefined = this.datasets.get(onlyID);
+		if (typeof sections !== "undefined") {
+			console.log(this.runFilter(where, onlyID, sections).length)
+		}
+		return [];
+	}
+
+	public runFilter(obj: unknown, onlyID: string, current: Section[]): Section[] {
+		if (typeof obj === "object" && obj !== null) {
+			if ("NOT" in obj) {
+				const inverse: Section[] = this.runFilter(obj.NOT, onlyID, current);
+				return current.filter((section) => !inverse.includes(section));
+			}
+			if ("AND" in obj) {
+				if (Array.isArray(obj.AND)) {
+					const and: unknown[] = obj.AND;
+					for (const query of and) {
+						current = this.runFilter(query, onlyID, current);
+					}
+					return current;
+				}
+			}
+			if ("OR" in obj) {
+				if (Array.isArray(obj.OR)) {
+					const or: unknown[] = obj.OR;
+					const builtArray: Section[] = [];
+					for (const query of or) {
+						builtArray.concat(
+							this.runFilter(query, onlyID, current).filter((section) => !builtArray.includes(section))
+						);
+					}
+					return builtArray;
+				}
+			}
+			return this.runSMFilter(obj, onlyID, current);
+		}
+		return [];
+	}
+
+	public runMFilter(obj: unknown, onlyID: string, current: Section[]): Section[] {
+		if (typeof obj === "object" && obj !== null) {
+			let mcomp: unknown = null;
+			let comp = '';
+			if ("LT" in obj) {
+				mcomp = obj.LT;
+				comp = "LT";
+			}
+			if ("GT" in obj) {
+				mcomp = obj.GT;
+				comp = "GT";
+			}
+			if ("EQ" in obj) {
+				mcomp = obj.EQ;
+				comp = "EQ";
+			}
+			if (typeof mcomp === "object" && mcomp !== null) {
+				const mkey = Object.keys(mcomp)[0].split('_')[1]
+				const mval = Object.values(mcomp)[0]
+				try {
+					return current.filter((section) => {
+						switch(comp) {
+							case "LT": return section[mkey as keyof Section] < mval
+						}
+						switch(comp) {
+							case "EQ": return section[mkey as keyof Section] === mval
+						}
+						switch(comp) {
+							case "GT": return section[mkey as keyof Section] > mval
+						}
+					})
+				} catch {
+					throw new InsightError('mkey not found');
+				}
+			}
+		}
+		return [];
+	}
+
+	public runSMFilter(obj: unknown, onlyID: string, current: Section[]): Section[] {
+		if (typeof obj === "object" && obj !== null) {
+			if ("IS" in obj) {
+				const scomp: unknown = obj.IS
+				if (typeof scomp === "object" && scomp !== null) {
+					const skey = Object.keys(scomp)[0].split('_')[1]
+					const sval = Object.values(scomp)[0]
+					try {
+						return current.filter((section) => {
+							return section[skey as keyof Section] === sval
+						})
+					} catch {
+						throw new InsightError('skey not found');
+					}
+				}
+			}
+			return this.runMFilter(obj, onlyID, current);
+		}
+		return [];
 	}
 
 	public async listDatasets(): Promise<InsightDataset[]> {
@@ -132,211 +255,5 @@ export default class InsightFacade implements IInsightFacade {
 		}
 
 		return datasets;
-	}
-
-	public isSCOMP(filter: unknown, sfields: string[], idVal: string): Boolean {
-		const keySections = 2;
-		const match = new RegExp("^[*]?[^*]*[*]?$");
-		if (typeof filter === "object" && filter !== null) {
-			if (Object.keys(filter).length === 1) {
-				const skey: string = Object.keys(filter)[0];
-				if (skey.split("_").length === keySections) {
-					const splitKey: string[] = skey.split("_");
-					if (splitKey[0] !== idVal) {
-						return false;
-					}
-					if (!sfields.includes(splitKey[1])) {
-						return false;
-					}
-				} else {
-					return false;
-				}
-			} else {
-				return false;
-			}
-			if (Object.values(filter).length === 1 && typeof Object.values(filter)[0] === "string") {
-				const sval: string = Object.values(filter)[0];
-				return match.test(sval);
-			}
-		}
-		return false;
-	}
-
-	public isMCOMP(filter: unknown, mfields: string[], idVal: string): Boolean {
-		const keySections = 2;
-		if (typeof filter === "object" && filter !== null) {
-			if (Object.keys(filter).length === 1) {
-				const mkey: string = Object.keys(filter)[0];
-				if (mkey.split("_").length === keySections) {
-					const splitKey: string[] = mkey.split("_");
-					if (splitKey[0] !== idVal) {
-						return false;
-					}
-					if (!mfields.includes(splitKey[1])) {
-						return false;
-					}
-				} else {
-					return false;
-				}
-			} else {
-				return false;
-			}
-			if (Object.values(filter).length === 1 && typeof Object.values(filter)[0] === "number") {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public isSMComp(filter: unknown, mfields: string[], sfields: string[], idVal: string): Boolean {
-		if (typeof filter === "object" && filter !== null) {
-			if ("IS" in filter) {
-				const scomp: unknown = filter.IS;
-				return this.isSCOMP(scomp, sfields, idVal);
-			}
-			if ("LT" in filter) {
-				const mcomp: unknown = filter.LT;
-				return this.isMCOMP(mcomp, mfields, idVal);
-			}
-			if ("GT" in filter) {
-				const mcomp: unknown = filter.GT;
-				return this.isMCOMP(mcomp, mfields, idVal);
-			}
-			if ("EQ" in filter) {
-				const mcomp: unknown = filter.EQ;
-				return this.isMCOMP(mcomp, mfields, idVal);
-			}
-			return false;
-		}
-		return false;
-	}
-
-	// Recursive check if it is a filter
-	public isFilter(obj: unknown, colVals: string[], mfields: string[], sfields: string[]): Boolean {
-		if (typeof obj === "object" && obj !== null) {
-			//console.log(Object.keys(obj));
-			if (Object.keys(obj).length !== 1) {
-				return false;
-			}
-			// Validate NOT
-			if ("NOT" in obj) {
-				return this.isFilter(obj.NOT, colVals, mfields, sfields);
-			}
-
-			// Validate AND and OR the same way
-			if ("AND" in obj || "OR" in obj) {
-				// Check if the value is an array
-				if (Object.values(obj).length === 1) {
-					const val = Object.values(obj)[0];
-					if (Array.isArray(val)) {
-						if (val.length < 1) {
-							return false;
-						}
-						// Check that no object is not a filter
-						return !val.some((item) => {
-							return !this.isFilter(item, colVals, mfields, sfields);
-						});
-					}
-				}
-				return false;
-			} else {
-				const idVal: string = colVals[0].split("_")[0];
-				return this.isSMComp(obj, mfields, sfields, idVal);
-			}
-		}
-		return true;
-	}
-
-	public validateCols(cols: unknown, mfields: string[], sfields: string[]): string[] {
-		let onlyID: string;
-		const keySections = 2;
-		if (Array.isArray(cols)) {
-			if (cols.length === 0 || typeof cols[0] !== "string") {
-				throw new Error("Incorrect format");
-			}
-			onlyID = cols[0].split("_")[0];
-			for (const val of cols) {
-				if (typeof val === "string") {
-					//console.log(val);
-					if (val.split("_", keySections)[0] !== onlyID) {
-						throw new Error("More than one id");
-					}
-					if (val.split("_", keySections).length < keySections) {
-						throw new Error("No cols after underscore");
-					}
-					if (!mfields.includes(val.split("_", keySections)[1]) && !sfields.includes(val.split("_", keySections)[1])) {
-						throw new Error("Not a key");
-					}
-				} else {
-					throw new Error("Not a string");
-				}
-			}
-			return cols;
-		} else {
-			throw new Error("Incorrect col format");
-		}
-	}
-
-	// Check for {}
-	public isEmpty(obj: unknown): Boolean {
-		if (typeof obj === "object" && obj !== null) {
-			return Object.keys(obj).length === 0;
-		}
-		return false;
-	}
-
-	public validateOrder(order: unknown, colVals: string[]): Boolean {
-		if (typeof order === "string") {
-			if (colVals.includes(order)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public validateWhere(where: unknown, colVals: string[], mfields: string[], sfields: string[]): Boolean {
-		if (!this.isEmpty(where) && !this.isFilter(where, colVals, mfields, sfields)) {
-			return false;
-		}
-		return true;
-	}
-
-	public validateQuery(query: unknown): Boolean {
-		const mfields: string[] = ["avg", "pass", "fail", "audit", "year"];
-		const sfields: string[] = ["dept", "id", "instructor", "title", "uuid"];
-		let where: unknown = {};
-		let options: unknown = {};
-		// Check query has body and options
-		if (typeof query === "object" && query && "WHERE" in query && "OPTIONS" in query) {
-			where = query.WHERE;
-			options = query.OPTIONS;
-		} else {
-			return false;
-		}
-		// Validate options
-		// TODO: check order
-		let colVals: string[];
-		if (typeof options === "object" && options !== null) {
-			if ("COLUMNS" in options) {
-				const cols = options.COLUMNS;
-				try {
-					colVals = this.validateCols(cols, mfields, sfields);
-				} catch {
-					return false;
-				}
-			} else {
-				return false;
-			}
-			if ("ORDER" in options) {
-				const order: unknown = options.ORDER;
-				if (!this.validateOrder(order, colVals)) {
-					return false;
-				}
-			}
-		} else {
-			return false;
-		}
-		// Validate where
-		return this.validateWhere(where, colVals, mfields, sfields);
 	}
 }
