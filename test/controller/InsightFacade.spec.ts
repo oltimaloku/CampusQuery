@@ -501,5 +501,6 @@ describe("InsightFacade", function () {
 		it("[invalid/scomp_use_number.json] scomp_use_number", checkQuery);
 		it("[invalid/invalid_multiple_underscore.json] invalid_multiple_underscore", checkQuery);
 		it("[invalid/invalid_order_key_not_skey_mkey.json] invalid_order_key_not_skey_mkey", checkQuery);
+		it("[invalid/invalid_order_ref_different_dataset.json] invalid_order_ref_different_dataset", checkQuery);
 	});
 });
