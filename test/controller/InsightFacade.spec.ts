@@ -500,5 +500,6 @@ describe("InsightFacade", function () {
 		it("[valid/double_wildcard_success.json] double_wildcard_success", checkQuery);
 		it("[invalid/scomp_use_number.json] scomp_use_number", checkQuery);
 		it("[invalid/invalid_multiple_underscore.json] invalid_multiple_underscore", checkQuery);
+		it("[invalid_order_key_not_skey_mkey.json] invalid_order_key_not_skey_mkey", checkQuery);
 	});
 });

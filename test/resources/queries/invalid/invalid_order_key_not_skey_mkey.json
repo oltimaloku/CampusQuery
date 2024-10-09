@@ -1,0 +1,14 @@
+{
+	"title": "invalid_order_key_not_skey_mkey",
+	"input": {
+		"WHERE": {
+			"GT": { "sections_avg": 70 }
+		},
+		"OPTIONS": {
+			"COLUMNS": ["sections_dept", "sections_avg", "sections_invalidKey"],
+			"ORDER": "sections_invalidKey"
+		}
+	},
+	"errorExpected": true,
+	"expected": "InsightError"
+}
