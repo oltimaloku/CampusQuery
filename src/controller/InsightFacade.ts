@@ -6,9 +6,10 @@ import {
 	InsightError,
 	InsightResult,
 	NotFoundError,
+	ResultTooLargeError,
 } from "./IInsightFacade";
 import Section from "./Section";
-import {validateQuery, validateCols} from "./ValidationHelpers"
+import {validateQuery, validateCols, isEmpty} from "./ValidationHelpers"
 
 /**
  * This is the main programmatic entry point for the project.
@@ -144,8 +145,13 @@ export default class InsightFacade implements IInsightFacade {
 			}
 		}
 		const sections: Section[] | undefined = this.datasets.get(onlyID);
+		let results: Section[] = []
 		if (typeof sections !== "undefined") {
-			console.log(this.runFilter(where, onlyID, sections).length)
+			results = this.runFilter(where, onlyID, sections)
+		}
+		console.log(results.length);
+		if (results.length > 5000) {
+			throw new ResultTooLargeError('Result too large');
 		}
 		return [];
 	}
@@ -168,14 +174,17 @@ export default class InsightFacade implements IInsightFacade {
 			if ("OR" in obj) {
 				if (Array.isArray(obj.OR)) {
 					const or: unknown[] = obj.OR;
-					const builtArray: Section[] = [];
+					let builtArray: Section[] = [];
 					for (const query of or) {
-						builtArray.concat(
+						builtArray = builtArray.concat(
 							this.runFilter(query, onlyID, current).filter((section) => !builtArray.includes(section))
 						);
 					}
 					return builtArray;
 				}
+			}
+			if (isEmpty(obj)) {
+				return current;
 			}
 			return this.runSMFilter(obj, onlyID, current);
 		}
@@ -227,10 +236,12 @@ export default class InsightFacade implements IInsightFacade {
 				const scomp: unknown = obj.IS
 				if (typeof scomp === "object" && scomp !== null) {
 					const skey = Object.keys(scomp)[0].split('_')[1]
-					const sval = Object.values(scomp)[0]
+					let sval = Object.values(scomp)[0]
 					try {
+						sval = '^'+sval.replace(/\*/gi, '.*')+'$';
+						const regex = new RegExp(sval);
 						return current.filter((section) => {
-							return section[skey as keyof Section] === sval
+							return regex.test(section[skey as keyof Section])
 						})
 					} catch {
 						throw new InsightError('skey not found');
