@@ -9,8 +9,6 @@ export default class Section {
 	private readonly pass: number;
 	private readonly fail: number;
 	private readonly audit: number;
-	private readonly campus: string;
-	private readonly course: string;
 
 	public constructor(
 		uuid: number,
@@ -22,9 +20,7 @@ export default class Section {
 		avg: number,
 		pass: number,
 		fail: number,
-		audit: number,
-		campus: string,
-		course: string
+		audit: number
 	) {
 		this.uuid = uuid;
 		this.id = id;
@@ -36,8 +32,6 @@ export default class Section {
 		this.pass = pass;
 		this.fail = fail;
 		this.audit = audit;
-		this.campus = campus;
-		this.course = course;
 	}
 
 	public static createSection(course: any): Section | null {
@@ -51,8 +45,7 @@ export default class Section {
 			Avg: "number",
 			Pass: "number",
 			Fail: "number",
-			Audit: "number",
-			Campus: "string",
+			Audit: "number"
 		};
 
 		// Check for the presence and type of each required field
@@ -63,18 +56,16 @@ export default class Section {
 		}
 
 		return new Section(
-			course.uuid,
 			course.id,
-			course.title,
-			course.instructor,
-			course.dept,
-			course.year,
-			course.avg,
-			course.pass,
-			course.fail,
-			course.audit,
-			course.campus,
-			course.courseCode
+			course.Course,
+			course.Title,
+			course.Professor,
+			course.Subject,
+			course.Year,
+			course.Avg,
+			course.Pass,
+			course.Fail,
+			course.Audit
 		);
 	}
 }
