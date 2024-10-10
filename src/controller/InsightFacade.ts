@@ -1,4 +1,5 @@
 import JSZip from "jszip";
+import fs from "fs-extra";
 import {
 	IInsightFacade,
 	InsightDataset,
@@ -19,6 +20,27 @@ import { validateQuery, validateCols, isEmpty, OptionResult } from "./Validation
 export default class InsightFacade implements IInsightFacade {
 	private datasets: Map<string, Section[]> = new Map<string, Section[]>();
 
+	public async getDataset(id: string): Promise<Section[]> {
+		if (id in this.datasets) {
+			const dataObject: Section[] | undefined = this.datasets.get(id);
+			if (typeof dataObject !== "undefined") {
+				return dataObject;
+			}
+		}
+		try {
+			const retVal: any = await fs.readJSON(`${__dirname}/../../data/${id}.json`);
+			if (Array.isArray(retVal)) {
+				if (retVal.length > 0 && retVal[0] instanceof Object) {
+					return retVal;
+				}
+			}
+			throw new NotFoundError(`Invalid file format`);
+		} catch (_error) {
+			throw new NotFoundError(`file not found`);
+		}
+		return [];
+	}
+
 	public async addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
 		try {
 			if (!this.isValidId(id)) {
@@ -37,6 +59,13 @@ export default class InsightFacade implements IInsightFacade {
 				}
 
 				this.datasets.set(id, processedContent);
+
+				await fs.mkdir(`${__dirname}/../../data`).catch((error) => {
+					if (!(error.code === "EEXIST")) {
+						throw error;
+					}
+				});
+				await fs.writeJSON(`${__dirname}/../../data/${id}.json`, processedContent);
 			} else {
 				throw new Error("Rooms dataset has not been implemented yet");
 			}
@@ -106,14 +135,14 @@ export default class InsightFacade implements IInsightFacade {
 			throw new InsightError("Invalid id");
 		}
 
-		const isDeleted = this.datasets.delete(id);
-
-		// delete returns true if the key was found and deleted, false otherwise
-		if (isDeleted) {
-			return id;
-		} else {
+		if (id in this.datasets) {
+			this.datasets.delete(id);
+		}
+		if (!(await fs.pathExists(`${__dirname}/../../data/${id}.json`))) {
 			throw new NotFoundError("Dataset not found");
 		}
+		await fs.remove(`${__dirname}/../../data/${id}.json`);
+		return id;
 	}
 
 	public getOptions(options: unknown, mfields: string[], sfields: string[]): OptionResult {
@@ -160,7 +189,7 @@ export default class InsightFacade implements IInsightFacade {
 			options = query.OPTIONS;
 		}
 		const optionsData: OptionResult = this.getOptions(options, mfields, sfields);
-		const sections: Section[] | undefined = this.datasets.get(optionsData.onlyID);
+		const sections: Section[] | undefined = await this.getDataset(optionsData.onlyID);
 		let results: Section[] = [];
 		if (typeof sections !== "undefined") {
 			results = this.runFilter(where, optionsData.onlyID, sections);
@@ -283,16 +312,22 @@ export default class InsightFacade implements IInsightFacade {
 
 	public async listDatasets(): Promise<InsightDataset[]> {
 		const datasets: InsightDataset[] = [];
-
-		for (const [id, sections] of this.datasets) {
+		const ids: string[] = [];
+		const results: Promise<Section[]>[] = [];
+		for (const filename of await fs.readdir(`${__dirname}/../../data`)) {
+			const id: string = filename.split(".")[0];
+			ids.push(id);
+			results.push(this.getDataset(id));
+		}
+		const resolved: Section[][] = await Promise.all(results);
+		for (let i = 0; i < ids.length; i++) {
 			const dataset: InsightDataset = {
-				id: id,
+				id: ids[i],
 				kind: InsightDatasetKind.Sections,
-				numRows: sections.length,
+				numRows: resolved[i].length,
 			};
 			datasets.push(dataset);
 		}
-
 		return datasets;
 	}
 }
