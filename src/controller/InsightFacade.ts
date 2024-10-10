@@ -129,8 +129,8 @@ export default class InsightFacade implements IInsightFacade {
 			options = query.OPTIONS;
 		}
 		let onlyID = '';
+		let colVals: string[] = [];
 		if (typeof options === "object" && options !== null) {
-			let colVals: string[];
 			if ("COLUMNS" in options) {
 				const cols = options.COLUMNS;
 				try {
@@ -149,11 +149,18 @@ export default class InsightFacade implements IInsightFacade {
 		if (typeof sections !== "undefined") {
 			results = this.runFilter(where, onlyID, sections)
 		}
-		console.log(results.length);
 		if (results.length > 5000) {
 			throw new ResultTooLargeError('Result too large');
 		}
-		return [];
+		let retVal: InsightResult[] = []
+		retVal = results.map((section) => {
+			const result: InsightResult = {};
+			for (const colKey of colVals) {
+				result[colKey] = section[colKey.split('_')[1] as keyof Section];
+			}
+			return result;
+		})
+		return retVal;
 	}
 
 	public runFilter(obj: unknown, onlyID: string, current: Section[]): Section[] {
