@@ -217,6 +217,18 @@ export default class InsightFacade implements IInsightFacade {
 		return [];
 	}
 
+	public mComparisons(comp: string, val: number, mval: number): boolean {
+		switch (comp) {
+			case "LT":
+				return val < mval;
+			case "EQ":
+				return val === mval;
+			case "GT":
+				return val > mval;
+		}
+		throw new InsightError(`Invalid mcomp comparator`);
+	}
+
 	public runMFilter(obj: unknown, current: Section[]): Section[] {
 		if (typeof obj === "object" && obj !== null) {
 			let mcomp: unknown = null;
@@ -237,20 +249,7 @@ export default class InsightFacade implements IInsightFacade {
 				const mkey = Object.keys(mcomp)[0].split("_")[1];
 				const mval = Object.values(mcomp)[0];
 				try {
-					return current.filter((section) => {
-						switch (comp) {
-							case "LT":
-								return section[mkey as keyof Section] < mval;
-						}
-						switch (comp) {
-							case "EQ":
-								return section[mkey as keyof Section] === mval;
-						}
-						switch (comp) {
-							case "GT":
-								return section[mkey as keyof Section] > mval;
-						}
-					});
+					return current.filter((section) => this.mComparisons(comp, section[mkey as keyof Section], mval));
 				} catch {
 					throw new InsightError("mkey not found");
 				}

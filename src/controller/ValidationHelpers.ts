@@ -209,3 +209,16 @@ export interface OptionResult {
 	colVals: string[];
 	orderField: string;
 }
+
+export const requiredFields: Record<string, string> = {
+	id: "number",
+	Course: "string",
+	Title: "string",
+	Professor: "string",
+	Subject: "string",
+	Year: "string",
+	Avg: "number",
+	Pass: "number",
+	Fail: "number",
+	Audit: "number",
+};

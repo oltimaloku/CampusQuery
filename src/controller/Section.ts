@@ -1,3 +1,5 @@
+import { requiredFields } from "./ValidationHelpers";
+
 export default class Section {
 	private readonly uuid: string;
 	private readonly id: string;
@@ -35,26 +37,12 @@ export default class Section {
 	}
 
 	public static createSection(course: any): Section | null {
-		const requiredFields: Record<string, string> = {
-			id: "number",
-			Course: "string",
-			Title: "string",
-			Professor: "string",
-			Subject: "string",
-			Year: "string",
-			Avg: "number",
-			Pass: "number",
-			Fail: "number",
-			Audit: "number",
-		};
-
 		// Check for the presence and type of each required field
 		for (const [field, type] of Object.entries(requiredFields)) {
 			if (!(field in course) || typeof course[field] !== type) {
 				return null;
 			}
 		}
-
 		let tempYear = 1900;
 		try {
 			if (course.Section !== "overall") {
@@ -66,7 +54,6 @@ export default class Section {
 		} catch {
 			return null;
 		}
-
 		return new Section(
 			course.id.toString(),
 			course.Course,
