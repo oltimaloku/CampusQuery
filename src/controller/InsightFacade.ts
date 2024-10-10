@@ -36,7 +36,7 @@ export default class InsightFacade implements IInsightFacade {
 				}
 			}
 			throw new NotFoundError(`Invalid file format`);
-		} catch (err) {
+		} catch (_error) {
 			throw new NotFoundError(`file not found`);
 		}
 		return [];
@@ -136,14 +136,14 @@ export default class InsightFacade implements IInsightFacade {
 			throw new InsightError("Invalid id");
 		}
 
-		const isDeleted = this.datasets.delete(id);
-
-		// delete returns true if the key was found and deleted, false otherwise
-		if (isDeleted) {
-			return id;
-		} else {
+		if (id in this.datasets) {
+			this.datasets.delete(id);
+		}
+		if (!await fs.pathExists(`${__dirname}/../../data/${id}.json`)) {
 			throw new NotFoundError("Dataset not found");
 		}
+		await fs.remove(`${__dirname}/../../data/${id}.json`);
+		return id;
 	}
 
 	public getOptions(options: unknown, mfields: string[], sfields: string[]): OptionResult {
