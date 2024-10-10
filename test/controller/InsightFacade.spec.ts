@@ -415,6 +415,20 @@ describe("InsightFacade", function () {
 			expect(newDatasets[0].kind).to.equal(InsightDatasetKind.Sections);
 		});
 
+		it("should prevent addition of a dataset already in json", async function () {
+			// Add dataset using the first instance
+			await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
+			const datasets = await facade.listDatasets();
+			expect(datasets).to.have.lengthOf(1);
+			await facade.addDataset("ubc2", oneCourseOneSection, InsightDatasetKind.Sections);
+
+			// Create a new instance of InsightFacade
+			const newFacade = new InsightFacade();
+
+			// List datasets using the new instance
+			const result = newFacade.addDataset("ubc", sections, InsightDatasetKind.Sections)
+			return expect(result).to.eventually.be.rejectedWith(InsightError);
+		});
 		it("should persist dataset across different instances with remove", async function () {
 			// Add dataset using the first instance
 			await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);

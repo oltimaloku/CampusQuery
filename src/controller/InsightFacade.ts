@@ -53,7 +53,7 @@ export default class InsightFacade implements IInsightFacade {
 				}
 			});
 
-			const alreadyExists: String[] = await fs.readdir(`${__dirname}/../../data`)
+			const alreadyExists: String[] = await fs.readdir(`${__dirname}/../../data`);
 			if (alreadyExists.includes(`${id}.json`)) {
 				throw new InsightError("Dataset already exists");
 			}
