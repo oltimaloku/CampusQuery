@@ -1,4 +1,5 @@
 import JSZip from "jszip";
+import fs from "fs-extra";
 import {
 	IInsightFacade,
 	InsightDataset,
@@ -37,6 +38,13 @@ export default class InsightFacade implements IInsightFacade {
 				}
 
 				this.datasets.set(id, processedContent);
+
+				await fs.mkdir(`${__dirname}/../../data`).catch((error) => {
+					if (!(error.code === 'EEXIST')) {
+						throw error;
+					}
+				});
+				await fs.writeJSON(`${__dirname}/../../data/${id}.json`, processedContent);
 			} else {
 				throw new Error("Rooms dataset has not been implemented yet");
 			}
