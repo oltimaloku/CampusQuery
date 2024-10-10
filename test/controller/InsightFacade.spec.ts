@@ -503,5 +503,6 @@ describe("InsightFacade", function () {
 		it("[invalid/invalid_order_key_not_skey_mkey.json] invalid_order_key_not_skey_mkey", checkQuery(true));
 		it("[invalid/invalid_order_ref_different_dataset.json] invalid_order_ref_different_dataset", checkQuery(true));
 		it("[invalid/invalid_order_type.json] invalid_order_type", checkQuery(true));
+		it("[valid/no_order.json] no_order", checkQuery(false));
 	});
 });
