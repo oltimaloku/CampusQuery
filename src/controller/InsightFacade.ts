@@ -313,13 +313,19 @@ export default class InsightFacade implements IInsightFacade {
 
 	public async listDatasets(): Promise<InsightDataset[]> {
 		const datasets: InsightDataset[] = [];
+		const ids: string[] = []
+		const results: Promise<Section[]>[] = [];
 		for (const filename of await fs.readdir(`${__dirname}/../../data`)) {
 			const id: string = filename.split('.')[0];
-			const sections: Section[] = await this.getDataset(id);
+			ids.push(id);
+			results.push(this.getDataset(id));
+		}
+		const resolved: Section[][] = await Promise.all(results);
+		for (let i = 0; i < ids.length; i++) {
 			const dataset: InsightDataset = {
-				id: id,
+				id: ids[i],
 				kind: InsightDatasetKind.Sections,
-				numRows: sections.length,
+				numRows: resolved[i].length,
 			};
 			datasets.push(dataset);
 		}
