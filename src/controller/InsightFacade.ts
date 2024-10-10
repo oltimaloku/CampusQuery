@@ -20,6 +20,28 @@ import { validateQuery, validateCols, isEmpty, OptionResult } from "./Validation
 export default class InsightFacade implements IInsightFacade {
 	private datasets: Map<string, Section[]> = new Map<string, Section[]>();
 
+	public async getDataset(id: string): Promise<Section[]> {
+
+		if ((id in this.datasets)) {
+			const dataObject: Section[] | undefined = this.datasets.get(id);
+			if (typeof dataObject !== "undefined") {
+				return dataObject;
+			}
+		}
+		try {
+			const retVal: any = await fs.readJSON(`${__dirname}/../../data/${id}.json`);
+			if (Array.isArray(retVal)) {
+				if ((retVal.length > 0) && (retVal[0] instanceof Object)) {
+					return retVal;
+				}
+			}
+			throw new NotFoundError(`Invalid file format`);
+		} catch (err) {
+			throw new NotFoundError(`file not found`);
+		}
+		return [];
+	}
+
 	public async addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
 		try {
 			if (!this.isValidId(id)) {
@@ -168,7 +190,7 @@ export default class InsightFacade implements IInsightFacade {
 			options = query.OPTIONS;
 		}
 		const optionsData: OptionResult = this.getOptions(options, mfields, sfields);
-		const sections: Section[] | undefined = this.datasets.get(optionsData.onlyID);
+		const sections: Section[] | undefined = await this.getDataset(optionsData.onlyID);
 		let results: Section[] = [];
 		if (typeof sections !== "undefined") {
 			results = this.runFilter(where, optionsData.onlyID, sections);
@@ -291,8 +313,9 @@ export default class InsightFacade implements IInsightFacade {
 
 	public async listDatasets(): Promise<InsightDataset[]> {
 		const datasets: InsightDataset[] = [];
-
-		for (const [id, sections] of this.datasets) {
+		for (const filename of await fs.readdir(`${__dirname}/../../data`)) {
+			const id: string = filename.split('.')[0];
+			const sections: Section[] = await this.getDataset(id);
 			const dataset: InsightDataset = {
 				id: id,
 				kind: InsightDatasetKind.Sections,
@@ -300,7 +323,6 @@ export default class InsightFacade implements IInsightFacade {
 			};
 			datasets.push(dataset);
 		}
-
 		return datasets;
 	}
 }
