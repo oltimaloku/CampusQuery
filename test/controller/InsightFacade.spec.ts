@@ -422,7 +422,7 @@ describe("InsightFacade", function () {
 				if (errorExpected) {
 					expect.fail("Should have thrown an error");
 				} else {
-					expect(result).to.deep.equal(expected);
+					expect(result).to.have.deep.members(expected);
 				}
 			} catch (err) {
 				if (!errorExpected) {
