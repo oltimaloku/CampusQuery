@@ -45,7 +45,7 @@ export default class Section {
 			Avg: "number",
 			Pass: "number",
 			Fail: "number",
-			Audit: "number"
+			Audit: "number",
 		};
 
 		// Check for the presence and type of each required field

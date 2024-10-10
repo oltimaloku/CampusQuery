@@ -9,7 +9,7 @@ import {
 	ResultTooLargeError,
 } from "./IInsightFacade";
 import Section from "./Section";
-import {validateQuery, validateCols, isEmpty} from "./ValidationHelpers"
+import { validateQuery, validateCols, isEmpty, OptionResult } from "./ValidationHelpers";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -116,19 +116,9 @@ export default class InsightFacade implements IInsightFacade {
 		}
 	}
 
-	public async performQuery(query: unknown): Promise<InsightResult[]> {
-		const mfields: string[] = ["avg", "pass", "fail", "audit", "year"];
-		const sfields: string[] = ["dept", "id", "instructor", "title", "uuid"];
-		let where: unknown;
-		let options: unknown;
-		if (!validateQuery(query)) {
-			throw new InsightError(`Invalid format for query`);
-		}
-		if (typeof query === "object" && query && "WHERE" in query && "OPTIONS" in query) {
-			where = query.WHERE;
-			options = query.OPTIONS;
-		}
-		let onlyID = '';
+	public getOptions(options: unknown, mfields: string[], sfields: string[]): OptionResult {
+		let onlyID = "";
+		let orderField = "";
 		let colVals: string[] = [];
 		if (typeof options === "object" && options !== null) {
 			if ("COLUMNS" in options) {
@@ -141,25 +131,54 @@ export default class InsightFacade implements IInsightFacade {
 				}
 			}
 			if ("ORDER" in options) {
-				// TODO: implement order
+				const order: unknown = options.ORDER;
+				if (typeof order === "string") {
+					if (colVals.includes(order)) {
+						orderField = order.split("_")[1];
+					} else {
+						throw new InsightError(`Invalid order field`);
+					}
+				} else {
+					throw new InsightError(`Order field not a string`);
+				}
 			}
 		}
-		const sections: Section[] | undefined = this.datasets.get(onlyID);
-		let results: Section[] = []
+		return { onlyID: onlyID, colVals: colVals, orderField: orderField };
+	}
+
+	public async performQuery(query: unknown): Promise<InsightResult[]> {
+		const mfields: string[] = ["avg", "pass", "fail", "audit", "year"];
+		const sfields: string[] = ["dept", "id", "instructor", "title", "uuid"];
+		const maxLen = 5000;
+		let where: unknown;
+		let options: unknown;
+		if (!validateQuery(query)) {
+			throw new InsightError(`Invalid format for query`);
+		}
+		if (typeof query === "object" && query && "WHERE" in query && "OPTIONS" in query) {
+			where = query.WHERE;
+			options = query.OPTIONS;
+		}
+		const optionsData: OptionResult = this.getOptions(options, mfields, sfields);
+		const sections: Section[] | undefined = this.datasets.get(optionsData.onlyID);
+		let results: Section[] = [];
 		if (typeof sections !== "undefined") {
-			results = this.runFilter(where, onlyID, sections)
+			results = this.runFilter(where, optionsData.onlyID, sections);
 		}
-		if (results.length > 5000) {
-			throw new ResultTooLargeError('Result too large');
+		if (results.length > maxLen) {
+			throw new ResultTooLargeError("Result too large");
 		}
-		let retVal: InsightResult[] = []
-		retVal = results.map((section) => {
+		const orderField: string = optionsData.orderField;
+		if (orderField !== "") {
+			results.sort((a, b) => a[orderField as keyof Section] - b[orderField as keyof Section]);
+		}
+		const retVal: InsightResult[] = results.map((section) => {
 			const result: InsightResult = {};
-			for (const colKey of colVals) {
-				result[colKey] = section[colKey.split('_')[1] as keyof Section];
+			for (const colKey of optionsData.colVals) {
+				result[colKey] = section[colKey.split("_")[1] as keyof Section];
 			}
 			return result;
-		})
+		});
 		return retVal;
 	}
 
@@ -193,15 +212,15 @@ export default class InsightFacade implements IInsightFacade {
 			if (isEmpty(obj)) {
 				return current;
 			}
-			return this.runSMFilter(obj, onlyID, current);
+			return this.runSMFilter(obj, current);
 		}
 		return [];
 	}
 
-	public runMFilter(obj: unknown, onlyID: string, current: Section[]): Section[] {
+	public runMFilter(obj: unknown, current: Section[]): Section[] {
 		if (typeof obj === "object" && obj !== null) {
 			let mcomp: unknown = null;
-			let comp = '';
+			let comp = "";
 			if ("LT" in obj) {
 				mcomp = obj.LT;
 				comp = "LT";
@@ -215,47 +234,50 @@ export default class InsightFacade implements IInsightFacade {
 				comp = "EQ";
 			}
 			if (typeof mcomp === "object" && mcomp !== null) {
-				const mkey = Object.keys(mcomp)[0].split('_')[1]
-				const mval = Object.values(mcomp)[0]
+				const mkey = Object.keys(mcomp)[0].split("_")[1];
+				const mval = Object.values(mcomp)[0];
 				try {
 					return current.filter((section) => {
-						switch(comp) {
-							case "LT": return section[mkey as keyof Section] < mval
+						switch (comp) {
+							case "LT":
+								return section[mkey as keyof Section] < mval;
 						}
-						switch(comp) {
-							case "EQ": return section[mkey as keyof Section] === mval
+						switch (comp) {
+							case "EQ":
+								return section[mkey as keyof Section] === mval;
 						}
-						switch(comp) {
-							case "GT": return section[mkey as keyof Section] > mval
+						switch (comp) {
+							case "GT":
+								return section[mkey as keyof Section] > mval;
 						}
-					})
+					});
 				} catch {
-					throw new InsightError('mkey not found');
+					throw new InsightError("mkey not found");
 				}
 			}
 		}
 		return [];
 	}
 
-	public runSMFilter(obj: unknown, onlyID: string, current: Section[]): Section[] {
+	public runSMFilter(obj: unknown, current: Section[]): Section[] {
 		if (typeof obj === "object" && obj !== null) {
 			if ("IS" in obj) {
-				const scomp: unknown = obj.IS
+				const scomp: unknown = obj.IS;
 				if (typeof scomp === "object" && scomp !== null) {
-					const skey = Object.keys(scomp)[0].split('_')[1]
-					let sval = Object.values(scomp)[0]
+					const skey = Object.keys(scomp)[0].split("_")[1];
+					let sval = Object.values(scomp)[0];
 					try {
-						sval = '^'+sval.replace(/\*/gi, '.*')+'$';
+						sval = "^" + sval.replace(/\*/gi, ".*") + "$";
 						const regex = new RegExp(sval);
 						return current.filter((section) => {
-							return regex.test(section[skey as keyof Section])
-						})
+							return regex.test(section[skey as keyof Section]);
+						});
 					} catch {
-						throw new InsightError('skey not found');
+						throw new InsightError("skey not found");
 					}
 				}
 			}
-			return this.runMFilter(obj, onlyID, current);
+			return this.runMFilter(obj, current);
 		}
 		return [];
 	}
