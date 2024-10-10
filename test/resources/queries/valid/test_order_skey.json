@@ -1,0 +1,128 @@
+{
+	"title": "test_order_skey",
+	"input": {
+		"WHERE": {
+			"EQ": {
+				"sections_avg": 68
+			}
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"sections_dept",
+				"sections_avg"
+			],
+			"ORDER": "sections_dept"
+		}
+	},
+	"errorExpected": false,
+	"expected": [
+		{
+			"sections_dept": "biol",
+			"sections_avg": 68
+		},
+		{
+			"sections_dept": "chem",
+			"sections_avg": 68
+		},
+		{
+			"sections_dept": "comm",
+			"sections_avg": 68
+		},
+		{
+			"sections_dept": "econ",
+			"sections_avg": 68
+		},
+		{
+			"sections_dept": "engl",
+			"sections_avg": 68
+		},
+		{
+			"sections_dept": "engl",
+			"sections_avg": 68
+		},
+		{
+			"sections_dept": "engl",
+			"sections_avg": 68
+		},
+		{
+			"sections_dept": "fopr",
+			"sections_avg": 68
+		},
+		{
+			"sections_dept": "fopr",
+			"sections_avg": 68
+		},
+		{
+			"sections_dept": "fre",
+			"sections_avg": 68
+		},
+		{
+			"sections_dept": "fren",
+			"sections_avg": 68
+		},
+		{
+			"sections_dept": "fren",
+			"sections_avg": 68
+		},
+		{
+			"sections_dept": "fren",
+			"sections_avg": 68
+		},
+		{
+			"sections_dept": "fren",
+			"sections_avg": 68
+		},
+		{
+			"sections_dept": "geog",
+			"sections_avg": 68
+		},
+		{
+			"sections_dept": "geog",
+			"sections_avg": 68
+		},
+		{
+			"sections_dept": "geog",
+			"sections_avg": 68
+		},
+		{
+			"sections_dept": "ital",
+			"sections_avg": 68
+		},
+		{
+			"sections_dept": "ital",
+			"sections_avg": 68
+		},
+		{
+			"sections_dept": "mine",
+			"sections_avg": 68
+		},
+		{
+			"sections_dept": "mine",
+			"sections_avg": 68
+		},
+		{
+			"sections_dept": "musc",
+			"sections_avg": 68
+		},
+		{
+			"sections_dept": "nrsc",
+			"sections_avg": 68
+		},
+		{
+			"sections_dept": "phil",
+			"sections_avg": 68
+		},
+		{
+			"sections_dept": "span",
+			"sections_avg": 68
+		},
+		{
+			"sections_dept": "span",
+			"sections_avg": 68
+		},
+		{
+			"sections_dept": "wrds",
+			"sections_avg": 68
+		}
+	]
+}

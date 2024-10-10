@@ -1,3 +1,5 @@
+import { InsightError } from "./IInsightFacade";
+
 export function isSCOMP(filter: unknown, sfields: string[], idVal: string): Boolean {
 	const keySections = 2;
 	const match = new RegExp("^[*]?[^*]*[*]?$");
@@ -116,28 +118,28 @@ export function validateCols(cols: unknown, mfields: string[], sfields: string[]
 	const keySections = 2;
 	if (Array.isArray(cols)) {
 		if (cols.length === 0 || typeof cols[0] !== "string") {
-			throw new Error("Incorrect format");
+			throw new InsightError("Incorrect format");
 		}
 		onlyID = cols[0].split("_")[0];
 		for (const val of cols) {
 			if (typeof val === "string") {
 				//console.log(val);
 				if (val.split("_", keySections)[0] !== onlyID) {
-					throw new Error("More than one id");
+					throw new InsightError("More than one id");
 				}
 				if (val.split("_", keySections).length < keySections) {
-					throw new Error("No cols after underscore");
+					throw new InsightError("No cols after underscore");
 				}
 				if (!mfields.includes(val.split("_", keySections)[1]) && !sfields.includes(val.split("_", keySections)[1])) {
-					throw new Error("Not a key");
+					throw new InsightError("Not a key");
 				}
 			} else {
-				throw new Error("Not a string");
+				throw new InsightError("Not a string");
 			}
 		}
 		return cols;
 	} else {
-		throw new Error("Incorrect col format");
+		throw new InsightError("Incorrect col format");
 	}
 }
 
@@ -168,6 +170,7 @@ export function validateWhere(where: unknown, colVals: string[], mfields: string
 export function validateQuery(query: unknown): Boolean {
 	const mfields: string[] = ["avg", "pass", "fail", "audit", "year"];
 	const sfields: string[] = ["dept", "id", "instructor", "title", "uuid"];
+	const maxQueryKeys = 2;
 	let where: unknown = {};
 	let options: unknown = {};
 	// Check query has body and options
@@ -177,17 +180,11 @@ export function validateQuery(query: unknown): Boolean {
 	} else {
 		return false;
 	}
-	// Validate options
-	// TODO: check order
 	let colVals: string[];
-	if (typeof options === "object" && options !== null) {
+	if (typeof options === "object" && options !== null && Object.keys(query).length <= maxQueryKeys) {
 		if ("COLUMNS" in options) {
 			const cols = options.COLUMNS;
-			try {
-				colVals = validateCols(cols, mfields, sfields);
-			} catch {
-				return false;
-			}
+			colVals = validateCols(cols, mfields, sfields);
 		} else {
 			return false;
 		}
