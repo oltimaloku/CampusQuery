@@ -1,5 +1,5 @@
 export default class Section {
-	private readonly uuid: number;
+	private readonly uuid: string;
 	private readonly id: string;
 	private readonly title: string;
 	private readonly instructor: string;
@@ -11,7 +11,7 @@ export default class Section {
 	private readonly audit: number;
 
 	public constructor(
-		uuid: number,
+		uuid: string,
 		id: string,
 		title: string,
 		instructor: string,
@@ -55,13 +55,25 @@ export default class Section {
 			}
 		}
 
+		let tempYear = 1900;
+		try {
+			if (course.Section !== "overall") {
+				if (isNaN(course.Year)) {
+					return null;
+				}
+			}
+			tempYear = Number(course.Year);
+		} catch {
+			return null;
+		}
+
 		return new Section(
-			course.id,
+			course.id.toString(),
 			course.Course,
 			course.Title,
 			course.Professor,
 			course.Subject,
-			course.Year,
+			tempYear,
 			course.Avg,
 			course.Pass,
 			course.Fail,
