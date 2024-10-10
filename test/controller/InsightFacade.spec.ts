@@ -398,6 +398,54 @@ describe("InsightFacade", function () {
 					async (_err) => Promise.reject(new Error("List did not succeed"))
 				);
 		});
+
+		it("should persist dataset across different instances", async function () {
+			// Add dataset using the first instance
+			await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
+			const datasets = await facade.listDatasets();
+			expect(datasets).to.have.lengthOf(1);
+
+			// Create a new instance of InsightFacade
+			const newFacade = new InsightFacade();
+
+			// List datasets using the new instance
+			const newDatasets = await newFacade.listDatasets();
+			expect(newDatasets).to.have.lengthOf(1);
+			expect(newDatasets[0].id).to.equal("ubc");
+			expect(newDatasets[0].kind).to.equal(InsightDatasetKind.Sections);
+		});
+
+		it("should persist dataset across different instances with remove", async function () {
+			// Add dataset using the first instance
+			await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
+			const datasets = await facade.listDatasets();
+			expect(datasets).to.have.lengthOf(1);
+			await facade.addDataset("ubc2", oneCourseOneSection, InsightDatasetKind.Sections);
+
+			// Create a new instance of InsightFacade
+			const newFacade = new InsightFacade();
+
+			// List datasets using the new instance
+			const newDatasets = await newFacade.listDatasets();
+			expect(newDatasets).to.deep.equal([
+				{
+					id: "ubc",
+					kind: "sections",
+					numRows: 64612,
+				},
+				{
+					id: "ubc2",
+					kind: "sections",
+					numRows: 1,
+				},
+			]);
+			await newFacade.removeDataset("ubc");
+
+			// Create a newer instance of InsightFacade
+			const newerFacade = new InsightFacade();
+			const newerDatasets = await newerFacade.listDatasets();
+			expect(newerDatasets).to.have.lengthOf(1);
+		});
 	});
 
 	describe("PerformQuery", function () {

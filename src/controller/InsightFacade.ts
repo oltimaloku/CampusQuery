@@ -21,8 +21,7 @@ export default class InsightFacade implements IInsightFacade {
 	private datasets: Map<string, Section[]> = new Map<string, Section[]>();
 
 	public async getDataset(id: string): Promise<Section[]> {
-
-		if ((id in this.datasets)) {
+		if (id in this.datasets) {
 			const dataObject: Section[] | undefined = this.datasets.get(id);
 			if (typeof dataObject !== "undefined") {
 				return dataObject;
@@ -31,7 +30,7 @@ export default class InsightFacade implements IInsightFacade {
 		try {
 			const retVal: any = await fs.readJSON(`${__dirname}/../../data/${id}.json`);
 			if (Array.isArray(retVal)) {
-				if ((retVal.length > 0) && (retVal[0] instanceof Object)) {
+				if (retVal.length > 0 && retVal[0] instanceof Object) {
 					return retVal;
 				}
 			}
@@ -62,7 +61,7 @@ export default class InsightFacade implements IInsightFacade {
 				this.datasets.set(id, processedContent);
 
 				await fs.mkdir(`${__dirname}/../../data`).catch((error) => {
-					if (!(error.code === 'EEXIST')) {
+					if (!(error.code === "EEXIST")) {
 						throw error;
 					}
 				});
@@ -139,7 +138,7 @@ export default class InsightFacade implements IInsightFacade {
 		if (id in this.datasets) {
 			this.datasets.delete(id);
 		}
-		if (!await fs.pathExists(`${__dirname}/../../data/${id}.json`)) {
+		if (!(await fs.pathExists(`${__dirname}/../../data/${id}.json`))) {
 			throw new NotFoundError("Dataset not found");
 		}
 		await fs.remove(`${__dirname}/../../data/${id}.json`);
@@ -313,10 +312,10 @@ export default class InsightFacade implements IInsightFacade {
 
 	public async listDatasets(): Promise<InsightDataset[]> {
 		const datasets: InsightDataset[] = [];
-		const ids: string[] = []
+		const ids: string[] = [];
 		const results: Promise<Section[]>[] = [];
 		for (const filename of await fs.readdir(`${__dirname}/../../data`)) {
-			const id: string = filename.split('.')[0];
+			const id: string = filename.split(".")[0];
 			ids.push(id);
 			results.push(this.getDataset(id));
 		}
