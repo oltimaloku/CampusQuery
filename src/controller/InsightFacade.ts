@@ -170,7 +170,7 @@ export default class InsightFacade implements IInsightFacade {
 		}
 		const orderField: string = optionsData.orderField;
 		if (orderField !== "") {
-			results.sort((a, b) => a[orderField as keyof Section] - b[orderField as keyof Section]);
+			results.sort((a, b) => (a[orderField as keyof Section] < b[orderField as keyof Section] ? -1 : 1));
 		}
 		const retVal: InsightResult[] = results.map((section) => {
 			const result: InsightResult = {};

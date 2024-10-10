@@ -1,0 +1,128 @@
+{
+	"title": "test_order_mkey",
+	"input": {
+		"WHERE": {
+			"IS": {
+				"sections_dept": "swed"
+			}
+		},
+		"OPTIONS": {
+			"ORDER": "sections_avg",
+			"COLUMNS": [
+				"sections_dept",
+				"sections_avg"
+			]
+		}
+	},
+	"errorExpected": false,
+	"expected": [
+		{
+			"sections_dept": "swed",
+			"sections_avg": 77.88
+		},
+		{
+			"sections_dept": "swed",
+			"sections_avg": 77.88
+		},
+		{
+			"sections_dept": "swed",
+			"sections_avg": 79
+		},
+		{
+			"sections_dept": "swed",
+			"sections_avg": 79.71
+		},
+		{
+			"sections_dept": "swed",
+			"sections_avg": 80.34
+		},
+		{
+			"sections_dept": "swed",
+			"sections_avg": 80.55
+		},
+		{
+			"sections_dept": "swed",
+			"sections_avg": 80.89
+		},
+		{
+			"sections_dept": "swed",
+			"sections_avg": 80.89
+		},
+		{
+			"sections_dept": "swed",
+			"sections_avg": 80.96
+		},
+		{
+			"sections_dept": "swed",
+			"sections_avg": 80.96
+		},
+		{
+			"sections_dept": "swed",
+			"sections_avg": 81.17
+		},
+		{
+			"sections_dept": "swed",
+			"sections_avg": 81.17
+		},
+		{
+			"sections_dept": "swed",
+			"sections_avg": 81.24
+		},
+		{
+			"sections_dept": "swed",
+			"sections_avg": 81.31
+		},
+		{
+			"sections_dept": "swed",
+			"sections_avg": 81.31
+		},
+		{
+			"sections_dept": "swed",
+			"sections_avg": 81.93
+		},
+		{
+			"sections_dept": "swed",
+			"sections_avg": 82.16
+		},
+		{
+			"sections_dept": "swed",
+			"sections_avg": 82.16
+		},
+		{
+			"sections_dept": "swed",
+			"sections_avg": 82.3
+		},
+		{
+			"sections_dept": "swed",
+			"sections_avg": 82.3
+		},
+		{
+			"sections_dept": "swed",
+			"sections_avg": 82.37
+		},
+		{
+			"sections_dept": "swed",
+			"sections_avg": 82.37
+		},
+		{
+			"sections_dept": "swed",
+			"sections_avg": 83.39
+		},
+		{
+			"sections_dept": "swed",
+			"sections_avg": 83.85
+		},
+		{
+			"sections_dept": "swed",
+			"sections_avg": 84.35
+		},
+		{
+			"sections_dept": "swed",
+			"sections_avg": 84.92
+		},
+		{
+			"sections_dept": "swed",
+			"sections_avg": 84.92
+		}
+	]
+}
