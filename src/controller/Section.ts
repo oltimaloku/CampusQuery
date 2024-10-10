@@ -61,8 +61,8 @@ export default class Section {
 				if (isNaN(course.Year)) {
 					return null;
 				}
+				tempYear = Number(course.Year);
 			}
-			tempYear = Number(course.Year);
 		} catch {
 			return null;
 		}
