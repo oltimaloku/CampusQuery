@@ -55,7 +55,7 @@ export default class InsightFacade implements IInsightFacade {
 			}
 
 			const alreadyExists: String[] = await fs.readdir(`${__dirname}/../../data`);
-			if (alreadyExists.includes(`${id}.json`)) {
+			if (this.datasets.has(id) || alreadyExists.includes(`${id}.json`)) {
 				throw new InsightError("Dataset already exists");
 			}
 
@@ -141,10 +141,21 @@ export default class InsightFacade implements IInsightFacade {
 		if (id in this.datasets) {
 			this.datasets.delete(id);
 		}
-		if (!(await fs.pathExists(`${__dirname}/../../data/${id}.json`))) {
+
+		const existsInData = await fs.pathExists(`${__dirname}/../../data/${id}.json`);
+		const existsInMemory = this.datasets.has(id);
+		if (!existsInData && !existsInMemory) {
 			throw new NotFoundError("Dataset not found");
 		}
-		await fs.remove(`${__dirname}/../../data/${id}.json`);
+
+		if (existsInMemory) {
+			this.datasets.delete(id);
+		}
+
+		if (existsInData) {
+			await fs.remove(`${__dirname}/../../data/${id}.json`);
+		}
+
 		return id;
 	}
 
