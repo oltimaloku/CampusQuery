@@ -46,12 +46,13 @@ export default class InsightFacade implements IInsightFacade {
 			if (!this.isValidId(id)) {
 				throw new InsightError("Invalid id");
 			}
-
-			await fs.mkdir(`${__dirname}/../../data`).catch((error) => {
+			try {
+				await fs.mkdir(`${__dirname}/../../data`);
+			} catch (error: any) {
 				if (!(error.code === "EEXIST")) {
 					throw error;
 				}
-			});
+			}
 
 			const alreadyExists: String[] = await fs.readdir(`${__dirname}/../../data`);
 			if (alreadyExists.includes(`${id}.json`)) {

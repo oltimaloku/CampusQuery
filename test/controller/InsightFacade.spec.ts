@@ -426,7 +426,7 @@ describe("InsightFacade", function () {
 			const newFacade = new InsightFacade();
 
 			// List datasets using the new instance
-			const result = newFacade.addDataset("ubc", sections, InsightDatasetKind.Sections)
+			const result = newFacade.addDataset("ubc", sections, InsightDatasetKind.Sections);
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 		it("should persist dataset across different instances with remove", async function () {
