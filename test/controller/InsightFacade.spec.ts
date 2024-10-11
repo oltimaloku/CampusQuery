@@ -323,6 +323,13 @@ describe("InsightFacade", function () {
 					async (_err) => Promise.reject(new Error("List did not succeed"))
 				);
 		});
+
+		it.only("should allow adding a dataset after removing it", async function () {
+			await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
+			await facade.removeDataset("ubc");
+			const result = await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
+			expect(result).to.have.members(["ubc"]);
+		});
 	});
 
 	describe("ListDatasets", function () {
