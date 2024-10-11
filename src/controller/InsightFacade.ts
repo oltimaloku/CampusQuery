@@ -1,4 +1,3 @@
-import JSZip from "jszip";
 import fs from "fs-extra";
 import {
 	IInsightFacade,
@@ -11,6 +10,7 @@ import {
 } from "./IInsightFacade";
 import Section from "./Section";
 import { validateQuery, validateCols, isEmpty, OptionResult } from "./ValidationHelpers";
+import DatasetProcessor from "./DatasetProcessor";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -19,9 +19,12 @@ import { validateQuery, validateCols, isEmpty, OptionResult } from "./Validation
  */
 export default class InsightFacade implements IInsightFacade {
 	private datasets: Map<string, Section[]> = new Map<string, Section[]>();
+	private static readonly MFIELDS = ["avg", "pass", "fail", "audit", "year"];
+	private static readonly SFIELDS = ["dept", "id", "instructor", "title", "uuid"];
+	private static readonly MAX_RESULTS = 5000;
 
 	public async getDataset(id: string): Promise<Section[]> {
-		if (id in this.datasets) {
+		if (this.datasets.has(id)) {
 			const dataObject: Section[] | undefined = this.datasets.get(id);
 			if (typeof dataObject !== "undefined") {
 				return dataObject;
@@ -31,6 +34,7 @@ export default class InsightFacade implements IInsightFacade {
 			const retVal: any = await fs.readJSON(`${__dirname}/../../data/${id}.json`);
 			if (Array.isArray(retVal)) {
 				if (retVal.length > 0 && retVal[0] instanceof Object) {
+					this.datasets.set(id, retVal);
 					return retVal;
 				}
 			}
@@ -46,20 +50,21 @@ export default class InsightFacade implements IInsightFacade {
 			if (!this.isValidId(id)) {
 				throw new InsightError("Invalid id");
 			}
-
-			await fs.mkdir(`${__dirname}/../../data`).catch((error) => {
+			try {
+				await fs.mkdir(`${__dirname}/../../data`);
+			} catch (error: any) {
 				if (!(error.code === "EEXIST")) {
 					throw error;
 				}
-			});
+			}
 
 			const alreadyExists: String[] = await fs.readdir(`${__dirname}/../../data`);
-			if (alreadyExists.includes(`${id}.json`)) {
+			if (this.datasets.has(id) || alreadyExists.includes(`${id}.json`)) {
 				throw new InsightError("Dataset already exists");
 			}
 
 			if (kind === InsightDatasetKind.Sections) {
-				const processedContent = await this.processContent(content);
+				const processedContent = await DatasetProcessor.processContent(content);
 
 				if (processedContent.length === 0) {
 					throw new InsightError("No valid sections found");
@@ -82,68 +87,25 @@ export default class InsightFacade implements IInsightFacade {
 		return /^[^_]+$/.test(id) && id.trim().length > 0;
 	}
 
-	private async processContent(content: string): Promise<Section[]> {
-		try {
-			// https://betterstack.com/community/questions/how-to-do-base64-encoding-in-node-js/
-			const buf = Buffer.from(content, "base64");
-			// https://stuk.github.io/jszip/documentation/howto/read_zip.html
-			const zip = new JSZip();
-
-			const zipContent: JSZip = await zip.loadAsync(buf); // Load zip data
-
-			const sections = await this.createValidSectionsFromZip(zipContent);
-
-			if (sections.length === 0) {
-				throw new InsightError("No valid sections found");
-			}
-
-			return sections;
-		} catch (e) {
-			throw new InsightError("Error processing content: " + e);
-		}
-	}
-
-	private async createValidSectionsFromZip(zipContent: JSZip): Promise<Section[]> {
-		const sections: Section[] = [];
-		const promises: Promise<void>[] = [];
-
-		// https://stuk.github.io/jszip/documentation/api_jszip/for_each.html
-		zipContent.forEach((relativePath: string, file: any) => {
-			// https://stuk.github.io/jszip/documentation/api_zipobject/async.html
-			const promise = file.async("string").then((fileContent: string) => {
-				if (fileContent.trim().length === 0) {
-					return;
-				}
-				if (relativePath.startsWith("courses/")) {
-					for (const course of JSON.parse(fileContent).result) {
-						const section = Section.createSection(course);
-
-						if (section) {
-							sections.push(section);
-						}
-					}
-				}
-			});
-
-			promises.push(promise);
-		});
-
-		await Promise.all(promises);
-		return sections;
-	}
-
 	public async removeDataset(id: string): Promise<string> {
 		if (!this.isValidId(id)) {
 			throw new InsightError("Invalid id");
 		}
 
-		if (id in this.datasets) {
-			this.datasets.delete(id);
-		}
-		if (!(await fs.pathExists(`${__dirname}/../../data/${id}.json`))) {
+		const existsInData = await fs.pathExists(`${__dirname}/../../data/${id}.json`);
+		const existsInMemory = this.datasets.has(id);
+		if (!existsInData && !existsInMemory) {
 			throw new NotFoundError("Dataset not found");
 		}
-		await fs.remove(`${__dirname}/../../data/${id}.json`);
+
+		if (existsInMemory) {
+			this.datasets.delete(id);
+		}
+
+		if (existsInData) {
+			await fs.remove(`${__dirname}/../../data/${id}.json`);
+		}
+
 		return id;
 	}
 
@@ -178,39 +140,56 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public async performQuery(query: unknown): Promise<InsightResult[]> {
-		const mfields: string[] = ["avg", "pass", "fail", "audit", "year"];
-		const sfields: string[] = ["dept", "id", "instructor", "title", "uuid"];
-		const maxLen = 5000;
-		let where: unknown;
-		let options: unknown;
-		if (!validateQuery(query)) {
-			throw new InsightError(`Invalid format for query`);
+		try {
+			let where: unknown;
+			let options: unknown;
+
+			if (!validateQuery(query)) {
+				throw new InsightError(`Invalid format for query`);
+			}
+
+			if (typeof query === "object" && query && "WHERE" in query && "OPTIONS" in query) {
+				where = query.WHERE;
+				options = query.OPTIONS;
+			}
+
+			const optionsData: OptionResult = this.getOptions(options, InsightFacade.MFIELDS, InsightFacade.SFIELDS);
+			const sections: Section[] | undefined = await this.getDataset(optionsData.onlyID);
+			let results: Section[] = [];
+
+			if (typeof sections !== "undefined") {
+				results = this.runFilter(where, optionsData.onlyID, sections);
+			}
+
+			if (results.length > InsightFacade.MAX_RESULTS) {
+				throw new ResultTooLargeError("Result too large");
+			}
+
+			const orderField: string = optionsData.orderField;
+			if (orderField !== "") {
+				results.sort((a, b) => (a[orderField as keyof Section] < b[orderField as keyof Section] ? -1 : 1));
+			}
+
+			return this.mapResults(results, optionsData.colVals);
+		} catch (error) {
+			// NotFoundError from getDataset must be caught and converted to InsightError
+			// since performQuery only returns InsightError or ResultTooLargeError
+			if (error instanceof NotFoundError) {
+				throw new InsightError("Error performing query: " + error);
+			}
+			throw error;
 		}
-		if (typeof query === "object" && query && "WHERE" in query && "OPTIONS" in query) {
-			where = query.WHERE;
-			options = query.OPTIONS;
-		}
-		const optionsData: OptionResult = this.getOptions(options, mfields, sfields);
-		const sections: Section[] | undefined = await this.getDataset(optionsData.onlyID);
-		let results: Section[] = [];
-		if (typeof sections !== "undefined") {
-			results = this.runFilter(where, optionsData.onlyID, sections);
-		}
-		if (results.length > maxLen) {
-			throw new ResultTooLargeError("Result too large");
-		}
-		const orderField: string = optionsData.orderField;
-		if (orderField !== "") {
-			results.sort((a, b) => (a[orderField as keyof Section] < b[orderField as keyof Section] ? -1 : 1));
-		}
-		const retVal: InsightResult[] = results.map((section) => {
+	}
+
+	private mapResults(results: Section[], colVals: string[]): InsightResult[] {
+		return results.map((section) => {
 			const result: InsightResult = {};
-			for (const colKey of optionsData.colVals) {
-				result[colKey] = section[colKey.split("_")[1] as keyof Section];
+			for (const colKey of colVals) {
+				const field = colKey.split("_")[1] as keyof Section;
+				result[colKey] = section[field];
 			}
 			return result;
 		});
-		return retVal;
 	}
 
 	public runFilter(obj: unknown, onlyID: string, current: Section[]): Section[] {
