@@ -47,7 +47,14 @@ export default class InsightFacade implements IInsightFacade {
 				throw new InsightError("Invalid id");
 			}
 
-			if (this.datasets.has(id)) {
+			await fs.mkdir(`${__dirname}/../../data`).catch((error) => {
+				if (!(error.code === "EEXIST")) {
+					throw error;
+				}
+			});
+
+			const alreadyExists: String[] = await fs.readdir(`${__dirname}/../../data`);
+			if (alreadyExists.includes(`${id}.json`)) {
 				throw new InsightError("Dataset already exists");
 			}
 
@@ -60,11 +67,6 @@ export default class InsightFacade implements IInsightFacade {
 
 				this.datasets.set(id, processedContent);
 
-				await fs.mkdir(`${__dirname}/../../data`).catch((error) => {
-					if (!(error.code === "EEXIST")) {
-						throw error;
-					}
-				});
 				await fs.writeJSON(`${__dirname}/../../data/${id}.json`, processedContent);
 			} else {
 				throw new Error("Rooms dataset has not been implemented yet");
