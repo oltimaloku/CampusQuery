@@ -31,6 +31,7 @@ export default class InsightFacade implements IInsightFacade {
 			const retVal: any = await fs.readJSON(`${__dirname}/../../data/${id}.json`);
 			if (Array.isArray(retVal)) {
 				if (retVal.length > 0 && retVal[0] instanceof Object) {
+					this.datasets.set(id, retVal);
 					return retVal;
 				}
 			}
