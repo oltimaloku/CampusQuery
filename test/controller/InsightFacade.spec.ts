@@ -332,7 +332,7 @@ describe("InsightFacade", function () {
 			expect(result).to.have.members(["ubc"]);
 		});
 
-		it.only("should successfully remove a dataset that exists only in memory", async function () {
+		it("should successfully remove a dataset that exists only in memory", async function () {
 			await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
 
 			// Simulate missing file on disk

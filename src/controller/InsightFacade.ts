@@ -21,7 +21,7 @@ export default class InsightFacade implements IInsightFacade {
 	private datasets: Map<string, Section[]> = new Map<string, Section[]>();
 
 	public async getDataset(id: string): Promise<Section[]> {
-		if (id in this.datasets) {
+		if (this.datasets.has(id)) {
 			const dataObject: Section[] | undefined = this.datasets.get(id);
 			if (typeof dataObject !== "undefined") {
 				return dataObject;
@@ -137,10 +137,6 @@ export default class InsightFacade implements IInsightFacade {
 	public async removeDataset(id: string): Promise<string> {
 		if (!this.isValidId(id)) {
 			throw new InsightError("Invalid id");
-		}
-
-		if (id in this.datasets) {
-			this.datasets.delete(id);
 		}
 
 		const existsInData = await fs.pathExists(`${__dirname}/../../data/${id}.json`);
