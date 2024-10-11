@@ -11,6 +11,7 @@ import { clearDisk, getContentFromArchives, loadTestQuery } from "../TestUtil";
 
 import { expect, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
+import fs from "fs-extra";
 
 use(chaiAsPromised);
 
@@ -324,11 +325,20 @@ describe("InsightFacade", function () {
 				);
 		});
 
-		it.only("should allow adding a dataset after removing it", async function () {
+		it("should allow adding a dataset after removing it", async function () {
 			await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
 			await facade.removeDataset("ubc");
 			const result = await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
 			expect(result).to.have.members(["ubc"]);
+		});
+
+		it.only("should successfully remove a dataset that exists only in memory", async function () {
+			await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
+
+			// Simulate missing file on disk
+			await fs.remove(`${__dirname}/../../data/ubc.json`);
+			const result = await facade.removeDataset("ubc");
+			expect(result).to.equal("ubc");
 		});
 	});
 
