@@ -111,8 +111,8 @@ describe("InsightFacade", function () {
 			return expect(result).to.eventually.have.members(["ubc"]);
 		});
 
-		it.only("should successfully add rooms dataset", function () {
-			const result = facade.addDataset("ubc", campus, InsightDatasetKind.Sections);
+		it("should successfully add rooms dataset", function () {
+			const result = facade.addDataset("ubc", campus, InsightDatasetKind.Rooms);
 
 			return expect(result).to.eventually.have.members(["ubc"]);
 		});
