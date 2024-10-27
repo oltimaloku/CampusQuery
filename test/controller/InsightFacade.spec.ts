@@ -45,6 +45,8 @@ describe("InsightFacade", function () {
 	let noTitle: string;
 	let noYear: string;
 
+	let campus: string;
+
 	before(async function () {
 		// This block runs once and loads the datasets.
 		sections = await getContentFromArchives("pair.zip");
@@ -65,6 +67,8 @@ describe("InsightFacade", function () {
 		noSubj = await getContentFromArchives("no_subj.zip");
 		noTitle = await getContentFromArchives("no_title.zip");
 		noYear = await getContentFromArchives("no_year.zip");
+
+		campus = await getContentFromArchives("campus.zip");
 
 		// Just in case there is anything hanging around from a previous run of the test suite
 		await clearDisk();
@@ -101,8 +105,14 @@ describe("InsightFacade", function () {
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
-		it("should successfully add a dataset", function () {
+		it("should successfully add a sections dataset", function () {
 			const result = facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
+
+			return expect(result).to.eventually.have.members(["ubc"]);
+		});
+
+		it.only("should successfully add rooms dataset", function () {
+			const result = facade.addDataset("ubc", campus, InsightDatasetKind.Sections);
 
 			return expect(result).to.eventually.have.members(["ubc"]);
 		});
