@@ -9,7 +9,7 @@ import {
 	ResultTooLargeError,
 } from "./IInsightFacade";
 import Section from "./Section";
-import { validateQuery, validateCols, isEmpty, OptionResult } from "./ValidationHelpers";
+import { validateQuery, validateCols, isEmpty, OptionResult, MFIELDS, SFIELDS } from "./ValidationHelpers";
 import DatasetProcessor from "./DatasetProcessor";
 
 /**
@@ -19,8 +19,8 @@ import DatasetProcessor from "./DatasetProcessor";
  */
 export default class InsightFacade implements IInsightFacade {
 	private datasets: Map<string, Section[]> = new Map<string, Section[]>();
-	private static readonly MFIELDS = ["avg", "pass", "fail", "audit", "year"];
-	private static readonly SFIELDS = ["dept", "id", "instructor", "title", "uuid"];
+	private static readonly MFIELDS = MFIELDS;
+	private static readonly SFIELDS = SFIELDS;
 	private static readonly MAX_RESULTS = 5000;
 
 	public async getDataset(id: string): Promise<Section[]> {
@@ -117,7 +117,7 @@ export default class InsightFacade implements IInsightFacade {
 			if ("COLUMNS" in options) {
 				const cols = options.COLUMNS;
 				try {
-					colVals = validateCols(cols, mfields, sfields);
+					colVals = validateCols(cols, mfields, sfields, []);
 					onlyID = colVals[0].split("_")[0];
 				} catch {
 					throw new InsightError(`No cols`);
