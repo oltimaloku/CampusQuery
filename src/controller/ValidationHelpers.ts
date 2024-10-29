@@ -78,7 +78,7 @@ export function isSMComp(filter: unknown, mfields: string[], sfields: string[], 
 }
 
 // Recursive check if it is a filter
-export function isFilter(obj: unknown, colVals: string[], mfields: string[], sfields: string[]): Boolean {
+export function isFilter(obj: unknown, idVal: string, mfields: string[], sfields: string[]): Boolean {
 	if (typeof obj === "object" && obj !== null) {
 		//console.log(Object.keys(obj));
 		if (Object.keys(obj).length !== 1) {
@@ -86,7 +86,7 @@ export function isFilter(obj: unknown, colVals: string[], mfields: string[], sfi
 		}
 		// Validate NOT
 		if ("NOT" in obj) {
-			return isFilter(obj.NOT, colVals, mfields, sfields);
+			return isFilter(obj.NOT, idVal, mfields, sfields);
 		}
 
 		// Validate AND and OR the same way
@@ -100,27 +100,30 @@ export function isFilter(obj: unknown, colVals: string[], mfields: string[], sfi
 					}
 					// Check that no object is not a filter
 					return !val.some((item) => {
-						return !isFilter(item, colVals, mfields, sfields);
+						return !isFilter(item, idVal, mfields, sfields);
 					});
 				}
 			}
 			return false;
 		} else {
-			const idVal: string = colVals[0].split("_")[0];
 			return isSMComp(obj, mfields, sfields, idVal);
 		}
 	}
 	return true;
 }
 
-export function validateCols(cols: unknown, mfields: string[], sfields: string[]): string[] {
+export function validateCols(cols: unknown, mfields: string[], sfields: string[], applykeys: string[]): string[] {
 	let onlyID: string;
 	const keySections = 2;
 	if (Array.isArray(cols)) {
 		if (cols.length === 0 || typeof cols[0] !== "string") {
 			throw new InsightError("Incorrect format");
 		}
-		onlyID = cols[0].split("_")[0];
+		if (applykeys.length > 0) {
+			onlyID = applykeys[0].split("_")[0];
+		} else {
+			onlyID = cols[0].split("_")[0];
+		}
 		for (const val of cols) {
 			if (typeof val === "string") {
 				//console.log(val);
@@ -130,8 +133,14 @@ export function validateCols(cols: unknown, mfields: string[], sfields: string[]
 				if (val.split("_", keySections).length < keySections) {
 					throw new InsightError("No cols after underscore");
 				}
-				if (!mfields.includes(val.split("_", keySections)[1]) && !sfields.includes(val.split("_", keySections)[1])) {
-					throw new InsightError("Not a key");
+				if (applykeys.length > 0) {
+					if (!applykeys.includes(val)) {
+						throw new InsightError("Not a valid key");
+					}
+				} else {
+					if (!mfields.includes(val.split("_", keySections)[1]) && !sfields.includes(val.split("_", keySections)[1])) {
+						throw new InsightError("Not a key");
+					}
 				}
 			} else {
 				throw new InsightError("Not a string");
@@ -170,8 +179,8 @@ export function validateOrder(order: unknown, colVals: string[]): Boolean {
 	return false;
 }
 
-export function validateWhere(where: unknown, colVals: string[], mfields: string[], sfields: string[]): Boolean {
-	if (!isEmpty(where) && !isFilter(where, colVals, mfields, sfields)) {
+export function validateWhere(where: unknown, idVal: string, mfields: string[], sfields: string[]): Boolean {
+	if (!isEmpty(where) && !isFilter(where, idVal, mfields, sfields)) {
 		return false;
 	}
 	return true;
@@ -185,34 +194,43 @@ export function validateQuery(query: unknown): Boolean {
 	let options: unknown = {};
 	let applykeys: string[] = [];
 	// Check query has body and options
-	if (typeof query === "object" && query && "WHERE" in query && "OPTIONS" in query) {
-		where = query.WHERE;
-		options = query.OPTIONS;
-	} else {
-		return false;
-	}
-	if ("TRANSFORMATIONS" in query) {
-		applykeys = validateTransformations(query.TRANSFORMATIONS, mfields, sfields);
-	}
-	let colVals: string[];
-	if (typeof options === "object" && options !== null && Object.keys(query).length <= maxQueryKeys) {
-		if ("COLUMNS" in options) {
-			const cols = options.COLUMNS;
-			colVals = validateCols(cols, mfields, sfields);
+	try{
+		if (typeof query === "object" && query && "WHERE" in query && "OPTIONS" in query) {
+			where = query.WHERE;
+			options = query.OPTIONS;
 		} else {
 			return false;
 		}
-		if ("ORDER" in options) {
-			const order: unknown = options.ORDER;
-			if (!validateOrder(order, colVals)) {
+		let colVals: string[];
+		let idVal: string = '';
+		if (typeof options === "object" && options !== null && Object.keys(query).length <= maxQueryKeys) {
+			if ("COLUMNS" in options) {
+				const cols = options.COLUMNS;
+				if ("TRANSFORMATIONS" in query) {
+					applykeys = validateTransformations(query.TRANSFORMATIONS, mfields, sfields);
+				}
+				colVals = validateCols(cols, mfields, sfields, applykeys);
+			} else {
 				return false;
 			}
+			if ("ORDER" in options) {
+				const order: unknown = options.ORDER;
+				if (!validateOrder(order, colVals)) {
+					return false;
+				}
+			}
+		} else {
+			return false;
 		}
-	} else {
+		if (applykeys.length > 0) {
+			idVal = applykeys[0].split('_')[0];
+		} else {
+			idVal = colVals[0].split('_')[0];
+		}
+		return validateWhere(where, idVal, mfields, sfields);
+	} catch {
 		return false;
 	}
-	// Validate where
-	return validateWhere(where, colVals, mfields, sfields);
 }
 
 export function validateTransformations(transformations: unknown, mfields: string[], sfields: string[]): string[] {
@@ -262,6 +280,9 @@ export function validateApply(apply: unknown[], mfields: string[], sfields: stri
 	let retVal: string[] = [];
 	for (const item of apply) {
 		retVal.push(validateApplyRule(item, mfields, sfields, onlyID));
+	}
+	if ((new Set(retVal)).size === retVal.length) {
+		throw new InsightError('Duplicate keys');
 	}
 	return retVal;
 }

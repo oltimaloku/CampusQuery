@@ -117,7 +117,7 @@ export default class InsightFacade implements IInsightFacade {
 			if ("COLUMNS" in options) {
 				const cols = options.COLUMNS;
 				try {
-					colVals = validateCols(cols, mfields, sfields);
+					colVals = validateCols(cols, mfields, sfields, []);
 					onlyID = colVals[0].split("_")[0];
 				} catch {
 					throw new InsightError(`No cols`);
