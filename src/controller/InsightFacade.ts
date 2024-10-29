@@ -19,8 +19,22 @@ import DatasetProcessor from "./DatasetProcessor";
  */
 export default class InsightFacade implements IInsightFacade {
 	private datasets: Map<string, Section[]> = new Map<string, Section[]>();
-	private static readonly MFIELDS = ["avg", "pass", "fail", "audit", "year"];
-	private static readonly SFIELDS = ["dept", "id", "instructor", "title", "uuid"];
+	private static readonly MFIELDS = ["avg", "pass", "fail", "audit", "year", "lat", "lon", "seats"];
+	private static readonly SFIELDS = [
+		"dept",
+		"id",
+		"instructor",
+		"title",
+		"uuid",
+		"fullname",
+		"shortname",
+		"number",
+		"name",
+		"address",
+		"type",
+		"furniture",
+		"href",
+	];
 	private static readonly MAX_RESULTS = 5000;
 
 	public async getDataset(id: string): Promise<Section[]> {

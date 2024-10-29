@@ -168,8 +168,22 @@ export function validateWhere(where: unknown, colVals: string[], mfields: string
 }
 
 export function validateQuery(query: unknown): Boolean {
-	const mfields: string[] = ["avg", "pass", "fail", "audit", "year"];
-	const sfields: string[] = ["dept", "id", "instructor", "title", "uuid"];
+	const mfields: string[] = ["avg", "pass", "fail", "audit", "year", "lat", "lon", "seats"];
+	const sfields: string[] = [
+		"dept",
+		"id",
+		"instructor",
+		"title",
+		"uuid",
+		"fullname",
+		"shortname",
+		"number",
+		"name",
+		"address",
+		"type",
+		"furniture",
+		"href",
+	];
 	const maxQueryKeys = 2;
 	let where: unknown = {};
 	let options: unknown = {};
