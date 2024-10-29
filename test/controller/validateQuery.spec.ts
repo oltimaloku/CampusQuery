@@ -89,5 +89,7 @@ describe("InsightFacade", function () {
 		it("[invalid/scomp_use_number.json] scomp_use_number", checkValidateQuery);
 		it("[invalid/invalid_multiple_underscore.json] invalid_multiple_underscore", checkValidateQuery);
         it("[onlyEBNF/cols_not_in_group.json] cols_not_in_group", checkValidateQuery);
+        it("[onlyEBNF/duplicate_apply_key.json] duplicate_apply_key", checkValidateQuery);
+        it("[onlyEBNF/empty_apply_valid.json] empty_apply_valid", checkValidateQuery);
 	});
 });

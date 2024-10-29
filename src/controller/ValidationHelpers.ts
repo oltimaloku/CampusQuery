@@ -119,11 +119,7 @@ export function validateCols(cols: unknown, mfields: string[], sfields: string[]
 		if (cols.length === 0 || typeof cols[0] !== "string") {
 			throw new InsightError("Incorrect format");
 		}
-		if (applykeys.length > 0) {
-			onlyID = applykeys[0].split("_")[0];
-		} else {
-			onlyID = cols[0].split("_")[0];
-		}
+		onlyID = (applykeys.length > 0) ? applykeys[0].split("_")[0] : cols[0].split("_")[0];
 		for (const val of cols) {
 			if (typeof val === "string") {
 				//console.log(val);
@@ -189,7 +185,7 @@ export function validateWhere(where: unknown, idVal: string, mfields: string[], 
 export function validateQuery(query: unknown): Boolean {
 	const mfields: string[] = MFIELDS;
 	const sfields: string[] = SFIELDS;
-	const maxQueryKeys = 2;
+	let maxQueryKeys = 2;
 	let where: unknown = {};
 	let options: unknown = {};
 	let applykeys: string[] = [];
@@ -201,8 +197,11 @@ export function validateQuery(query: unknown): Boolean {
 		} else {
 			return false;
 		}
+		if ("TRANSFORMATIONS" in query) {
+			maxQueryKeys += 1;
+		}
 		let colVals: string[];
-		let idVal: string = '';
+		let idVal = '';
 		if (typeof options === "object" && options !== null && Object.keys(query).length <= maxQueryKeys) {
 			if ("COLUMNS" in options) {
 				const cols = options.COLUMNS;
@@ -277,11 +276,11 @@ export function validateGroup(group: unknown[], mfields: string[], sfields: stri
 }
 
 export function validateApply(apply: unknown[], mfields: string[], sfields: string[], onlyID: string): string[] {
-	let retVal: string[] = [];
+	const retVal: string[] = [];
 	for (const item of apply) {
 		retVal.push(validateApplyRule(item, mfields, sfields, onlyID));
 	}
-	if ((new Set(retVal)).size === retVal.length) {
+	if ((new Set(retVal)).size !== retVal.length) {
 		throw new InsightError('Duplicate keys');
 	}
 	return retVal;

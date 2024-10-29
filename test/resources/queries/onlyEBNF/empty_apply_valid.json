@@ -1,0 +1,5550 @@
+{
+	"title": "empty_apply_valid",
+	"input": {
+		"WHERE": {
+			"GT": {
+				"sections_avg": 90
+			}
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"sections_instructor",
+				"sections_pass"
+			]
+		},
+		"TRANSFORMATIONS": {
+			"GROUP": [
+				"sections_pass",
+				"sections_instructor"
+			],
+			"APPLY": []
+		}
+	},
+	"errorExpected": false,
+	"expected": [
+		{
+			"sections_instructor": "",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "bishundayal, deonarine",
+			"sections_pass": 33
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 62
+		},
+		{
+			"sections_instructor": "bishundayal, deonarine",
+			"sections_pass": 27
+		},
+		{
+			"sections_instructor": "bishundayal, deonarine",
+			"sections_pass": 26
+		},
+		{
+			"sections_instructor": "bishundayal, deonarine",
+			"sections_pass": 28
+		},
+		{
+			"sections_instructor": "bishundayal, deonarine",
+			"sections_pass": 23
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 34
+		},
+		{
+			"sections_instructor": "bishundayal, deonarine",
+			"sections_pass": 29
+		},
+		{
+			"sections_instructor": "bishundayal, deonarine",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "bishundayal, deonarine",
+			"sections_pass": 25
+		},
+		{
+			"sections_instructor": "vanwynsberghe, robert",
+			"sections_pass": 31
+		},
+		{
+			"sections_instructor": "falk, clifford",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "krebs, claudia",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "krebs, claudia",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "menzies, charles",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "kamat, vinay ramnath",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "kamat, vinay ramnath",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "rushen, jeffrey",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "wassink, berend",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "wassink, berend",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "wassink, berend",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "wassink, berend",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "wassink, berend",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "wassink, berend",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "wassink, berend",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "tba",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "robinson, maria",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "tba",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "broadley, louise;olsen, anne",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 1
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 3
+		},
+		{
+			"sections_instructor": "sossi, vesna",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "stull, roland",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "herdman, anthony",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "herdman, anthony",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "herdman, anthony",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "herdman, anthony",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "adelman, sharon;macleod, elizabeth d",
+			"sections_pass": 33
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 33
+		},
+		{
+			"sections_instructor": "avery, lisa ann;rammage, linda;reynolds, cindy",
+			"sections_pass": 24
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 24
+		},
+		{
+			"sections_instructor": "purves, barbara",
+			"sections_pass": 24
+		},
+		{
+			"sections_instructor": "duke, wendy",
+			"sections_pass": 30
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 30
+		},
+		{
+			"sections_instructor": "dillon, lisa",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "small, susan",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "shahnaz, navid",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "brown, sasha",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "shahnaz, navid",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "shahnaz, navid",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "hatton, jennifer;herdman, anthony",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "small, susan",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "small, susan",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "adelman, sharon",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "adelman, sharon",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "adelman, sharon;hicks, darlene",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "adelman, sharon",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "adelman, sharon;hicks, darlene",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "adelman, sharon;hicks, darlene",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "bernhardt, barbara",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "bernhardt, barbara",
+			"sections_pass": 24
+		},
+		{
+			"sections_instructor": "tba",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "avery, lisa ann",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "avery, lisa ann;tba",
+			"sections_pass": 24
+		},
+		{
+			"sections_instructor": "adler-bock, marcy;avery, lisa ann",
+			"sections_pass": 30
+		},
+		{
+			"sections_instructor": "reynolds, cindy",
+			"sections_pass": 24
+		},
+		{
+			"sections_instructor": "marcoux, caroline;poirier, brigitte",
+			"sections_pass": 24
+		},
+		{
+			"sections_instructor": "bernhardt, barbara;rammage, linda;small, jeff alan",
+			"sections_pass": 25
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 25
+		},
+		{
+			"sections_instructor": "small, jeff alan",
+			"sections_pass": 35
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 35
+		},
+		{
+			"sections_instructor": "avery, lisa ann;taylor, sandra lynn",
+			"sections_pass": 23
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 23
+		},
+		{
+			"sections_instructor": "avery, lisa ann;taylor, sandra lynn",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "avery, lisa ann;taylor, sandra lynn",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "tba",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "atkins, derek",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "zhang, zhe",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "cullis, pieter;duong van hoa, franck;molday, robert",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "cullis, pieter;molday, robert",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "cullis, pieter",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "cullis, pieter",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "jones, steven j",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "jones, steven j",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "jones, steven j",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "jones, steven j",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "douglas, carl;schulte, patricia",
+			"sections_pass": 26
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 26
+		},
+		{
+			"sections_instructor": "douglas, carl;schulte, patricia",
+			"sections_pass": 29
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 29
+		},
+		{
+			"sections_instructor": "cronk, quentin charles",
+			"sections_pass": 24
+		},
+		{
+			"sections_instructor": "singh, santokh",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "ellis, shona margaret",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "blake, robert wm;ganders, fred r",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "ellis, shona margaret",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "blake, robert wm;ganders, fred r",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "bohlmann, jorg",
+			"sections_pass": 23
+		},
+		{
+			"sections_instructor": "bohlmann, jorg",
+			"sections_pass": 27
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 27
+		},
+		{
+			"sections_instructor": "mizumoto, kota",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "van der loos, hendrik;wilson, david",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "hodgson, antony",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "dumont, guy a",
+			"sections_pass": 2
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 2
+		},
+		{
+			"sections_instructor": "abolmaesumi, purang",
+			"sections_pass": 3
+		},
+		{
+			"sections_instructor": "abolmaesumi, purang",
+			"sections_pass": 2
+		},
+		{
+			"sections_instructor": "zhang, yuelin",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "bohlmann, jorg",
+			"sections_pass": 3
+		},
+		{
+			"sections_instructor": "ng, david",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "watson, scott",
+			"sections_pass": 3
+		},
+		{
+			"sections_instructor": "mazzi, eric",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "mazzi, eric",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "mazzi, eric",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "prodanovic, vladan zoran",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "vogl, a wayne",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "loewen, christopher;nabi, ivan robert",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "loewen, christopher;nabi, ivan robert",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "loewen, christopher;nabi, ivan robert",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "haas, kurt",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "haas, kurt",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "underhill, tully michael",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "underhill, tully michael",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "kieffer, tim",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "hatzikiriakos, savvas",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "feng, james jingtao",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "gopaluni, bhushan",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "haynes, charles",
+			"sections_pass": 3
+		},
+		{
+			"sections_instructor": "feng, james jingtao",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "feng, james jingtao",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "gopaluni, bhushan",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "feng, james jingtao",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "feng, james jingtao",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "smith, kevin",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "lau, anthony k",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "gyenge, christina",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "wilkinson, david",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "englezos, peter",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "krems, roman",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "patrick, brian",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "patrick, brian",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "blades, michael;turner, robin",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "blades, michael;turner, robin",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "chen, david",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "chen, david",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "naghibi, ali",
+			"sections_pass": 132
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 132
+		},
+		{
+			"sections_instructor": "lo, kwang victor",
+			"sections_pass": 25
+		},
+		{
+			"sections_instructor": "joghataie, abdolreza",
+			"sections_pass": 50
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 50
+		},
+		{
+			"sections_instructor": "ventura, carlos estuardo",
+			"sections_pass": 46
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 46
+		},
+		{
+			"sections_instructor": "lim, clark",
+			"sections_pass": 31
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 31
+		},
+		{
+			"sections_instructor": "jenkins, dr jacqueline",
+			"sections_pass": 28
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 28
+		},
+		{
+			"sections_instructor": "chieng, sie-tan;stiemer, siegfried",
+			"sections_pass": 140
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 140
+		},
+		{
+			"sections_instructor": "ventura, carlos estuardo",
+			"sections_pass": 32
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 32
+		},
+		{
+			"sections_instructor": "ventura, carlos estuardo",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "ventura, carlos estuardo",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "ventura, carlos estuardo",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "tannert, thomas",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "staub-french, sheryl",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "lence, barbara jean",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "lence, barbara jean",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "wijewickreme, dharmapriya",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "bigazzi, alexander york",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "jenkins, dr jacqueline",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "westwood, marvin",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "amundson, norman;sawatsky, frank",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "motl, thomas",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "motl, thomas",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "bruno, talino",
+			"sections_pass": 51
+		},
+		{
+			"sections_instructor": "weinberg, mark",
+			"sections_pass": 29
+		},
+		{
+			"sections_instructor": "pickerell, deirdre",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "pickerell, deirdre",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "weinberg, mark",
+			"sections_pass": 37
+		},
+		{
+			"sections_instructor": "bruno, talino",
+			"sections_pass": 33
+		},
+		{
+			"sections_instructor": "bruno, talino",
+			"sections_pass": 58
+		},
+		{
+			"sections_instructor": "bruno, talino",
+			"sections_pass": 59
+		},
+		{
+			"sections_instructor": "weinberg, mark",
+			"sections_pass": 32
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 57
+		},
+		{
+			"sections_instructor": "klubben, laura",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "weinberg, mark",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "tba",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 42
+		},
+		{
+			"sections_instructor": "gaster, sean",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "swan, graeme",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 53
+		},
+		{
+			"sections_instructor": "gaster, sean",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "marshall, janet vaughan",
+			"sections_pass": 98
+		},
+		{
+			"sections_instructor": "marshall, janet vaughan",
+			"sections_pass": 116
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 214
+		},
+		{
+			"sections_instructor": "marshall, janet vaughan",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "owens, rhea",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "smith, gillian",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "weinberg, mark",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "dyer, brenda",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "dyer, brenda",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "dyer, brenda",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "dyer, brenda",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "dyer, brenda",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "ishiyama, fumio ishu",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "schultz, izabela",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "schultz, izabela",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "adler, michal",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "miller, lynn delaine",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "elez, tatjana",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "james, susan",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "adler, michal",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "tba",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "dadson, michael",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "amundson, norman",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "jordan, sharalyn",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "amundson, norman",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "cox, daniel",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "amundson, norman",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "amundson, norman",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "amundson, norman",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "neault, roberta a",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "jordan, sharalyn",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "young, richard",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "carter, john",
+			"sections_pass": 23
+		},
+		{
+			"sections_instructor": "cox, daniel",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "carter, john",
+			"sections_pass": 25
+		},
+		{
+			"sections_instructor": "cox, daniel",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "carter, john",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 37
+		},
+		{
+			"sections_instructor": "cox, daniel",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "carter, john",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "munteanu, mircea",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "munteanu, mircea",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "flood, karen",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "munteanu, mircea",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "haney, colleen;hawley, jody;tba",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "munteanu, mircea",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 40
+		},
+		{
+			"sections_instructor": "munteanu, mircea",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "munteanu, mircea",
+			"sections_pass": 23
+		},
+		{
+			"sections_instructor": "munteanu, mircea",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "munteanu, mircea",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "flood, karen",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 41
+		},
+		{
+			"sections_instructor": "james, susan",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "ishiyama, fumio ishu",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "ishiyama, fumio ishu",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "ishiyama, fumio ishu",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "schultz, izabela",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "schultz, izabela",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "schultz, izabela",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "berrington, david arthur",
+			"sections_pass": 39
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 39
+		},
+		{
+			"sections_instructor": "ghement, isabella",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "ghement, isabella",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "ghement, isabella",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "ghement, isabella",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "arcese, peter",
+			"sections_pass": 137
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 137
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 103
+		},
+		{
+			"sections_instructor": "trosper, ronald",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "hoos, holger",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "knorr, edwin max",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "tsiknis, georgios",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "knorr, edwin max",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "tsiknis, georgios",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "tsiknis, georgios",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "wolfman, steven",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "friedman, joel",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "friedman, joel",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "harvey, nicholas",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "friedman, joel",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "carenini, giuseppe",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "wohlstadter, eric",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "poole, david",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "beschastnikh, ivan",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "krasic, charles",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "schmidt, mark",
+			"sections_pass": 54
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 54
+		},
+		{
+			"sections_instructor": "schmidt, mark",
+			"sections_pass": 59
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 59
+		},
+		{
+			"sections_instructor": "campbell, deborah",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "campbell, deborah",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "campbell, deborah",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "campbell, deborah",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "campbell, deborah",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "medved, maureen",
+			"sections_pass": 1
+		},
+		{
+			"sections_instructor": "galloway, steve",
+			"sections_pass": 3
+		},
+		{
+			"sections_instructor": "tregebov, rhea",
+			"sections_pass": 3
+		},
+		{
+			"sections_instructor": "svendsen, linda jane",
+			"sections_pass": 2
+		},
+		{
+			"sections_instructor": "campbell, deborah",
+			"sections_pass": 1
+		},
+		{
+			"sections_instructor": "lyon, annabel",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "graefe, sara",
+			"sections_pass": 2
+		},
+		{
+			"sections_instructor": "taylor, timothy",
+			"sections_pass": 1
+		},
+		{
+			"sections_instructor": "schendlinger, mary",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "maillard, keith",
+			"sections_pass": 1
+		},
+		{
+			"sections_instructor": "svendsen, linda jane",
+			"sections_pass": 1
+		},
+		{
+			"sections_instructor": "galloway, steve",
+			"sections_pass": 1
+		},
+		{
+			"sections_instructor": "lyon, annabel",
+			"sections_pass": 1
+		},
+		{
+			"sections_instructor": "musgrave, susan",
+			"sections_pass": 3
+		},
+		{
+			"sections_instructor": "grady, albert wayne",
+			"sections_pass": 1
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 36
+		},
+		{
+			"sections_instructor": "maillard, keith",
+			"sections_pass": 2
+		},
+		{
+			"sections_instructor": "grady, albert wayne",
+			"sections_pass": 3
+		},
+		{
+			"sections_instructor": "gartner, zsu zsi",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "acheson, alison",
+			"sections_pass": 1
+		},
+		{
+			"sections_instructor": "lyon, annabel",
+			"sections_pass": 3
+		},
+		{
+			"sections_instructor": "galloway, steve",
+			"sections_pass": 2
+		},
+		{
+			"sections_instructor": "tba",
+			"sections_pass": 3
+		},
+		{
+			"sections_instructor": "von bergmann, hsingchi",
+			"sections_pass": 28
+		},
+		{
+			"sections_instructor": "mcfarlane, rae",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "mcfarlane, rae",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "mcfarlane, rae",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "mcfarlane, rae",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "mcfarlane, rae",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "mcfarlane, rae",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "mcfarlane, rae",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "thom, marie",
+			"sections_pass": 32
+		},
+		{
+			"sections_instructor": "lintott, deirdre;thom, marie",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "pighini, maria",
+			"sections_pass": 31
+		},
+		{
+			"sections_instructor": "el khatib, lara",
+			"sections_pass": 34
+		},
+		{
+			"sections_instructor": "el khatib, lara",
+			"sections_pass": 38
+		},
+		{
+			"sections_instructor": "el khatib, lara",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "el khatib, lara",
+			"sections_pass": 33
+		},
+		{
+			"sections_instructor": "richardson, catherine",
+			"sections_pass": 31
+		},
+		{
+			"sections_instructor": "perla, jesse",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "sakata, shinichi",
+			"sections_pass": 28
+		},
+		{
+			"sections_instructor": "anderson, kristin siwan",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "anderson, kristin siwan",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "gallipoli, giovanni",
+			"sections_pass": 3
+		},
+		{
+			"sections_instructor": "gallipoli, giovanni",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "gallipoli, giovanni",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "gallipoli, giovanni",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "gallipoli, giovanni",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "halevy, yoram",
+			"sections_pass": 2
+		},
+		{
+			"sections_instructor": "sakata, shinichi",
+			"sections_pass": 64
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 64
+		},
+		{
+			"sections_instructor": "sakata, shinichi",
+			"sections_pass": 56
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 56
+		},
+		{
+			"sections_instructor": "perla, jesse",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "perla, jesse",
+			"sections_pass": 24
+		},
+		{
+			"sections_instructor": "green, david",
+			"sections_pass": 3
+		},
+		{
+			"sections_instructor": "hoffmann, florian",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "schrimpf, paul",
+			"sections_pass": 2
+		},
+		{
+			"sections_instructor": "diewert, w erwin",
+			"sections_pass": 23
+		},
+		{
+			"sections_instructor": "diewert, w erwin",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "diewert, w erwin",
+			"sections_pass": 25
+		},
+		{
+			"sections_instructor": "diewert, w erwin",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "gallipoli, giovanni",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "marmer, vadim",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "marmer, vadim",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "kasahara, hiroyuki",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "lemieux, thomas",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "siu, henry",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "siu, henry",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "siu, henry",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "gouzouasis, peter",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "lucus, calin",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "jeroff, debra",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "lucus, calin",
+			"sections_pass": 23
+		},
+		{
+			"sections_instructor": "magee, theresa",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "magee, theresa",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "magee, theresa",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "lamonde, anne-marie",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "petrina, stephen",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "macdowell, paula",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "krug, don",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "nicholson, kathleen;petersen, susan",
+			"sections_pass": 24
+		},
+		{
+			"sections_instructor": "johnson, jennifer",
+			"sections_pass": 23
+		},
+		{
+			"sections_instructor": "nicholson, kathleen;petersen, susan",
+			"sections_pass": 30
+		},
+		{
+			"sections_instructor": "nicholson, kathleen;petersen, susan",
+			"sections_pass": 27
+		},
+		{
+			"sections_instructor": "krug, don",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "ross, eddie wayne",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "smith, mary",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "butler, joy;de cosson, alexander",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "butler, joy;clarke, anthony",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "ross, eddie wayne",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "loutzenheiser, lisa",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "loutzenheiser, lisa",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "davis, brent",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "nicol, cynthia",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "gerofsky, susan",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "adler, james douglas",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "adler, james douglas",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "tan, yuen sze michelle",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "milner-bolotin, marina",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "ross, eddie wayne",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "de cosson, alexander",
+			"sections_pass": 23
+		},
+		{
+			"sections_instructor": "de cosson, alexander",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 87
+		},
+		{
+			"sections_instructor": "de cosson, alexander",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "pinar, william",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "phelan, anne",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "gouzouasis, peter",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 70
+		},
+		{
+			"sections_instructor": "pinar, william",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "de cosson, alexander",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 102
+		},
+		{
+			"sections_instructor": "petrina, stephen",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "gouzouasis, peter",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "de cosson, alexander",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "pinar, william",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "ross, eddie wayne",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "ross, eddie wayne",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "pinar, william",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "pinar, william",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "shamsher, mohammed",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "mazawi, andre",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "mazawi, andre;waithman, marilynne",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "butterwick, shauna",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "marker, michael",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "marker, michael",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "marker, michael",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "marker, michael",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "marker, michael",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "metcalfe, amy",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "metcalfe, amy",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "palacios, carolina",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "mazawi, andre",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "butterwick, shauna;chan, jennifer",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "vanwynsberghe, robert",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "mazawi, andre",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "metcalfe, amy",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "shamsher, mohammed",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "gill, hartej",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "poole, wendy",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "gill, hartej",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "gill, hartej",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "pamer, monica",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "roman, leslie",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "vanwynsberghe, robert",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "roman, leslie",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "roman, leslie",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "roman, leslie",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "shan, hongxia",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "shan, hongxia",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "shamsher, mohammed",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "aquash, mark",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "shamsher, mohammed",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "mazawi, andre",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "shamsher, mohammed",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "rocha perkerwicz, samuel",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "henry, annette",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "feng, francis",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "mathison, sandra",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "scott, sandra",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "fatemi, sayyed mohsen",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "carr, wendy;denizot, isabelle",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "bartosh, oksana",
+			"sections_pass": 24
+		},
+		{
+			"sections_instructor": "bartosh, oksana",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "scott, sandra",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "ahenakew, cash",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "morgan, tannis",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "renwick, kerry",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "adler, james douglas",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "ahenakew, cash",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "adler, james douglas;scott, sandra",
+			"sections_pass": 31
+		},
+		{
+			"sections_instructor": "feng, francis;o'riley, patricia",
+			"sections_pass": 28
+		},
+		{
+			"sections_instructor": "fatemi, sayyed mohsen",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "feng, francis;scott, sandra",
+			"sections_pass": 23
+		},
+		{
+			"sections_instructor": "mathison, sandra",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "davis, brent",
+			"sections_pass": 23
+		},
+		{
+			"sections_instructor": "cretu, edmond",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "lis, mieszko",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "nojeh, alireza",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "nojeh, alireza",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "servati, peyman",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "servati, peyman",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "coria, lino",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "nasiopoulos, panos",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "jatskevich, juri",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "jatskevich, juri",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "dommel, hermann",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "dommel, hermann",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "dommel, hermann",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "marti, jose",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "krishnamurthy, vikram",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "krishnamurthy, vikram",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "dumont, guy a",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "dumont, guy a",
+			"sections_pass": 3
+		},
+		{
+			"sections_instructor": "dumont, guy a",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "walus, konrad",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "walus, konrad",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "quinton, bradley",
+			"sections_pass": 2
+		},
+		{
+			"sections_instructor": "wilton, steven",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "wilton, steven",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "wilton, steven",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "sarkaria, sarbjit",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "sarkaria, sarbjit",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "sarkaria, sarbjit",
+			"sections_pass": 28
+		},
+		{
+			"sections_instructor": "sarkaria, sarbjit",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "motavas, saloome",
+			"sections_pass": 28
+		},
+		{
+			"sections_instructor": "motavas, saloome",
+			"sections_pass": 25
+		},
+		{
+			"sections_instructor": "rohling, robert",
+			"sections_pass": 23
+		},
+		{
+			"sections_instructor": "mindell, randal",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "hsieh, william",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "haber, eldad",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "balmforth, neil",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "herrmann, felix",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "herrmann, felix",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "groat, lee",
+			"sections_pass": 3
+		},
+		{
+			"sections_instructor": "gordon, terence;russell, james kelly",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "baker, shaun;kennedy, lori",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "hungr, oldrich",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "mortensen, james;tba",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "hart, craig;mortensen, james",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "hart, craig;mortensen, james",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "hart, craig;mortensen, james",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "mortensen, james;tosdal, richard",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "eberhardt, erik",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "russell, james kelly",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "mortensen, james",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "tosdal, richard",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "bostock, michael",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "lo, chih shen",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "chartres, lynn",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "porath, marion",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "lo, chih shen",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "lo, chih shen",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "nicks, david",
+			"sections_pass": 27
+		},
+		{
+			"sections_instructor": "nicks, david",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "nicks, david",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "nicks, david",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "stockman, james",
+			"sections_pass": 36
+		},
+		{
+			"sections_instructor": "jamieson, janet ruth",
+			"sections_pass": 36
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 68
+		},
+		{
+			"sections_instructor": "stockman, james",
+			"sections_pass": 35
+		},
+		{
+			"sections_instructor": "stockman, james",
+			"sections_pass": 41
+		},
+		{
+			"sections_instructor": "gaster, sean",
+			"sections_pass": 29
+		},
+		{
+			"sections_instructor": "romero, amber",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "romero, amber",
+			"sections_pass": 36
+		},
+		{
+			"sections_instructor": "yorke, erin",
+			"sections_pass": 28
+		},
+		{
+			"sections_instructor": "heikkila, mary",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "heikkila, mary",
+			"sections_pass": 31
+		},
+		{
+			"sections_instructor": "heikkila, mary",
+			"sections_pass": 36
+		},
+		{
+			"sections_instructor": "heikkila, mary",
+			"sections_pass": 29
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 60
+		},
+		{
+			"sections_instructor": "turriff, wendy",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "heikkila, mary",
+			"sections_pass": 33
+		},
+		{
+			"sections_instructor": "heikkila, mary",
+			"sections_pass": 25
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 58
+		},
+		{
+			"sections_instructor": "turriff, wendy",
+			"sections_pass": 31
+		},
+		{
+			"sections_instructor": "heikkila, mary",
+			"sections_pass": 26
+		},
+		{
+			"sections_instructor": "dowler, judith rosemary",
+			"sections_pass": 24
+		},
+		{
+			"sections_instructor": "rathwell, david",
+			"sections_pass": 35
+		},
+		{
+			"sections_instructor": "wilk, diana",
+			"sections_pass": 40
+		},
+		{
+			"sections_instructor": "el khatib, lara",
+			"sections_pass": 75
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 115
+		},
+		{
+			"sections_instructor": "kelty, jane",
+			"sections_pass": 25
+		},
+		{
+			"sections_instructor": "el khatib, lara",
+			"sections_pass": 39
+		},
+		{
+			"sections_instructor": "kelty, jane",
+			"sections_pass": 28
+		},
+		{
+			"sections_instructor": "el khatib, lara",
+			"sections_pass": 48
+		},
+		{
+			"sections_instructor": "el khatib, lara",
+			"sections_pass": 44
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 92
+		},
+		{
+			"sections_instructor": "el khatib, lara",
+			"sections_pass": 58
+		},
+		{
+			"sections_instructor": "el khatib, lara",
+			"sections_pass": 57
+		},
+		{
+			"sections_instructor": "el khatib, lara",
+			"sections_pass": 67
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 67
+		},
+		{
+			"sections_instructor": "cox, elizabeth;reiner, ann",
+			"sections_pass": 33
+		},
+		{
+			"sections_instructor": "el khatib, lara",
+			"sections_pass": 43
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 82
+		},
+		{
+			"sections_instructor": "el khatib, lara",
+			"sections_pass": 27
+		},
+		{
+			"sections_instructor": "el khatib, lara",
+			"sections_pass": 64
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 139
+		},
+		{
+			"sections_instructor": "el khatib, lara",
+			"sections_pass": 59
+		},
+		{
+			"sections_instructor": "el khatib, lara",
+			"sections_pass": 29
+		},
+		{
+			"sections_instructor": "el khatib, lara",
+			"sections_pass": 35
+		},
+		{
+			"sections_instructor": "el khatib, lara",
+			"sections_pass": 49
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 49
+		},
+		{
+			"sections_instructor": "lee, hyekyung",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "porath, marion",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "chartres, lynn",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "lee, hyekyung",
+			"sections_pass": 32
+		},
+		{
+			"sections_instructor": "chartres, lynn",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "chartres, lynn",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "chartres, lynn",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "mceachern hughes, tammy",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "mceachern hughes, tammy",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "mceachern hughes, tammy",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "levinson, tami",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "ford, laurie",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "malone, sharon",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "malone, sharon",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "cole, kenneth",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "cole, kenneth",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "cole, kenneth",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "ford, laurie",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "mitchell, allison rugh",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "cole, kenneth",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "white, aaron",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "amaral, deborah",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "fusaro, nicole",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "macneil, kimberley",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "heikkila, mary",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "ervin, ruth",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "both, pauline;ervin, ruth",
+			"sections_pass": 25
+		},
+		{
+			"sections_instructor": "both, pauline",
+			"sections_pass": 26
+		},
+		{
+			"sections_instructor": "smith, gillian",
+			"sections_pass": 36
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 52
+		},
+		{
+			"sections_instructor": "ervin, ruth",
+			"sections_pass": 24
+		},
+		{
+			"sections_instructor": "yorke, erin",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 45
+		},
+		{
+			"sections_instructor": "both, pauline;romero, amber",
+			"sections_pass": 36
+		},
+		{
+			"sections_instructor": "smith, gillian",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 51
+		},
+		{
+			"sections_instructor": "romero, amber",
+			"sections_pass": 32
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 61
+		},
+		{
+			"sections_instructor": "smith, gillian",
+			"sections_pass": 32
+		},
+		{
+			"sections_instructor": "both, pauline;faber, shawna",
+			"sections_pass": 30
+		},
+		{
+			"sections_instructor": "romero, amber",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "champion, kathleen",
+			"sections_pass": 37
+		},
+		{
+			"sections_instructor": "champion, kathleen",
+			"sections_pass": 33
+		},
+		{
+			"sections_instructor": "champion, kathleen",
+			"sections_pass": 32
+		},
+		{
+			"sections_instructor": "champion, kathleen",
+			"sections_pass": 31
+		},
+		{
+			"sections_instructor": "champion, kathleen",
+			"sections_pass": 36
+		},
+		{
+			"sections_instructor": "champion, kathleen",
+			"sections_pass": 30
+		},
+		{
+			"sections_instructor": "champion, kathleen",
+			"sections_pass": 26
+		},
+		{
+			"sections_instructor": "champion, kathleen",
+			"sections_pass": 34
+		},
+		{
+			"sections_instructor": "champion, kathleen",
+			"sections_pass": 29
+		},
+		{
+			"sections_instructor": "white, aaron",
+			"sections_pass": 24
+		},
+		{
+			"sections_instructor": "white, aaron",
+			"sections_pass": 23
+		},
+		{
+			"sections_instructor": "white, aaron",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "white, aaron",
+			"sections_pass": 26
+		},
+		{
+			"sections_instructor": "white, aaron",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "grow, laura",
+			"sections_pass": 25
+		},
+		{
+			"sections_instructor": "el khatib, lara",
+			"sections_pass": 60
+		},
+		{
+			"sections_instructor": "el khatib, lara",
+			"sections_pass": 61
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 146
+		},
+		{
+			"sections_instructor": "mirenda, pat",
+			"sections_pass": 28
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 88
+		},
+		{
+			"sections_instructor": "grow, laura",
+			"sections_pass": 29
+		},
+		{
+			"sections_instructor": "wilk, diana",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "grow, laura",
+			"sections_pass": 24
+		},
+		{
+			"sections_instructor": "fossett, brenda",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "el khatib, lara",
+			"sections_pass": 69
+		},
+		{
+			"sections_instructor": "el khatib, lara",
+			"sections_pass": 91
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 185
+		},
+		{
+			"sections_instructor": "grow, laura",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "stock, richard",
+			"sections_pass": 35
+		},
+		{
+			"sections_instructor": "sandilands, dallie",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "rusticus, shayna",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "wu, amery",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "rusticus, shayna",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "launeanu, mihaela",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "chan, eric",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "rusticus, shayna",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "kishor, nand;launeanu, mihaela",
+			"sections_pass": 32
+		},
+		{
+			"sections_instructor": "kishor, nand",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "weber, barbara",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "faber, shawna",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "guhn, martin",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "guhn, martin",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "faber, shawna",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "faber, shawna",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "perry, nancy",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "perry, nancy",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "perry, nancy",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "konishi, chiaki",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "porath, marion",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 48
+		},
+		{
+			"sections_instructor": "darwich, lina",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "darwich, lina",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "porath, marion",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "miller, lynn delaine",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "lacroix, serge",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "young, tigerson",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "fossett, brenda",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "jordan, elizabeth",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "champion, kathleen",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "jordan, elizabeth",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "cannon, joanna",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "jordan, elizabeth",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "jordan, elizabeth",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "jordan, elizabeth",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "champion, kathleen",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "curle, deirdre;jordan, elizabeth",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "curle, deirdre;jordan, elizabeth;norman, nancy",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "curle, deirdre;jordan, elizabeth;norman, nancy",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "jordan, elizabeth",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "jordan, elizabeth",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "porath, marion",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "lauridsen, kristi",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "porath, marion",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "cannon, joanna",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "karres, debora",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "cannon, joanna",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "russell, debra",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "russell, debra",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "mcquarrie, maureen",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "heikkila, mary",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "andreou, theresa",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "mcquarrie, maureen",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "heikkila, mary",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "heikkila, mary",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "reid, gavin",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "kishor, nand",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "kishor, nand",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "kishor, nand",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "hubley, anita",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "hubley, anita",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "chan, eric",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "chan, eric",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "wu, amery",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "kishor, nand",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "kishor, nand",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "kishor, nand",
+			"sections_pass": 23
+		},
+		{
+			"sections_instructor": "ercikan, kadriye",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "kishor, nand",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "hubley, anita",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "hubley, anita",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "mercer, sterett",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "mercer, sterett",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "mercer, sterett",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "mercer, sterett",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "mcintosh, kent",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "mcintosh, kent",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "weber, rachel",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "hymel, shelley",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "weber, rachel",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "lacroix, serge",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "amaral, deborah",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "amaral, deborah;ford, laurie",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "amaral, deborah;ford, laurie",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "missiaen, sharon anne",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "hymel, shelley",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "motl, thomas",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "miller, lynn delaine",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "amaral, deborah",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "amaral, deborah;missiaen, sharon anne",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "amaral, deborah;missiaen, sharon anne",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "missiaen, sharon anne",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "zebehazy, kim",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "zebehazy, kim",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "grow, laura",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "grow, laura",
+			"sections_pass": 27
+		},
+		{
+			"sections_instructor": "lacroix, serge",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "mckee, william",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "mckee, william",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "ford, laurie",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "ford, laurie",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "robinson, georgina",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "wormeli, ted",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "ford, laurie",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "ford, laurie",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "ford, laurie;robinson, georgina",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "ford, laurie;robinson, georgina",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "weber, rachel",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "weber, rachel",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "weber, rachel",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "jhangiani, rajiv",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "jhangiani, rajiv",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "mercer, sterett",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "grow, laura",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "mirenda, pat",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "perry, nancy",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "perry, nancy",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "vadeboncoeur, jennifer",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "mathison, sandra",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "rusticus, shayna",
+			"sections_pass": 23
+		},
+		{
+			"sections_instructor": "wu, amery",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "zumbo, bruno",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "wu, amery",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "wu, amery",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "kishor, nand",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "chan, eric",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "wu, amery",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "kishor, nand",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "motl, thomas",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "wu, amery",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "chan, eric",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "kishor, nand",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "kishor, nand",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "mathison, sandra",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "mathison, sandra",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "jordan, sharalyn",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "mathison, sandra",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "mathison, sandra",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "kishor, nand",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "wu, amery",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "wu, amery",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "kishor, nand",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "kishor, nand",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "vadeboncoeur, jennifer",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "vadeboncoeur, jennifer",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "smith, veronica",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "faber, shawna",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "vadeboncoeur, jennifer",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "weber, barbara",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "vadeboncoeur, jennifer",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "porath, marion",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "faber, shawna",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "zumbo, bruno",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "zumbo, bruno",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "zumbo, bruno",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "zumbo, bruno",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "zumbo, bruno",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "zumbo, bruno",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "zumbo, bruno",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "ercikan, kadriye",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "ercikan, kadriye",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "carey, stephen",
+			"sections_pass": 23
+		},
+		{
+			"sections_instructor": "mccracken, janet",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "cho, sunah",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "cho, sunah",
+			"sections_pass": 23
+		},
+		{
+			"sections_instructor": "falk, clifford",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "ercikan, kadriye",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "cho, sunah",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "cho, sunah",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "mccracken, janet",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 47
+		},
+		{
+			"sections_instructor": "mccracken, janet",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "mccracken, janet",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "falk, clifford",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "cho, sunah",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "cho, sunah",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "bartosh, oksana",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 73
+		},
+		{
+			"sections_instructor": "janes, diane",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "janes, diane",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 91
+		},
+		{
+			"sections_instructor": "janes, diane",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "janes, diane",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "miller, jeffrey",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "hauge, chelsey",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "janes, diane",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 83
+		},
+		{
+			"sections_instructor": "hauge, chelsey",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "miller, jeffrey",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "janes, diane",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "bryson, mary",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "feng, francis",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "alam, matiul",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 78
+		},
+		{
+			"sections_instructor": "petrina, stephen",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "feng, francis",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 86
+		},
+		{
+			"sections_instructor": "alam, matiul",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "alam, matiul",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "alam, matiul",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "wang, yifei",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 77
+		},
+		{
+			"sections_instructor": "feng, francis",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 85
+		},
+		{
+			"sections_instructor": "falk, clifford",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "law, danielle m",
+			"sections_pass": 30
+		},
+		{
+			"sections_instructor": "cho, sunah",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "falk, clifford",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "mccracken, janet",
+			"sections_pass": 23
+		},
+		{
+			"sections_instructor": "mccracken, janet",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "marker, michael",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "marker, michael",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "marker, michael",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "marker, michael",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "janes, diane",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "janes, diane",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 38
+		},
+		{
+			"sections_instructor": "feng, francis",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "feng, francis",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "feng, francis",
+			"sections_pass": 23
+		},
+		{
+			"sections_instructor": "feng, francis",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "feng, francis",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "de cosson, alexander",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "de cosson, alexander",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "de cosson, alexander",
+			"sections_pass": 24
+		},
+		{
+			"sections_instructor": "de cosson, alexander",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "milner-bolotin, marina",
+			"sections_pass": 24
+		},
+		{
+			"sections_instructor": "milner-bolotin, marina",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "milner-bolotin, marina",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "milner-bolotin, marina",
+			"sections_pass": 26
+		},
+		{
+			"sections_instructor": "van enk, anneke",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "lamb, brian",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "pena alonso, ernesto",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "dobson, teresa",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "miller, jeffrey",
+			"sections_pass": 23
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 44
+		},
+		{
+			"sections_instructor": "wenzek, rob",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "martell, steve",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "martell, steve",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "sumaila, ussif rashid",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "mcallister, murdoch",
+			"sections_pass": 2
+		},
+		{
+			"sections_instructor": "ross, nancy",
+			"sections_pass": 25
+		},
+		{
+			"sections_instructor": "bendickson, dennis",
+			"sections_pass": 3
+		},
+		{
+			"sections_instructor": "bendickson, dennis",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "mitchell, stephen jarvis",
+			"sections_pass": 67
+		},
+		{
+			"sections_instructor": "mitchell, stephen jarvis",
+			"sections_pass": 52
+		},
+		{
+			"sections_instructor": "simard, suzanne",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "bohlmann, jorg",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "trosper, ronald",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "nelson, harry william",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "watts, susan",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "watts, susan",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "watts, susan",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "kozak, robert antal;panwar, rajat",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "timko, joleen",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "alila, younes",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "frackman, kyle",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "tba",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "tba",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "hines, naseem",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "sinha, srija",
+			"sections_pass": 23
+		},
+		{
+			"sections_instructor": "evans, robert james",
+			"sections_pass": 39
+		},
+		{
+			"sections_instructor": "boccassini, daniela",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "benimeo, maria",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "benimeo, maria",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 97
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 123
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 124
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 108
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 121
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 119
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 111
+		},
+		{
+			"sections_instructor": "dunster, katherine",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "girling, cynthia",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "de groot, joanne",
+			"sections_pass": 27
+		},
+		{
+			"sections_instructor": "norrie, cathy",
+			"sections_pass": 31
+		},
+		{
+			"sections_instructor": "mueller, aaron",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "letain, anne",
+			"sections_pass": 39
+		},
+		{
+			"sections_instructor": "prendergast, teresa",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "arias hernandez, richard",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "farrell, adam",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "arias hernandez, richard",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "arias hernandez, richard",
+			"sections_pass": 25
+		},
+		{
+			"sections_instructor": "arias hernandez, richard",
+			"sections_pass": 24
+		},
+		{
+			"sections_instructor": "matthewson, lisa",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "delvecchio, jennifer",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "streelasky, jodi",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "greig, linda elizabeth",
+			"sections_pass": 27
+		},
+		{
+			"sections_instructor": "greig, linda elizabeth",
+			"sections_pass": 25
+		},
+		{
+			"sections_instructor": "ekdahl, moira",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "ekdahl, moira",
+			"sections_pass": 27
+		},
+		{
+			"sections_instructor": "vadeboncoeur, jennifer",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "anderson, jim",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "rogers, theresa",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "li, guofang",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "duff, patricia",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "zhao, mingfeng",
+			"sections_pass": 50
+		},
+		{
+			"sections_instructor": "khosravi, mahta",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "magyar, akos",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "fraser, ailana",
+			"sections_pass": 3
+		},
+		{
+			"sections_instructor": "chen, jingyi",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "pramanik, malabika",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "karu, kalle",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "karu, kalle",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "behrend, kai",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "gordon, julia yulia",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "solymosi, jozsef",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "solymosi, jozsef",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "perkins, edwin",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "pramanik, malabika",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "magyar, akos",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "lamoureux, michael",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "laba, izabella",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "perkins, edwin",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "murugan, mathav",
+			"sections_pass": 3
+		},
+		{
+			"sections_instructor": "tsai, tai-peng",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "li, dong",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "tsai, tai-peng",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "gustafson, stephen james",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "kim, young-heon",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "tsai, tai-peng",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "kim, young-heon",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "wei, juncheng",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "friedman, joel",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "solymosi, jozsef",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "fraser, ailana",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "chau, albert",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "fraser, ailana",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "chen, jingyi",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "fraser, ailana",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "gomez, jose",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "bryan, jim",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "adem, alejandro",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "karu, kalle",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "gordon, julia yulia",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "reichstein, zinovy",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "ghioca, dragos",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "bennett, michael",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "silberman, lior",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "silberman, lior",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "pramanik, malabika",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "laba, izabella",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "slade, gordon",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "angel, omer",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "angel, omer",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "angel, omer",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "nachmias, asaf",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "brydges, david",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "angel, omer",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "perkins, edwin",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "barlow, martin",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "perkins, edwin",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "perkins, edwin",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "balmforth, neil",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "ward, michael jeffrey",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "ward, michael jeffrey",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "ward, michael jeffrey",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "nagata, k wayne",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "feng, james jingtao",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "mohammadhasani khorasany, rami",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "de silva, clarence wilfred",
+			"sections_pass": 25
+		},
+		{
+			"sections_instructor": "de silva, clarence wilfred",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "cripton, peter",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "merida-donis, walter",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "chiao, mu",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "chiao, mu",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "hodgson, murray",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "hodgson, murray",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "altintas, yusuf",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "altintas, yusuf",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "teslenko, tatiana",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "anasavarapu, srikantha",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "hieter, philip;jones, steven j;rose, ann",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "hieter, philip;jones, steven j;rose, ann",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "hieter, philip;jones, steven j;rose, ann",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "hieter, philip;jones, steven j;rose, ann",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "hieter, philip;jones, steven j;rose, ann",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "taubert, stefan",
+			"sections_pass": 24
+		},
+		{
+			"sections_instructor": "morin, gregg",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "clarke, lorne",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "virani, alice",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "ashe, maureen;cherkasov, artem;cox, michael;duronio, vincent;mcnagny, kelly marshall;mui, alice;pelech, steven daniel;reiner, neil;roberts, clive;rossi, fabio;sandford, andrew;sly, laura;steiner, theodore;tebbutt, scott;vallance, bruce;wang, yu tian",
+			"sections_pass": 38
+		},
+		{
+			"sections_instructor": "cox, michael",
+			"sections_pass": 49
+		},
+		{
+			"sections_instructor": "cox, michael",
+			"sections_pass": 34
+		},
+		{
+			"sections_instructor": "cox, michael",
+			"sections_pass": 28
+		},
+		{
+			"sections_instructor": "ayas, najib",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "ayas, najib",
+			"sections_pass": 3
+		},
+		{
+			"sections_instructor": "allard, michael",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "gantt, soren;horwitz, marc",
+			"sections_pass": 28
+		},
+		{
+			"sections_instructor": "oliver, david",
+			"sections_pass": 56
+		},
+		{
+			"sections_instructor": "hallam, steven",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "ramey, william d",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "ramey, william d",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "kion, tracy",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "perona wright, georgia",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "perona wright, georgia",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "abraham, ninan",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "gold, michael;perona wright, georgia;sly, laura",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "mcrae, lorna",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "mcrae, lorna",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "tba",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "bayrampour basmenj, hamideh",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "lyons, jeanne",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "lyons, jeanne",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "lyons, jeanne",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "broten, courtney",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "campbell, kim;vedam, saraswathi",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "schoen, michael",
+			"sections_pass": 35
+		},
+		{
+			"sections_instructor": "veiga, marcello",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "veiga, marcello",
+			"sections_pass": 34
+		},
+		{
+			"sections_instructor": "veiga, marcello",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "elmo, davide",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "handelsman, simon",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "dunbar, w scott",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "dunbar, w scott",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "dunbar, w scott",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "veiga, marcello",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "cockcroft, steven",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "dixon, david",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "dixon, david",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "forghani, alireza;zobeiry, navid",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "konoval, michael brandon",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "bortolussi, paolo;hamm, corey",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "hamm, corey;magnanensi, giorgio;wilson, eric",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "stride, frederick",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "sharon, rena",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "sharon, rena",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "sharon, rena",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "van deursen, john",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "hesselink, nathan",
+			"sections_pass": 148
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 148
+		},
+		{
+			"sections_instructor": "raftery, james",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "girard, jonathan",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "girard, jonathan",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "van deursen, john",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "barcza, peter;sharon, rena",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "langager, graeme",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "langager, graeme",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "langager, graeme",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "girard, jonathan",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "bortolussi, paolo;hamm, corey",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "hamm, corey;wilson, eric",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "bortolussi, paolo;hamm, corey",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "stana, vitorio",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "macphee, maura",
+			"sections_pass": 120
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 120
+		},
+		{
+			"sections_instructor": "bungay, victoria",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "rodney, patricia",
+			"sections_pass": 118
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 118
+		},
+		{
+			"sections_instructor": "brown, helen jean;o'flynn-magee, katherine;smye, victoria;tan, elsie",
+			"sections_pass": 118
+		},
+		{
+			"sections_instructor": "rodney, patricia",
+			"sections_pass": 116
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 116
+		},
+		{
+			"sections_instructor": "macphee, maura",
+			"sections_pass": 116
+		},
+		{
+			"sections_instructor": "macphee, maura",
+			"sections_pass": 88
+		},
+		{
+			"sections_instructor": "macphee, maura",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "phillips, craig",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "phillips, craig",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "phillips, craig",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "henczel, lisa",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "mccuaig, fairleth",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "brew, nancy",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "joachim, gloria;thomson, sharon",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "henczel, lisa",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "krist, jennifer",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "harding, jillian",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "krist, jennifer;mccuaig, fairleth",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "mccuaig, fairleth",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "jennings,  mary lou;mccuaig, fairleth",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "burrows, marlene;harding, jillian;mccuaig, fairleth",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "harding, jillian;krist, jennifer;mccuaig, fairleth",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "burrows, marlene;mccuaig, fairleth",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "brown, helen jean;mccuaig, fairleth",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "macphee, maura",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "bungay, victoria",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "jillings, carol",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "saewyc, elizabeth",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "burrows, marlene;harding, jillian;krist, jennifer;mccuaig, fairleth",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "mccuaig, fairleth;tba",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "mccuaig, fairleth",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "brew, nancy;mccuaig, fairleth",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "joachim, gloria;thomson, sharon",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "burrows, marlene;harding, jillian;krist, jennifer;mccuaig, fairleth",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "brew, nancy",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "thomson, sharon",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "burrows, marlene",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "harding, jillian",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "burrows, marlene",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "burrows, marlene",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "brew, nancy",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "jillings, carol",
+			"sections_pass": 1
+		},
+		{
+			"sections_instructor": "perks, anthony",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "janssen, patricia",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "yip, stephen",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "yip, stephen",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "yip, stephen",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "weng, andrew",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "yip, stephen",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "bennewith, kevin;cote, helene;devlin, angela;granville, david;lockwood, william;shah, sohrab;steidl, christian;verchere, bruce;wellington, cheryl lea;weng, andrew",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "bally, marcel bertran;bennewith, kevin;cote, helene;devlin, angela;rajcan-separovic, evica;shah, sohrab;steidl, christian;verchere, bruce;wellington, cheryl lea;weng, andrew",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "morin, gregg",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "cote, helene",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "cote, helene",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "cote, helene",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "cote, helene;kalloger, steve ernest;wellington, cheryl lea",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "cote, helene",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "ng, david",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "ng, david",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "ng, david",
+			"sections_pass": 24
+		},
+		{
+			"sections_instructor": "cote, helene",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "pang, catherine c",
+			"sections_pass": 29
+		},
+		{
+			"sections_instructor": "karim, sultan;pang, catherine c;walker, michael j a",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "karim, sultan;pang, catherine c;walker, michael j a",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "karim, sultan;pang, catherine c;walker, michael j a",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "bhagavatula, sastry",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "dormuth, colin",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "walker, michael j a",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "walker, michael j a",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "macleod, bernard a",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "bhagavatula, sastry",
+			"sections_pass": 1
+		},
+		{
+			"sections_instructor": "knight, darryl",
+			"sections_pass": 2
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 152
+		},
+		{
+			"sections_instructor": "wasan, kishor",
+			"sections_pass": 155
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 155
+		},
+		{
+			"sections_instructor": "low, alan",
+			"sections_pass": 43
+		},
+		{
+			"sections_instructor": "low, alan",
+			"sections_pass": 126
+		},
+		{
+			"sections_instructor": "low, alan",
+			"sections_pass": 94
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 220
+		},
+		{
+			"sections_instructor": "seto, katherine",
+			"sections_pass": 126
+		},
+		{
+			"sections_instructor": "massaro, davide;seto, katherine",
+			"sections_pass": 94
+		},
+		{
+			"sections_instructor": "massaro, davide",
+			"sections_pass": 120
+		},
+		{
+			"sections_instructor": "lalji, fawziah;seto, katherine",
+			"sections_pass": 121
+		},
+		{
+			"sections_instructor": "lalji, fawziah;seto, katherine",
+			"sections_pass": 79
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 200
+		},
+		{
+			"sections_instructor": "kent, debra ann",
+			"sections_pass": 50
+		},
+		{
+			"sections_instructor": "kent, debra ann",
+			"sections_pass": 46
+		},
+		{
+			"sections_instructor": "kent, debra ann",
+			"sections_pass": 51
+		},
+		{
+			"sections_instructor": "kent, debra ann",
+			"sections_pass": 43
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 43
+		},
+		{
+			"sections_instructor": "kent, debra ann",
+			"sections_pass": 70
+		},
+		{
+			"sections_instructor": "ensom, mary",
+			"sections_pass": 57
+		},
+		{
+			"sections_instructor": "ensom, mary",
+			"sections_pass": 59
+		},
+		{
+			"sections_instructor": "cairns, brian;levine, marc;soja, peter",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "leung, larry;min, jason",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "leung, larry;min, jason",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "leung, larry;min, jason",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "nicholl, tessa",
+			"sections_pass": 46
+		},
+		{
+			"sections_instructor": "nicholl, tessa",
+			"sections_pass": 82
+		},
+		{
+			"sections_instructor": "nicholl, tessa",
+			"sections_pass": 53
+		},
+		{
+			"sections_instructor": "ensom, mary;riggs, kenneth wayne",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "ensom, mary;riggs, kenneth wayne",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "ensom, mary;riggs, kenneth wayne",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "collier, abby;ensom, mary;wong, harvey",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "hafeli, urs",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "hafeli, urs",
+			"sections_pass": 1
+		},
+		{
+			"sections_instructor": "hafeli, urs;kumar, ujendra",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "jackson, howard",
+			"sections_pass": 1
+		},
+		{
+			"sections_instructor": "taubeneck, steven",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "taubeneck, steven",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "leung, larry",
+			"sections_pass": 218
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 218
+		},
+		{
+			"sections_instructor": "min, jason",
+			"sections_pass": 218
+		},
+		{
+			"sections_instructor": "murphy, susan",
+			"sections_pass": 80
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 80
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 79
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 81
+		},
+		{
+			"sections_instructor": "bonn, douglas andrew",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "semenoff, gordon walter",
+			"sections_pass": 29
+		},
+		{
+			"sections_instructor": "affleck, ian keith",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "rozali, moshe",
+			"sections_pass": 24
+		},
+		{
+			"sections_instructor": "lister, alison",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "stamp, philip c",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "zhitnitsky, ariel",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "ng, john",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "zhitnitsky, ariel",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "zhitnitsky, ariel",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "semenoff, gordon walter",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "spadinger, ingrid",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "reinsberg, stefan",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "reinsberg, stefan",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "duzenli, cheryl",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "mackay, alexander",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "mackay, alexander",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "mackay, alexander",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "mackay, alexander",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "mackay, alexander;schulzer, michael",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "senbel, maged",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "senbel, maged",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "villagomez, erick",
+			"sections_pass": 33
+		},
+		{
+			"sections_instructor": "villagomez, erick",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "wollenberg, jay",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "wollenberg, jay",
+			"sections_pass": 23
+		},
+		{
+			"sections_instructor": "wollenberg, jay",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "wollenberg, jay",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "wollenberg, jay",
+			"sections_pass": 31
+		},
+		{
+			"sections_instructor": "wollenberg, jay",
+			"sections_pass": 25
+		},
+		{
+			"sections_instructor": "frank, lawrence",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "hutton, thomas",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "hutton, thomas",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "dorcey, anthony h j",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "dorcey, anthony h j",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "erfan, aftab",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "dorcey, anthony h j",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "woody, sheila",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "woody, sheila",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "wilkie, donald",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "schaller, mark",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "de longis, anita",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "de longis, anita",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "de longis, anita",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "carlson, scott",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "carlson, scott",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "heaven, roberta",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "wagner, john",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "sochting, ingrid",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "mcgee, brandy",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "mcgee, brandy",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "mcgee, brandy",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "alden, lynn",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "alden, lynn",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "klonsky, elisha",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "jongbloed, lyn",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "tba",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "barbic, skye",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "tba",
+			"sections_pass": 2
+		},
+		{
+			"sections_instructor": "tba",
+			"sections_pass": 1
+		},
+		{
+			"sections_instructor": "yusupova, stella",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "chitnev, veta",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "habajova, irina",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "hunter, thomas",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "hunter, thomas",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "lavkulich, leslie;wilson, julie",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "wilson, julie",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "o'neill, brian",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "o'neill, brian",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "johnston, patricia",
+			"sections_pass": 53
+		},
+		{
+			"sections_instructor": "johnston, patricia",
+			"sections_pass": 65
+		},
+		{
+			"sections_instructor": "",
+			"sections_pass": 65
+		},
+		{
+			"sections_instructor": "weaver, sydney",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "clark, natalie",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "johnson, shelly",
+			"sections_pass": 29
+		},
+		{
+			"sections_instructor": "casson, barbara;choi, marcia",
+			"sections_pass": 56
+		},
+		{
+			"sections_instructor": "gill, deana",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "bryson, stephanie;o'connor, deborah;stainton, timothy;sullivan, t richard;tester, frank",
+			"sections_pass": 27
+		},
+		{
+			"sections_instructor": "vedan, richard",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "johnson, shelly",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "kealy, david",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "escueta, mok",
+			"sections_pass": 3
+		},
+		{
+			"sections_instructor": "escueta, mok",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "escueta, mok",
+			"sections_pass": 20
+		},
+		{
+			"sections_instructor": "wright, margaret",
+			"sections_pass": 33
+		},
+		{
+			"sections_instructor": "bryson, stephanie",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "gauvin, emma",
+			"sections_pass": 17
+		},
+		{
+			"sections_instructor": "gill, deana",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "o'neill, brian",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "bryson, stephanie",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "bryson, stephanie",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "o'neill, brian",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "advisor, -",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "clark, natalie",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "clark, natalie",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "spacciante, stephanie;tba",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "frankish, charles james",
+			"sections_pass": 56
+		},
+		{
+			"sections_instructor": "frankish, charles james;guhn, martin;tanimura, kanna",
+			"sections_pass": 36
+		},
+		{
+			"sections_instructor": "frank, erica",
+			"sections_pass": 82
+		},
+		{
+			"sections_instructor": "birnbaum, david",
+			"sections_pass": 49
+		},
+		{
+			"sections_instructor": "sobolev, boris",
+			"sections_pass": 54
+		},
+		{
+			"sections_instructor": "sobolev, boris",
+			"sections_pass": 61
+		},
+		{
+			"sections_instructor": "sobolev, boris",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "masse, louise",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "kishchenko, svetlana",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "kishchenko, svetlana",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "doyle-waters, mary;taylor, darlene",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "mulpuri, kishore",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "pourbohloul, babak",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "pourbohloul, babak",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "dharamsi, shafik;spiegel, jerry",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "patrick, david",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "kassam, rosemin",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "ragaz, joseph",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "lee, victoria",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "naus, monika",
+			"sections_pass": 25
+		},
+		{
+			"sections_instructor": "smailes, elizabeth;smith, robert",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "kazanjian, arminee",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "mcgrail, kimberlyn;shoveller, jean",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "shoveller, jean",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "mcgrail, kimberlyn",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "spittal, patricia",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "lovato, chris",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "lovato, chris",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "lovato, chris",
+			"sections_pass": 23
+		},
+		{
+			"sections_instructor": "lovato, chris",
+			"sections_pass": 25
+		},
+		{
+			"sections_instructor": "kishchenko, svetlana",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "kazanjian, arminee",
+			"sections_pass": 5
+		},
+		{
+			"sections_instructor": "frankish, charles james",
+			"sections_pass": 8
+		},
+		{
+			"sections_instructor": "frankish, charles james",
+			"sections_pass": 12
+		},
+		{
+			"sections_instructor": "frankish, charles james",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "frankish, charles james",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "frankish, charles james",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "frankish, charles james",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "frankish, charles james",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "frankish, charles james",
+			"sections_pass": 6
+		},
+		{
+			"sections_instructor": "frankish, charles james",
+			"sections_pass": 16
+		},
+		{
+			"sections_instructor": "oviedo-joekes, eugenia",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "zamar, ruben",
+			"sections_pass": 11
+		},
+		{
+			"sections_instructor": "bryan, jennifer frazier;cohen freue, gabriela",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "cohen freue, gabriela",
+			"sections_pass": 14
+		},
+		{
+			"sections_instructor": "zamar, ruben",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "zamar, ruben",
+			"sections_pass": 9
+		},
+		{
+			"sections_instructor": "mclean, jayson",
+			"sections_pass": 48
+		},
+		{
+			"sections_instructor": "horka, andy",
+			"sections_pass": 19
+		},
+		{
+			"sections_instructor": "horka, andy",
+			"sections_pass": 26
+		},
+		{
+			"sections_instructor": "rodgers, sarah",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "mclean, jayson",
+			"sections_pass": 15
+		},
+		{
+			"sections_instructor": "mclean, jayson",
+			"sections_pass": 18
+		},
+		{
+			"sections_instructor": "fowler, ruth skai",
+			"sections_pass": 13
+		},
+		{
+			"sections_instructor": "driscoll-bell, jean",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "firkins, jacqueline",
+			"sections_pass": 22
+		},
+		{
+			"sections_instructor": "ditor, rachel",
+			"sections_pass": 21
+		},
+		{
+			"sections_instructor": "johnston, kirsty",
+			"sections_pass": 7
+		},
+		{
+			"sections_instructor": "johnston, kirsty",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "gardiner, robert",
+			"sections_pass": 4
+		},
+		{
+			"sections_instructor": "savage, ken;shadwick, robert edward",
+			"sections_pass": 10
+		},
+		{
+			"sections_instructor": "matthews, philip",
+			"sections_pass": 11
+		}
+	]
+}
