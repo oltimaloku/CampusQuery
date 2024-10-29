@@ -1,82 +1,5 @@
 import { InsightError } from "./IInsightFacade";
-
-export function isSCOMP(filter: unknown, sfields: string[], idVal: string): Boolean {
-	const keySections = 2;
-	const match = new RegExp("^[*]?[^*]*[*]?$");
-	if (typeof filter === "object" && filter !== null) {
-		if (Object.keys(filter).length === 1) {
-			const skey: string = Object.keys(filter)[0];
-			if (skey.split("_").length === keySections) {
-				const splitKey: string[] = skey.split("_");
-				if (splitKey[0] !== idVal) {
-					return false;
-				}
-				if (!sfields.includes(splitKey[1])) {
-					return false;
-				}
-			} else {
-				return false;
-			}
-		} else {
-			return false;
-		}
-		if (Object.values(filter).length === 1 && typeof Object.values(filter)[0] === "string") {
-			const sval: string = Object.values(filter)[0];
-			return match.test(sval);
-		}
-	}
-	return false;
-}
-
-export function isMCOMP(filter: unknown, mfields: string[], idVal: string): Boolean {
-	const keySections = 2;
-	if (typeof filter === "object" && filter !== null) {
-		if (Object.keys(filter).length === 1) {
-			const mkey: string = Object.keys(filter)[0];
-			if (mkey.split("_").length === keySections) {
-				const splitKey: string[] = mkey.split("_");
-				if (splitKey[0] !== idVal) {
-					return false;
-				}
-				if (!mfields.includes(splitKey[1])) {
-					return false;
-				}
-			} else {
-				return false;
-			}
-		} else {
-			return false;
-		}
-		if (Object.values(filter).length === 1 && typeof Object.values(filter)[0] === "number") {
-			return true;
-		}
-	}
-	return false;
-}
-
-export function isSMComp(filter: unknown, mfields: string[], sfields: string[], idVal: string): Boolean {
-	if (typeof filter === "object" && filter !== null) {
-		if ("IS" in filter) {
-			const scomp: unknown = filter.IS;
-			return isSCOMP(scomp, sfields, idVal);
-		}
-		if ("LT" in filter) {
-			const mcomp: unknown = filter.LT;
-			return isMCOMP(mcomp, mfields, idVal);
-		}
-		if ("GT" in filter) {
-			const mcomp: unknown = filter.GT;
-			return isMCOMP(mcomp, mfields, idVal);
-		}
-		if ("EQ" in filter) {
-			const mcomp: unknown = filter.EQ;
-			return isMCOMP(mcomp, mfields, idVal);
-		}
-		return false;
-	}
-	return false;
-}
-
+import { isSMComp } from "./SMCompValidationHelpers";
 // Recursive check if it is a filter
 export function isFilter(obj: unknown, idVal: string, mfields: string[], sfields: string[]): Boolean {
 	if (typeof obj === "object" && obj !== null) {
@@ -180,55 +103,62 @@ export function validateWhere(where: unknown, idVal: string, mfields: string[], 
 	return true;
 }
 
-export function validateQuery(query: unknown): Boolean {
+function initialValidateQuery(query: unknown): { where: unknown, options: unknown, applyKeys: string[]} | false {
 	const mfields: string[] = MFIELDS;
 	const sfields: string[] = SFIELDS;
-	let maxQueryKeys = 2;
 	let where: unknown = {};
 	let options: unknown = {};
 	let applykeys: string[] = [];
-	// Check query has body and options
-	try{
-		if (typeof query === "object" && query && "WHERE" in query && "OPTIONS" in query) {
-			where = query.WHERE;
-			options = query.OPTIONS;
-		} else {
-			return false;
-		}
+	let maxQueryKeys = 2;
+
+	if (typeof query === "object" && query && "WHERE" in query && "OPTIONS" in query) {
+		where = query.WHERE;
+		options = query.OPTIONS;
+
 		if ("TRANSFORMATIONS" in query) {
 			maxQueryKeys += 1;
+			applykeys = validateTransformations(query.TRANSFORMATIONS, mfields, sfields);
 		}
-		let colVals: string[];
+		if (Object.keys(query).length > maxQueryKeys) {
+			return false;
+		}
+		return { where, options, applyKeys: applykeys};
+	}
+
+	return false;
+}
+
+export function validateQuery(query: unknown): Boolean {
+	try {
+		const validationResult = initialValidateQuery(query);
+		if (!validationResult) {
+			return false;
+		}
+		const { where, options, applyKeys} = validationResult;
+		let colVals: string[] = [];
 		let idVal = '';
-		if (typeof options === "object" && options !== null && Object.keys(query).length <= maxQueryKeys) {
+
+		if (typeof options === "object" && options !== null) {
 			if ("COLUMNS" in options) {
 				const cols = options.COLUMNS;
-				if ("TRANSFORMATIONS" in query) {
-					applykeys = validateTransformations(query.TRANSFORMATIONS, mfields, sfields);
-				}
-				colVals = validateCols(cols, mfields, sfields, applykeys);
+				colVals = validateCols(cols, MFIELDS, SFIELDS, applyKeys);
 			} else {
 				return false;
 			}
-			if ("ORDER" in options) {
-				const order: unknown = options.ORDER;
-				if (!validateOrder(order, colVals)) {
-					return false;
-				}
+			if ("ORDER" in options && !validateOrder(options.ORDER, colVals)) {
+				return false;
 			}
 		} else {
 			return false;
 		}
-		if (applykeys.length > 0) {
-			idVal = applykeys[0].split('_')[0];
-		} else {
-			idVal = colVals[0].split('_')[0];
-		}
-		return validateWhere(where, idVal, mfields, sfields);
+
+		idVal = (applyKeys.length > 0 ? applyKeys[0] : colVals[0]).split('_')[0];
+		return validateWhere(where, idVal, MFIELDS, SFIELDS);
 	} catch {
 		return false;
 	}
 }
+
 
 export function validateTransformations(transformations: unknown, mfields: string[], sfields: string[]): string[] {
 	let retArray: string[] = []
