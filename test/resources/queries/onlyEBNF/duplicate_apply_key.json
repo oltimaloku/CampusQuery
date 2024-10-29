@@ -24,7 +24,7 @@
 				},
 				{
 					"overallAvg": {
-						"AVG": "sections_avg"
+						"MAX": "sections_avg"
 					}
 				}
 			]

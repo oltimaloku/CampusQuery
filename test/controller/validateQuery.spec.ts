@@ -91,5 +91,7 @@ describe("InsightFacade", function () {
         it("[onlyEBNF/cols_not_in_group.json] cols_not_in_group", checkValidateQuery);
         it("[onlyEBNF/duplicate_apply_key.json] duplicate_apply_key", checkValidateQuery);
         it("[onlyEBNF/empty_apply_valid.json] empty_apply_valid", checkValidateQuery);
+        it("[onlyEBNF/valid_apply.json] valid_apply", checkValidateQuery);
+        it("[onlyEBNF/valid_room_multi_apply.json] valid_room_multi_apply", checkValidateQuery);
 	});
 });

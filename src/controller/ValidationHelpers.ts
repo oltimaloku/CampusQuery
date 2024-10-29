@@ -80,7 +80,6 @@ export function isSMComp(filter: unknown, mfields: string[], sfields: string[], 
 // Recursive check if it is a filter
 export function isFilter(obj: unknown, idVal: string, mfields: string[], sfields: string[]): Boolean {
 	if (typeof obj === "object" && obj !== null) {
-		//console.log(Object.keys(obj));
 		if (Object.keys(obj).length !== 1) {
 			return false;
 		}
@@ -122,18 +121,17 @@ export function validateCols(cols: unknown, mfields: string[], sfields: string[]
 		onlyID = (applykeys.length > 0) ? applykeys[0].split("_")[0] : cols[0].split("_")[0];
 		for (const val of cols) {
 			if (typeof val === "string") {
-				//console.log(val);
-				if (val.split("_", keySections)[0] !== onlyID) {
-					throw new InsightError("More than one id");
-				}
-				if (val.split("_", keySections).length < keySections) {
-					throw new InsightError("No cols after underscore");
-				}
 				if (applykeys.length > 0) {
 					if (!applykeys.includes(val)) {
 						throw new InsightError("Not a valid key");
 					}
 				} else {
+					if (val.split("_", keySections)[0] !== onlyID) {
+						throw new InsightError("More than one id");
+					}
+					if (val.split("_", keySections).length < keySections) {
+						throw new InsightError("No cols after underscore");
+					}
 					if (!mfields.includes(val.split("_", keySections)[1]) && !sfields.includes(val.split("_", keySections)[1])) {
 						throw new InsightError("Not a key");
 					}
@@ -258,7 +256,6 @@ export function validateGroup(group: unknown[], mfields: string[], sfields: stri
 	const onlyID: string = group[0].split('_')[0];
 	for (const val of group) {
 		if (typeof val === "string") {
-			//console.log(val);
 			if (val.split("_", keySections)[0] !== onlyID) {
 				throw new InsightError("More than one id");
 			}
