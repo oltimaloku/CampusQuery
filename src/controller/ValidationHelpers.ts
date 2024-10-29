@@ -156,6 +156,16 @@ export function validateOrder(order: unknown, colVals: string[]): Boolean {
 		if (colVals.includes(order)) {
 			return true;
 		}
+	} else if (typeof order === "object" && order !== null) {
+		if ("dir" in order && "keys" in order) {
+			if ((order.dir === 'UP') || (order.dir === 'DOWN')) {
+				if (Array.isArray(order.keys)) {
+					if (order.keys.every((element) => colVals.includes(element))) {
+						return true;
+					}
+				}
+			}
+		}
 	}
 	return false;
 }
@@ -168,22 +178,8 @@ export function validateWhere(where: unknown, colVals: string[], mfields: string
 }
 
 export function validateQuery(query: unknown): Boolean {
-	const mfields: string[] = ["avg", "pass", "fail", "audit", "year", "lat", "lon", "seats"];
-	const sfields: string[] = [
-		"dept",
-		"id",
-		"instructor",
-		"title",
-		"uuid",
-		"fullname",
-		"shortname",
-		"number",
-		"name",
-		"address",
-		"type",
-		"furniture",
-		"href",
-	];
+	const mfields: string[] = MFIELDS;
+	const sfields: string[] = SFIELDS;
 	const maxQueryKeys = 2;
 	let where: unknown = {};
 	let options: unknown = {};
@@ -233,3 +229,20 @@ export const requiredFields: Record<string, string> = {
 	Fail: "number",
 	Audit: "number",
 };
+
+export const MFIELDS = ["avg", "pass", "fail", "audit", "year", "lat", "lon", "seats"];
+export const SFIELDS = [
+	"dept",
+	"id",
+	"instructor",
+	"title",
+	"uuid",
+	"fullname",
+	"shortname",
+	"number",
+	"name",
+	"address",
+	"type",
+	"furniture",
+	"href",
+];

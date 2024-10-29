@@ -9,7 +9,7 @@ import {
 	ResultTooLargeError,
 } from "./IInsightFacade";
 import Section from "./Section";
-import { validateQuery, validateCols, isEmpty, OptionResult } from "./ValidationHelpers";
+import { validateQuery, validateCols, isEmpty, OptionResult, MFIELDS, SFIELDS } from "./ValidationHelpers";
 import DatasetProcessor from "./DatasetProcessor";
 
 /**
@@ -19,22 +19,8 @@ import DatasetProcessor from "./DatasetProcessor";
  */
 export default class InsightFacade implements IInsightFacade {
 	private datasets: Map<string, Section[]> = new Map<string, Section[]>();
-	private static readonly MFIELDS = ["avg", "pass", "fail", "audit", "year", "lat", "lon", "seats"];
-	private static readonly SFIELDS = [
-		"dept",
-		"id",
-		"instructor",
-		"title",
-		"uuid",
-		"fullname",
-		"shortname",
-		"number",
-		"name",
-		"address",
-		"type",
-		"furniture",
-		"href",
-	];
+	private static readonly MFIELDS = MFIELDS;
+	private static readonly SFIELDS = SFIELDS;
 	private static readonly MAX_RESULTS = 5000;
 
 	public async getDataset(id: string): Promise<Section[]> {
