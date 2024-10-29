@@ -183,12 +183,16 @@ export function validateQuery(query: unknown): Boolean {
 	const maxQueryKeys = 2;
 	let where: unknown = {};
 	let options: unknown = {};
+	let applykeys: string[] = [];
 	// Check query has body and options
 	if (typeof query === "object" && query && "WHERE" in query && "OPTIONS" in query) {
 		where = query.WHERE;
 		options = query.OPTIONS;
 	} else {
 		return false;
+	}
+	if ("TRANSFORMATIONS" in query) {
+		applykeys = validateTransformations(query.TRANSFORMATIONS, mfields, sfields);
 	}
 	let colVals: string[];
 	if (typeof options === "object" && options !== null && Object.keys(query).length <= maxQueryKeys) {
@@ -209,6 +213,97 @@ export function validateQuery(query: unknown): Boolean {
 	}
 	// Validate where
 	return validateWhere(where, colVals, mfields, sfields);
+}
+
+export function validateTransformations(transformations: unknown, mfields: string[], sfields: string[]): string[] {
+	let retArray: string[] = []
+	if (typeof transformations === "object" && transformations !== null) {
+		if ("GROUP" in transformations && "APPLY" in transformations) {
+			if (Array.isArray(transformations.GROUP) && Array.isArray(transformations.APPLY)) {
+				const group = transformations.GROUP;
+				const apply = transformations.APPLY;
+				retArray = validateGroup(group, mfields, sfields)
+				return retArray.concat(validateApply(apply, mfields, sfields, retArray[0].split('_')[0]));
+			}
+		}
+	}
+	throw new InsightError("Invalid transformation");
+}
+
+export function validateGroup(group: unknown[], mfields: string[], sfields: string[]): string[] {
+	const keySections = 2;
+	if (group.length === 0) {
+		throw new InsightError("Invalid grouping");
+	}
+	if (typeof group[0] !== 'string') {
+		throw new InsightError("Invalid grouping");
+	}
+	const onlyID: string = group[0].split('_')[0];
+	for (const val of group) {
+		if (typeof val === "string") {
+			//console.log(val);
+			if (val.split("_", keySections)[0] !== onlyID) {
+				throw new InsightError("More than one id");
+			}
+			if (val.split("_", keySections).length < keySections) {
+				throw new InsightError("No cols after underscore");
+			}
+			if (!mfields.includes(val.split("_", keySections)[1]) && !sfields.includes(val.split("_", keySections)[1])) {
+				throw new InsightError("Not a key");
+			}
+		} else {
+			throw new InsightError("Not a string");
+		}
+	}
+	return group as string[];
+}
+
+export function validateApply(apply: unknown[], mfields: string[], sfields: string[], onlyID: string): string[] {
+	let retVal: string[] = [];
+	for (const item of apply) {
+		retVal.push(validateApplyRule(item, mfields, sfields, onlyID));
+	}
+	return retVal;
+}
+
+export function validateApplyRule(item: unknown, mfields: string[], sfields: string[], onlyID: string): string {
+	if (typeof item === 'object' && item !== null) {
+		if (Object.keys(item).length === 1) {
+			const key = Object.keys(item)[0]
+			if (!key.includes('_')) {
+				if (Object.values(item).length === 1) {
+					if (validateApplyToken(Object.values(item)[0], mfields, sfields, onlyID)) {
+						return key
+					}
+				}
+			}
+		}
+	}
+	throw new InsightError('Apply Rule invalid');
+}
+
+export function validateApplyToken(item: unknown, mfields: string[], sfields: string[], onlyID: string): boolean {
+	const keySections = 2;
+	const applyTokens: string[] = ['MAX', 'MIN', 'AVG', 'COUNT', 'SUM'];
+	if (typeof item === 'object' && item !== null) {
+		if (Object.keys(item).length === 1) {
+			if (applyTokens.includes(Object.keys(item)[0])) {
+				if (Object.values(item).length === 1) {
+					const key: unknown = Object.values(item)[0];
+					if (typeof key === 'string') {
+						if (key.split("_", keySections)[0] === onlyID) {
+							if (key.split("_", keySections).length === keySections) {
+								if (mfields.includes(key.split("_", keySections)[1]) || sfields.includes(key.split("_", keySections)[1])) {
+									return true;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return false;
 }
 
 export interface OptionResult {
