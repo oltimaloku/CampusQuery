@@ -48,6 +48,7 @@ describe("InsightFacade", function () {
 	let campus: string;
 	let missingIndexZip: string;
 	let emptyBuildingsZip: string;
+	let onlyACU: string;
 
 	before(async function () {
 		// This block runs once and loads the datasets.
@@ -74,6 +75,7 @@ describe("InsightFacade", function () {
 		campus = await getContentFromArchives("campus.zip");
 		missingIndexZip = await getContentFromArchives("rooms_no_index.zip");
 		emptyBuildingsZip = await getContentFromArchives("no_buildings.zip");
+		onlyACU = await getContentFromArchives("only_ACU.zip");
 		// Just in case there is anything hanging around from a previous run of the test suite
 		await clearDisk();
 	});
@@ -95,6 +97,12 @@ describe("InsightFacade", function () {
 			const result = facade.addDataset("ubc", campus, InsightDatasetKind.Rooms);
 
 			return expect(result).to.eventually.have.members(["ubc"]);
+		});
+
+		it.only("should successfully add rooms dataset with only 1 reference building in index", function () {
+			const result = facade.addDataset("acu", onlyACU, InsightDatasetKind.Rooms);
+
+			return expect(result).to.eventually.have.members(["acu"]);
 		});
 
 		it("should reject non-zip content for rooms", function () {
