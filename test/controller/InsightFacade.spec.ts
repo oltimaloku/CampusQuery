@@ -45,6 +45,10 @@ describe("InsightFacade", function () {
 	let noTitle: string;
 	let noYear: string;
 
+	let campus: string;
+	let missingIndexZip: string;
+	let emptyBuildingsZip: string;
+
 	before(async function () {
 		// This block runs once and loads the datasets.
 		sections = await getContentFromArchives("pair.zip");
@@ -66,6 +70,10 @@ describe("InsightFacade", function () {
 		noTitle = await getContentFromArchives("no_title.zip");
 		noYear = await getContentFromArchives("no_year.zip");
 
+		// ROOMS
+		campus = await getContentFromArchives("campus.zip");
+		missingIndexZip = await getContentFromArchives("rooms_no_index.zip");
+		emptyBuildingsZip = await getContentFromArchives("no_buildings.zip");
 		// Just in case there is anything hanging around from a previous run of the test suite
 		await clearDisk();
 	});
@@ -81,6 +89,27 @@ describe("InsightFacade", function () {
 			// This section resets the data directory (removing any cached data)
 			// This runs after each test, which should make each test independent of the previous one
 			await clearDisk();
+		});
+
+		it("should successfully add rooms dataset", function () {
+			const result = facade.addDataset("ubc", campus, InsightDatasetKind.Rooms);
+
+			return expect(result).to.eventually.have.members(["ubc"]);
+		});
+
+		it("should reject non-zip content for rooms", function () {
+			const result = facade.addDataset("rooms", "invalid-base64", InsightDatasetKind.Rooms);
+			return expect(result).to.eventually.be.rejectedWith(InsightError);
+		});
+
+		it("should reject zip with no building files", function () {
+			const result = facade.addDataset("rooms", emptyBuildingsZip, InsightDatasetKind.Rooms);
+			return expect(result).to.eventually.be.rejectedWith(InsightError);
+		});
+
+		it("should reject zip without index.htm", function () {
+			const result = facade.addDataset("rooms", missingIndexZip, InsightDatasetKind.Rooms);
+			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
 		it("should reject with an empty dataset id", async function () {
@@ -101,7 +130,7 @@ describe("InsightFacade", function () {
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
-		it("should successfully add a dataset", function () {
+		it("should successfully add a sections dataset", function () {
 			const result = facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
 
 			return expect(result).to.eventually.have.members(["ubc"]);
