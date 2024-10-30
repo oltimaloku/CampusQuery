@@ -1,6 +1,6 @@
 export default class Room {
-	private readonly fullname: string;
-	private readonly shortname: string;
+	private readonly buildingFullName: string;
+	private readonly buildingShortName: string;
 	private readonly number: string;
 	private readonly name: string;
 	private readonly address: string;
@@ -12,8 +12,8 @@ export default class Room {
 	private readonly href: string;
 
 	public constructor(
-		fullname: string,
-		shortname: string,
+		buildingFullName: string,
+		buildingShortName: string,
 		number: string,
 		name: string,
 		address: string,
@@ -24,8 +24,8 @@ export default class Room {
 		furniture: string,
 		href: string
 	) {
-		this.fullname = fullname;
-		this.shortname = shortname;
+		this.buildingFullName = buildingFullName;
+		this.buildingShortName = buildingShortName;
 		this.number = number;
 		this.name = name;
 		this.address = address;
@@ -44,8 +44,8 @@ export default class Room {
 
 		// Validate required fields exist and have correct types
 		if (
-			typeof room.fullname !== "string" ||
-			typeof room.shortname !== "string" ||
+			typeof room.buildingFullName !== "string" ||
+			typeof room.buildingShortName !== "string" ||
 			typeof room.number !== "string" ||
 			typeof room.name !== "string" ||
 			typeof room.address !== "string" ||
@@ -60,8 +60,8 @@ export default class Room {
 		}
 
 		return new Room(
-			room.fullname,
-			room.shortname,
+			room.buildingFullName,
+			room.buildingShortName,
 			room.number,
 			room.name,
 			room.address,
