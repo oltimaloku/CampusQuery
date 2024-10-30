@@ -79,7 +79,6 @@ export default class InsightFacade implements IInsightFacade {
 
 			this.datasets.set(id, processedContent);
 			await fs.writeJSON(`${__dirname}/../../data/${id}.json`, processedContent);
-
 			return Array.from(this.datasets.keys());
 		} catch (error) {
 			throw new InsightError("Error adding dataset" + error);

@@ -123,3 +123,19 @@ export function isBuildingRow(cell: ChildNode): boolean {
 	}
 	return false;
 }
+
+export function getRoomRows(roomsTable: ChildNode): ChildNode[] {
+	const rows: ChildNode[] = [];
+	if ("childNodes" in roomsTable) {
+		for (const node of roomsTable.childNodes) {
+			if (node.nodeName === "tbody" && "childNodes" in node) {
+				for (const child of node.childNodes) {
+					if (child.nodeName === "tr") {
+						rows.push(child);
+					}
+				}
+			}
+		}
+	}
+	return rows;
+}
