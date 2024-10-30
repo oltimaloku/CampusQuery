@@ -92,7 +92,8 @@ export default class DatasetProcessor {
 	private static async createValidRoomsFromZip(zipContent: JSZip): Promise<Room[]> {
 		let indexFile: JSZip.JSZipObject | null = null;
 		zipContent.forEach((relativePath: string, file: JSZip.JSZipObject) => {
-			if (relativePath.endsWith("/index.htm")) {
+			console.log("relativePath: " + relativePath);
+			if (relativePath.endsWith("index.htm")) {
 				indexFile = file;
 			}
 		});

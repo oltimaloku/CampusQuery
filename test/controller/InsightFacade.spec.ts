@@ -45,7 +45,6 @@ describe("InsightFacade", function () {
 	let noTitle: string;
 	let noYear: string;
 
-	let smallCampus: string;
 	let campus: string;
 
 	before(async function () {
@@ -69,7 +68,6 @@ describe("InsightFacade", function () {
 		noTitle = await getContentFromArchives("no_title.zip");
 		noYear = await getContentFromArchives("no_year.zip");
 
-		smallCampus = await getContentFromArchives("small_campus.zip");
 		campus = await getContentFromArchives("campus.zip");
 
 		// Just in case there is anything hanging around from a previous run of the test suite
