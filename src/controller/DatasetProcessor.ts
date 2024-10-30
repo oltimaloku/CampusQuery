@@ -6,11 +6,15 @@ import Room from "./Room";
 import * as parse5 from "parse5";
 import { ChildNode, Document } from "parse5/dist/tree-adapters/default";
 import { findTableWithClass, getTableCells } from "./HtmlParseHelpers";
+import { relative } from "path";
 
 interface BuildingData {
-	title: string;
-	code: string;
+	fullName: string;
+	shortName: string;
 	address: string;
+	roomsLink: string;
+	lat?: number;
+	lon?: number;
 }
 
 interface RoomData {
@@ -18,6 +22,7 @@ interface RoomData {
 	seats: number;
 	furniture: string;
 	type: string;
+	href: string;
 }
 
 export default class DatasetProcessor {
@@ -85,9 +90,6 @@ export default class DatasetProcessor {
 	}
 
 	private static async createValidRoomsFromZip(zipContent: JSZip): Promise<Room[]> {
-		const rooms: Room[] = [];
-
-		// First get and parse the index.htm file
 		let indexFile: JSZip.JSZipObject | null = null;
 		zipContent.forEach((relativePath: string, file: JSZip.JSZipObject) => {
 			if (relativePath.endsWith("/index.htm")) {
@@ -96,7 +98,7 @@ export default class DatasetProcessor {
 		});
 
 		if (!indexFile) {
-			return rooms;
+			throw new InsightError("index file does not exist");
 		}
 
 		const indexStringContent = await (indexFile as JSZip.JSZipObject).async("string");
@@ -105,29 +107,168 @@ export default class DatasetProcessor {
 
 		const buildingTable = this.getBuildingTable(indexDoc.childNodes);
 		if (!buildingTable) {
-			return rooms;
+			throw new InsightError("building table not found");
 		}
 
 		const buildingRows = this.getBuildingRows(buildingTable);
 		if (buildingRows.length === 0) {
+			throw new InsightError("No building rows found in index.htm");
+		}
+
+		// Process each building
+		const buildingPromises = buildingRows.map(async (row) => {
+			const buildingData = this.getBuildingDataFromRow(row);
+			if (!buildingData) {
+				console.warn("Skipping invalid building row");
+				return [];
+			}
+			return this.getRoomsForBuilding(buildingData, zipContent);
+		});
+
+		// Wait for all building processing to complete
+		const roomArrays = await Promise.all(buildingPromises);
+		return roomArrays.flat();
+	}
+
+	private static async getRoomsForBuilding(buildingData: BuildingData, zipContent: JSZip): Promise<Room[]> {
+		const rooms: Room[] = [];
+
+		// Normalize the building file path
+		const buildingFilePath = this.normalizeZipPath(buildingData.roomsLink);
+		console.log(`Searching for building file: ${buildingFilePath}`);
+
+		// Find the building file in the zip
+		const buildingFile = this.findFileInZip(zipContent, buildingFilePath);
+		if (!buildingFile) {
+			console.warn(`Building file not found: ${buildingFilePath} for building ${buildingData.fullName}`);
 			return rooms;
 		}
 
-		for (const buildingRow of buildingRows) {
-			const buildingData = this.getBuildingDataFromRow(buildingRow);
-			if (!buildingData) {
-				console.log("Invalid building data");
-			} else {
-				console.log("buildingData: \n", buildingData);
+		try {
+			// Parse building file content
+			const buildingContent = await buildingFile.async("string");
+			const buildingDoc: Document = parse5.parse(buildingContent);
+
+			// Find and process rooms table
+			const roomsTable = findTableWithClass(buildingDoc, "views-table");
+			if (!roomsTable) {
+				console.warn(`Rooms table not found in building: ${buildingData.fullName}`);
+				return rooms;
 			}
+
+			const roomRows = this.getRoomRows(roomsTable);
+			for (const roomRow of roomRows) {
+				try {
+					const cells = getTableCells(roomRow);
+					const roomData = this.getRoomDataFromCells(cells, buildingData);
+					if (roomData) {
+						console.log("ROOM DATA: " + roomData);
+						const name = `${buildingData.shortName}_${roomData.number}`;
+						const room = new Room(
+							buildingData.fullName,
+							buildingData.shortName,
+							roomData.number,
+							name,
+							buildingData.address,
+							1,
+							1,
+							roomData.seats,
+							roomData.type,
+							roomData.furniture,
+							roomData.href
+						);
+						rooms.push(room);
+					}
+				} catch (e) {
+					console.warn(`Error processing room row in ${buildingData.fullName}: ${e}`);
+					continue;
+				}
+			}
+		} catch (e) {
+			console.error(`Error processing building ${buildingData.fullName}: ${e}`);
 		}
+
 		return rooms;
 	}
 
+	private static findFileInZip(zipContent: JSZip, targetPath: string): JSZip.JSZipObject | null {
+		let foundFile: JSZip.JSZipObject | null = null;
+		const normalizedTarget = this.normalizeZipPath(targetPath);
+
+		zipContent.forEach((relativePath: string, file: JSZip.JSZipObject) => {
+			const normalizedPath = this.normalizeZipPath(relativePath);
+
+			if (normalizedPath.endsWith(normalizedTarget)) {
+				foundFile = file;
+			}
+		});
+
+		return foundFile;
+	}
+
+	private static normalizeZipPath(path: string): string {
+		// Remove leading "./" and normalize slashes
+		return path.replace(/^\.\//, "").replace(/\\/g, "/").replace(/^\//, ""); // Remove leading slash if present
+	}
+
+	private static getRoomRows(roomsTable: ChildNode): ChildNode[] {
+		const rows: ChildNode[] = [];
+		if ("childNodes" in roomsTable) {
+			for (const node of roomsTable.childNodes) {
+				if (node.nodeName === "tbody" && "childNodes" in node) {
+					for (const child of node.childNodes) {
+						if (child.nodeName === "tr") {
+							rows.push(child);
+						}
+					}
+				}
+			}
+		}
+		return rows;
+	}
+
+	private static getRoomDataFromCells(cells: ChildNode[], buildingData: BuildingData): RoomData | null {
+		let number = "",
+			seats = 0,
+			furniture = "",
+			type = "",
+			href = "";
+
+		for (const cell of cells) {
+			if ("attrs" in cell) {
+				const classAttr = cell.attrs?.find((attr) => attr.name === "class")?.value || "";
+
+				if (classAttr.includes("views-field-field-room-number")) {
+					number = this.getLinkText(cell);
+					href = this.getHrefFromLink(cell);
+				} else if (classAttr.includes("views-field-field-room-capacity")) {
+					const seatsText = this.getTextContent(cell);
+					seats = parseInt(seatsText, 10);
+				} else if (classAttr.includes("views-field-field-room-furniture")) {
+					furniture = this.getTextContent(cell);
+				} else if (classAttr.includes("views-field-field-room-type")) {
+					type = this.getTextContent(cell);
+				}
+			}
+		}
+
+		if (number && seats && furniture && type) {
+			return {
+				number,
+				seats,
+				furniture,
+				type,
+				href,
+			};
+		}
+		return null;
+	}
+
 	private static getBuildingDataFromRow(buildingRow: ChildNode): BuildingData | null {
-		let title = "",
-			code = "",
-			address = "";
+		let fullName = "",
+			shortName = "",
+			address = "",
+			roomsLink = "";
 
 		if ("childNodes" in buildingRow) {
 			for (const child of buildingRow.childNodes) {
@@ -136,12 +277,13 @@ export default class DatasetProcessor {
 
 					// Extract the building code
 					if (classAttr.includes("views-field-field-building-code")) {
-						code = DatasetProcessor.getTextContent(child);
+						shortName = DatasetProcessor.getTextContent(child);
 					}
 
 					// Extract the building name
 					if (classAttr.includes("views-field-title")) {
-						title = DatasetProcessor.getLinkText(child); // Updated to handle <a> tag
+						fullName = DatasetProcessor.getLinkText(child); // Updated to handle <a> tag
+						roomsLink = DatasetProcessor.getHrefFromLink(child);
 					}
 
 					// Extract the building address
@@ -151,9 +293,9 @@ export default class DatasetProcessor {
 				}
 			}
 		}
-		console.log("title: ", title, "code: ", code, "address: ", address);
-		if (title && code && address) {
-			return { title, code, address };
+
+		if (fullName && shortName && address) {
+			return { fullName, shortName, address, roomsLink };
 		}
 		return null;
 	}
@@ -171,13 +313,26 @@ export default class DatasetProcessor {
 		return text.trim();
 	}
 
+	private static getHrefFromLink(node: ChildNode): string {
+		if ("childNodes" in node) {
+			for (const child of node.childNodes) {
+				if (child.nodeName === "a" && child.attrs) {
+					const href = child.attrs.find((attr) => attr.name === "href")?.value;
+					if (href) {
+						return href;
+					}
+				}
+			}
+		}
+		return "";
+	}
+
 	private static getLinkText(node: ChildNode): string {
 		let text = "";
 
 		if ("childNodes" in node) {
 			for (const child of node.childNodes) {
 				if (child.nodeName === "a" && "childNodes" in child) {
-					// Traverse the <a> tag's children to get the text content
 					for (const linkChild of child.childNodes) {
 						if (linkChild.nodeName === "#text" && "value" in linkChild) {
 							text += linkChild.value.trim() + " ";
@@ -218,7 +373,7 @@ export default class DatasetProcessor {
 				if (node.nodeName === "table") {
 					return node;
 				}
-				// Search children
+				// Search children recursively
 				const result = this.getBuildingTable(node.childNodes);
 				if (result) {
 					return result;
