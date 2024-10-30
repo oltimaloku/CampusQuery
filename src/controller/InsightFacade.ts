@@ -195,11 +195,11 @@ export default class InsightFacade implements IInsightFacade {
 		});
 	}
 
-	public runFilter(obj: unknown, onlyID: string, current: Section[]): Section[] {
+	public runFilter(obj: unknown, onlyID: string, current: any): any {
 		if (typeof obj === "object" && obj !== null) {
 			if ("NOT" in obj) {
 				const inverse: Section[] = this.runFilter(obj.NOT, onlyID, current);
-				return current.filter((section) => !inverse.includes(section));
+				return current.filter((section: Section) => !inverse.includes(section));
 			}
 			if ("AND" in obj) {
 				if (Array.isArray(obj.AND)) {
@@ -216,7 +216,7 @@ export default class InsightFacade implements IInsightFacade {
 					let builtArray: Section[] = [];
 					for (const query of or) {
 						builtArray = builtArray.concat(
-							this.runFilter(query, onlyID, current).filter((section) => !builtArray.includes(section))
+							this.runFilter(query, onlyID, current).filter((section: Section) => !builtArray.includes(section))
 						);
 					}
 					return builtArray;
