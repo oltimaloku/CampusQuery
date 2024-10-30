@@ -1,4 +1,3 @@
-import InsightFacade from "../../src/controller/InsightFacade";
 import { clearDisk, loadTestQuery } from "../TestUtil";
 import { validateQuery } from "../../src/controller/ValidationHelpers";
 
@@ -15,7 +14,7 @@ export interface ITestQuery {
 }
 
 describe("InsightFacade", function () {
-	let facade: InsightFacade;
+	//let facade: InsightFacade;
 
 	before(async function () {
 		// Just in case there is anything hanging around from a previous run of the test suite
@@ -43,7 +42,7 @@ describe("InsightFacade", function () {
 		}
 
 		before(async function () {
-			facade = new InsightFacade();
+			//facade = new InsightFacade();
 		});
 
 		after(async function () {
@@ -88,10 +87,10 @@ describe("InsightFacade", function () {
 		it("[valid/double_wildcard_success.json] double_wildcard_success", checkValidateQuery);
 		it("[invalid/scomp_use_number.json] scomp_use_number", checkValidateQuery);
 		it("[invalid/invalid_multiple_underscore.json] invalid_multiple_underscore", checkValidateQuery);
-        it("[onlyEBNF/cols_not_in_group.json] cols_not_in_group", checkValidateQuery);
-        it("[onlyEBNF/duplicate_apply_key.json] duplicate_apply_key", checkValidateQuery);
-        it("[onlyEBNF/empty_apply_valid.json] empty_apply_valid", checkValidateQuery);
-        it("[onlyEBNF/valid_apply.json] valid_apply", checkValidateQuery);
-        it("[onlyEBNF/valid_room_multi_apply.json] valid_room_multi_apply", checkValidateQuery);
+		it("[onlyEBNF/cols_not_in_group.json] cols_not_in_group", checkValidateQuery);
+		it("[onlyEBNF/duplicate_apply_key.json] duplicate_apply_key", checkValidateQuery);
+		it("[onlyEBNF/empty_apply_valid.json] empty_apply_valid", checkValidateQuery);
+		it("[onlyEBNF/valid_apply.json] valid_apply", checkValidateQuery);
+		it("[onlyEBNF/valid_room_multi_apply.json] valid_room_multi_apply", checkValidateQuery);
 	});
 });

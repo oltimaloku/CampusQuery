@@ -5,8 +5,15 @@ import Section from "./Section";
 import Room from "./Room";
 import * as parse5 from "parse5";
 import { ChildNode, Document } from "parse5/dist/tree-adapters/default";
-import { findTableWithClass, getTableCells } from "./HtmlParseHelpers";
-import { relative } from "path";
+import {
+	findTableWithClass,
+	getBuildingRows,
+	getBuildingTable,
+	getHrefFromLink,
+	getLinkText,
+	getTableCells,
+	getTextContent,
+} from "./HtmlParseHelpers";
 
 interface BuildingData {
 	fullName: string;
@@ -92,7 +99,6 @@ export default class DatasetProcessor {
 	private static async createValidRoomsFromZip(zipContent: JSZip): Promise<Room[]> {
 		let indexFile: JSZip.JSZipObject | null = null;
 		zipContent.forEach((relativePath: string, file: JSZip.JSZipObject) => {
-			console.log("relativePath: " + relativePath);
 			if (relativePath.endsWith("index.htm")) {
 				indexFile = file;
 			}
@@ -106,66 +112,64 @@ export default class DatasetProcessor {
 
 		const indexDoc: Document = parse5.parse(indexStringContent);
 
-		const buildingTable = this.getBuildingTable(indexDoc.childNodes);
+		const buildingTable = getBuildingTable(indexDoc.childNodes);
 		if (!buildingTable) {
 			throw new InsightError("building table not found");
 		}
 
-		const buildingRows = this.getBuildingRows(buildingTable);
+		const buildingRows = getBuildingRows(buildingTable);
 		if (buildingRows.length === 0) {
 			throw new InsightError("No building rows found in index.htm");
 		}
 
-		// Process each building
 		const buildingPromises = buildingRows.map(async (row) => {
 			const buildingData = this.getBuildingDataFromRow(row);
 			if (!buildingData) {
-				console.warn("Skipping invalid building row");
 				return [];
 			}
 			return this.getRoomsForBuilding(buildingData, zipContent);
 		});
 
-		// Wait for all building processing to complete
 		const roomArrays = await Promise.all(buildingPromises);
 		return roomArrays.flat();
 	}
 
 	private static async getRoomsForBuilding(buildingData: BuildingData, zipContent: JSZip): Promise<Room[]> {
-		const rooms: Room[] = [];
-
-		// Normalize the building file path
-		const buildingFilePath = this.normalizeZipPath(buildingData.roomsLink);
-		console.log(`Searching for building file: ${buildingFilePath}`);
-
-		// Find the building file in the zip
-		const buildingFile = this.findFileInZip(zipContent, buildingFilePath);
+		const buildingFile = this.findBuildingFile(zipContent, buildingData.roomsLink);
 		if (!buildingFile) {
-			console.warn(`Building file not found: ${buildingFilePath} for building ${buildingData.fullName}`);
-			return rooms;
+			return [];
 		}
 
-		try {
-			// Parse building file content
-			const buildingContent = await buildingFile.async("string");
-			const buildingDoc: Document = parse5.parse(buildingContent);
+		const buildingDoc = await this.parseBuildingFile(buildingFile);
+		const roomsTable = findTableWithClass(buildingDoc, "views-table");
+		if (!roomsTable) {
+			return [];
+		}
 
-			// Find and process rooms table
-			const roomsTable = findTableWithClass(buildingDoc, "views-table");
-			if (!roomsTable) {
-				console.warn(`Rooms table not found in building: ${buildingData.fullName}`);
-				return rooms;
-			}
+		const roomRows = this.getRoomRows(roomsTable);
+		return this.extractRoomsFromRows(roomRows, buildingData);
+	}
 
-			const roomRows = this.getRoomRows(roomsTable);
-			for (const roomRow of roomRows) {
-				try {
-					const cells = getTableCells(roomRow);
-					const roomData = this.getRoomDataFromCells(cells, buildingData);
-					if (roomData) {
-						console.log("ROOM DATA: " + roomData);
-						const name = `${buildingData.shortName}_${roomData.number}`;
-						const room = new Room(
+	private static findBuildingFile(zipContent: JSZip, link: string): JSZip.JSZipObject | null {
+		const path = this.normalizeZipPath(link);
+		return this.findFileInZip(zipContent, path);
+	}
+
+	private static async parseBuildingFile(buildingFile: JSZip.JSZipObject): Promise<Document> {
+		const content = await buildingFile.async("string");
+		return parse5.parse(content);
+	}
+
+	private static extractRoomsFromRows(roomRows: ChildNode[], buildingData: BuildingData): Room[] {
+		const rooms: Room[] = [];
+		for (const row of roomRows) {
+			try {
+				const cells = getTableCells(row);
+				const roomData = this.getRoomDataFromCells(cells);
+				if (roomData) {
+					const name = `${buildingData.shortName}_${roomData.number}`;
+					rooms.push(
+						new Room(
 							buildingData.fullName,
 							buildingData.shortName,
 							roomData.number,
@@ -177,18 +181,13 @@ export default class DatasetProcessor {
 							roomData.type,
 							roomData.furniture,
 							roomData.href
-						);
-						rooms.push(room);
-					}
-				} catch (e) {
-					console.warn(`Error processing room row in ${buildingData.fullName}: ${e}`);
-					continue;
+						)
+					);
 				}
+			} catch {
+				continue;
 			}
-		} catch (e) {
-			console.error(`Error processing building ${buildingData.fullName}: ${e}`);
 		}
-
 		return rooms;
 	}
 
@@ -208,8 +207,8 @@ export default class DatasetProcessor {
 	}
 
 	private static normalizeZipPath(path: string): string {
-		// Remove leading "./" and normalize slashes
-		return path.replace(/^\.\//, "").replace(/\\/g, "/").replace(/^\//, ""); // Remove leading slash if present
+		path = path.replace(/^\.\//, "").replace(/\\/g, "/");
+		return path.replace(/^\//, "");
 	}
 
 	private static getRoomRows(roomsTable: ChildNode): ChildNode[] {
@@ -228,7 +227,7 @@ export default class DatasetProcessor {
 		return rows;
 	}
 
-	private static getRoomDataFromCells(cells: ChildNode[], buildingData: BuildingData): RoomData | null {
+	private static getRoomDataFromCells(cells: ChildNode[]): RoomData | null {
 		let number = "",
 			seats = 0,
 			furniture = "",
@@ -240,15 +239,15 @@ export default class DatasetProcessor {
 				const classAttr = cell.attrs?.find((attr) => attr.name === "class")?.value || "";
 
 				if (classAttr.includes("views-field-field-room-number")) {
-					number = this.getLinkText(cell);
-					href = this.getHrefFromLink(cell);
+					number = getLinkText(cell);
+					href = getHrefFromLink(cell);
 				} else if (classAttr.includes("views-field-field-room-capacity")) {
-					const seatsText = this.getTextContent(cell);
+					const seatsText = getTextContent(cell);
 					seats = parseInt(seatsText, 10);
 				} else if (classAttr.includes("views-field-field-room-furniture")) {
-					furniture = this.getTextContent(cell);
+					furniture = getTextContent(cell);
 				} else if (classAttr.includes("views-field-field-room-type")) {
-					type = this.getTextContent(cell);
+					type = getTextContent(cell);
 				}
 			}
 		}
@@ -278,18 +277,18 @@ export default class DatasetProcessor {
 
 					// Extract the building code
 					if (classAttr.includes("views-field-field-building-code")) {
-						shortName = DatasetProcessor.getTextContent(child);
+						shortName = getTextContent(child);
 					}
 
 					// Extract the building name
 					if (classAttr.includes("views-field-title")) {
-						fullName = DatasetProcessor.getLinkText(child); // Updated to handle <a> tag
-						roomsLink = DatasetProcessor.getHrefFromLink(child);
+						fullName = getLinkText(child); // Updated to handle <a> tag
+						roomsLink = getHrefFromLink(child);
 					}
 
 					// Extract the building address
 					if (classAttr.includes("views-field-field-building-address")) {
-						address = DatasetProcessor.getTextContent(child);
+						address = getTextContent(child);
 					}
 				}
 			}
@@ -299,118 +298,5 @@ export default class DatasetProcessor {
 			return { fullName, shortName, address, roomsLink };
 		}
 		return null;
-	}
-
-	private static getTextContent(node: ChildNode): string {
-		let text = "";
-
-		if ("childNodes" in node) {
-			for (const child of node.childNodes) {
-				if (child.nodeName === "#text" && "value" in child) {
-					text += child.value.trim() + " ";
-				}
-			}
-		}
-		return text.trim();
-	}
-
-	private static getHrefFromLink(node: ChildNode): string {
-		if ("childNodes" in node) {
-			for (const child of node.childNodes) {
-				if (child.nodeName === "a" && child.attrs) {
-					const href = child.attrs.find((attr) => attr.name === "href")?.value;
-					if (href) {
-						return href;
-					}
-				}
-			}
-		}
-		return "";
-	}
-
-	private static getLinkText(node: ChildNode): string {
-		let text = "";
-
-		if ("childNodes" in node) {
-			for (const child of node.childNodes) {
-				if (child.nodeName === "a" && "childNodes" in child) {
-					for (const linkChild of child.childNodes) {
-						if (linkChild.nodeName === "#text" && "value" in linkChild) {
-							text += linkChild.value.trim() + " ";
-						}
-					}
-				}
-			}
-		}
-
-		return text.trim();
-	}
-
-	private static getLinksAndImages(node: ChildNode): any[] {
-		const elements: any[] = [];
-
-		if ("childNodes" in node) {
-			for (const child of node.childNodes) {
-				if (child.nodeName === "a" && child.attrs) {
-					const href = child.attrs.find((attr) => attr.name === "href")?.value;
-					if (href) {
-						elements.push({ type: "link", href });
-					}
-				} else if (child.nodeName === "img" && child.attrs) {
-					const src = child.attrs.find((attr) => attr.name === "src")?.value;
-					const alt = child.attrs.find((attr) => attr.name === "alt")?.value || "";
-					elements.push({ type: "image", src, alt });
-				}
-			}
-		}
-
-		return elements;
-	}
-
-	private static getBuildingTable(nodes: ChildNode[]): ChildNode | null {
-		for (const node of nodes) {
-			// Check if the node has children
-			if ("childNodes" in node) {
-				if (node.nodeName === "table") {
-					return node;
-				}
-				// Search children recursively
-				const result = this.getBuildingTable(node.childNodes);
-				if (result) {
-					return result;
-				}
-			}
-		}
-		return null;
-	}
-
-	private static getBuildingRows(buildingTable: ChildNode): ChildNode[] {
-		const rows: ChildNode[] = [];
-		if ("childNodes" in buildingTable) {
-			for (const node of buildingTable.childNodes) {
-				if (node.nodeName === "tbody" && "childNodes" in node) {
-					for (const child of node.childNodes) {
-						if (child.nodeName === "tr") {
-							const cells = getTableCells(child);
-							if (cells.some((cell: ChildNode) => this.isBuildingRow(cell))) {
-								rows.push(child);
-							}
-						}
-					}
-				}
-			}
-		}
-		return rows;
-	}
-
-	private static isBuildingRow(cell: ChildNode): boolean {
-		if ("attrs" in cell) {
-			for (const attr of cell.attrs) {
-				if (attr.name === "class" && attr.value.includes("views-field-field-building-code")) {
-					return true;
-				}
-			}
-		}
-		return false;
 	}
 }

@@ -215,9 +215,11 @@ export default class InsightFacade implements IInsightFacade {
 					const or: unknown[] = obj.OR;
 					let builtArray: Section[] = [];
 					for (const query of or) {
-						builtArray = builtArray.concat(
-							this.runFilter(query, onlyID, current).filter((section: Section) => !builtArray.includes(section))
+						const filteredSections = this.runFilter(query, onlyID, current).filter(
+							(section: Section) => !builtArray.includes(section)
 						);
+
+						builtArray = builtArray.concat(filteredSections);
 					}
 					return builtArray;
 				}
