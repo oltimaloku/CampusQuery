@@ -41,7 +41,7 @@ export function validateCols(cols: unknown, mfields: string[], sfields: string[]
 		if (cols.length === 0 || typeof cols[0] !== "string") {
 			throw new InsightError("Incorrect format");
 		}
-		onlyID = (applykeys.length > 0) ? applykeys[0].split("_")[0] : cols[0].split("_")[0];
+		onlyID = applykeys.length > 0 ? applykeys[0].split("_")[0] : cols[0].split("_")[0];
 		for (const val of cols) {
 			if (typeof val === "string") {
 				if (applykeys.length > 0) {
@@ -84,7 +84,7 @@ export function validateOrder(order: unknown, colVals: string[]): Boolean {
 		}
 	} else if (typeof order === "object" && order !== null) {
 		if ("dir" in order && "keys" in order) {
-			if ((order.dir === 'UP') || (order.dir === 'DOWN')) {
+			if (order.dir === "UP" || order.dir === "DOWN") {
 				if (Array.isArray(order.keys)) {
 					if (order.keys.every((element) => colVals.includes(element))) {
 						return true;
@@ -103,7 +103,7 @@ export function validateWhere(where: unknown, idVal: string, mfields: string[], 
 	return true;
 }
 
-function initialValidateQuery(query: unknown): { where: unknown, options: unknown, applyKeys: string[]} | false {
+function initialValidateQuery(query: unknown): { where: unknown; options: unknown; applyKeys: string[] } | false {
 	const mfields: string[] = MFIELDS;
 	const sfields: string[] = SFIELDS;
 	let where: unknown = {};
@@ -122,7 +122,7 @@ function initialValidateQuery(query: unknown): { where: unknown, options: unknow
 		if (Object.keys(query).length > maxQueryKeys) {
 			return false;
 		}
-		return { where, options, applyKeys: applykeys};
+		return { where, options, applyKeys: applykeys };
 	}
 
 	return false;
@@ -134,9 +134,9 @@ export function validateQuery(query: unknown): Boolean {
 		if (!validationResult) {
 			return false;
 		}
-		const { where, options, applyKeys} = validationResult;
+		const { where, options, applyKeys } = validationResult;
 		let colVals: string[] = [];
-		let idVal = '';
+		let idVal = "";
 
 		if (typeof options === "object" && options !== null) {
 			if ("COLUMNS" in options) {
@@ -152,23 +152,22 @@ export function validateQuery(query: unknown): Boolean {
 			return false;
 		}
 
-		idVal = (applyKeys.length > 0 ? applyKeys[0] : colVals[0]).split('_')[0];
+		idVal = (applyKeys.length > 0 ? applyKeys[0] : colVals[0]).split("_")[0];
 		return validateWhere(where, idVal, MFIELDS, SFIELDS);
 	} catch {
 		return false;
 	}
 }
 
-
 export function validateTransformations(transformations: unknown, mfields: string[], sfields: string[]): string[] {
-	let retArray: string[] = []
+	let retArray: string[] = [];
 	if (typeof transformations === "object" && transformations !== null) {
 		if ("GROUP" in transformations && "APPLY" in transformations) {
 			if (Array.isArray(transformations.GROUP) && Array.isArray(transformations.APPLY)) {
 				const group = transformations.GROUP;
 				const apply = transformations.APPLY;
-				retArray = validateGroup(group, mfields, sfields)
-				return retArray.concat(validateApply(apply, mfields, sfields, retArray[0].split('_')[0]));
+				retArray = validateGroup(group, mfields, sfields);
+				return retArray.concat(validateApply(apply, mfields, sfields, retArray[0].split("_")[0]));
 			}
 		}
 	}
@@ -180,10 +179,10 @@ export function validateGroup(group: unknown[], mfields: string[], sfields: stri
 	if (group.length === 0) {
 		throw new InsightError("Invalid grouping");
 	}
-	if (typeof group[0] !== 'string') {
+	if (typeof group[0] !== "string") {
 		throw new InsightError("Invalid grouping");
 	}
-	const onlyID: string = group[0].split('_')[0];
+	const onlyID: string = group[0].split("_")[0];
 	for (const val of group) {
 		if (typeof val === "string") {
 			if (val.split("_", keySections)[0] !== onlyID) {
@@ -207,40 +206,43 @@ export function validateApply(apply: unknown[], mfields: string[], sfields: stri
 	for (const item of apply) {
 		retVal.push(validateApplyRule(item, mfields, sfields, onlyID));
 	}
-	if ((new Set(retVal)).size !== retVal.length) {
-		throw new InsightError('Duplicate keys');
+	if (new Set(retVal).size !== retVal.length) {
+		throw new InsightError("Duplicate keys");
 	}
 	return retVal;
 }
 
 export function validateApplyRule(item: unknown, mfields: string[], sfields: string[], onlyID: string): string {
-	if (typeof item === 'object' && item !== null) {
+	if (typeof item === "object" && item !== null) {
 		if (Object.keys(item).length === 1) {
-			const key = Object.keys(item)[0]
-			if (!key.includes('_')) {
+			const key = Object.keys(item)[0];
+			if (!key.includes("_")) {
 				if (Object.values(item).length === 1) {
 					if (validateApplyToken(Object.values(item)[0], mfields, sfields, onlyID)) {
-						return key
+						return key;
 					}
 				}
 			}
 		}
 	}
-	throw new InsightError('Apply Rule invalid');
+	throw new InsightError("Apply Rule invalid");
 }
 
 export function validateApplyToken(item: unknown, mfields: string[], sfields: string[], onlyID: string): boolean {
 	const keySections = 2;
-	const applyTokens: string[] = ['MAX', 'MIN', 'AVG', 'COUNT', 'SUM'];
-	if (typeof item === 'object' && item !== null) {
+	const applyTokens: string[] = ["MAX", "MIN", "AVG", "COUNT", "SUM"];
+	if (typeof item === "object" && item !== null) {
 		if (Object.keys(item).length === 1) {
 			if (applyTokens.includes(Object.keys(item)[0])) {
 				if (Object.values(item).length === 1) {
 					const key: unknown = Object.values(item)[0];
-					if (typeof key === 'string') {
+					if (typeof key === "string") {
 						if (key.split("_", keySections)[0] === onlyID) {
 							if (key.split("_", keySections).length === keySections) {
-								if (mfields.includes(key.split("_", keySections)[1]) || sfields.includes(key.split("_", keySections)[1])) {
+								if (
+									mfields.includes(key.split("_", keySections)[1]) ||
+									sfields.includes(key.split("_", keySections)[1])
+								) {
 									return true;
 								}
 							}
