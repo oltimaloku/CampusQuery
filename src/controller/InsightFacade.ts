@@ -11,6 +11,7 @@ import {
 import Section from "./Section";
 import { validateQuery, validateCols, isEmpty, OptionResult } from "./ValidationHelpers";
 import DatasetProcessor from "./DatasetProcessor";
+import Room from "./Room";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -18,14 +19,14 @@ import DatasetProcessor from "./DatasetProcessor";
  *
  */
 export default class InsightFacade implements IInsightFacade {
-	private datasets: Map<string, Section[]> = new Map<string, Section[]>();
+	private datasets: Map<string, Section[] | Room[]> = new Map<string, Section[] | Room[]>();
 	private static readonly MFIELDS = ["avg", "pass", "fail", "audit", "year"];
 	private static readonly SFIELDS = ["dept", "id", "instructor", "title", "uuid"];
 	private static readonly MAX_RESULTS = 5000;
 
-	public async getDataset(id: string): Promise<Section[]> {
+	public async getDataset(id: string): Promise<Section[] | Room[]> {
 		if (this.datasets.has(id)) {
-			const dataObject: Section[] | undefined = this.datasets.get(id);
+			const dataObject = this.datasets.get(id);
 			if (typeof dataObject !== "undefined") {
 				return dataObject;
 			}
@@ -63,19 +64,21 @@ export default class InsightFacade implements IInsightFacade {
 				throw new InsightError("Dataset already exists");
 			}
 
+			let processedContent: Section[] | Room[];
 			if (kind === InsightDatasetKind.Sections) {
-				const processedContent = await DatasetProcessor.processContent(content);
-
-				if (processedContent.length === 0) {
-					throw new InsightError("No valid sections found");
-				}
-
-				this.datasets.set(id, processedContent);
-
-				await fs.writeJSON(`${__dirname}/../../data/${id}.json`, processedContent);
+				processedContent = await DatasetProcessor.processSectionsContent(content);
+			} else if (kind === InsightDatasetKind.Rooms) {
+				processedContent = await DatasetProcessor.processRoomsContent(content);
 			} else {
-				throw new Error("Rooms dataset has not been implemented yet");
+				throw new InsightError("Unsupported dataset kind");
 			}
+
+			if (processedContent.length === 0) {
+				throw new InsightError("No valid data found in dataset");
+			}
+
+			this.datasets.set(id, processedContent);
+			await fs.writeJSON(`${__dirname}/../../data/${id}.json`, processedContent);
 
 			return Array.from(this.datasets.keys());
 		} catch (error) {
@@ -154,7 +157,7 @@ export default class InsightFacade implements IInsightFacade {
 			}
 
 			const optionsData: OptionResult = this.getOptions(options, InsightFacade.MFIELDS, InsightFacade.SFIELDS);
-			const sections: Section[] | undefined = await this.getDataset(optionsData.onlyID);
+			const sections = await this.getDataset(optionsData.onlyID);
 			let results: Section[] = [];
 
 			if (typeof sections !== "undefined") {
@@ -294,17 +297,26 @@ export default class InsightFacade implements IInsightFacade {
 	public async listDatasets(): Promise<InsightDataset[]> {
 		const datasets: InsightDataset[] = [];
 		const ids: string[] = [];
-		const results: Promise<Section[]>[] = [];
+		const results = [];
 		for (const filename of await fs.readdir(`${__dirname}/../../data`)) {
 			const id: string = filename.split(".")[0];
 			ids.push(id);
 			results.push(this.getDataset(id));
 		}
-		const resolved: Section[][] = await Promise.all(results);
+		const resolved = await Promise.all(results);
 		for (let i = 0; i < ids.length; i++) {
+			const data = resolved[i];
+			let kind: InsightDatasetKind;
+
+			if (data.length > 0 && data[0] instanceof Room) {
+				kind = InsightDatasetKind.Rooms;
+			} else {
+				kind = InsightDatasetKind.Sections;
+			}
+
 			const dataset: InsightDataset = {
 				id: ids[i],
-				kind: InsightDatasetKind.Sections,
+				kind: kind,
 				numRows: resolved[i].length,
 			};
 			datasets.push(dataset);
