@@ -36,41 +36,4 @@ export default class Room {
 		this.furniture = furniture;
 		this.href = href;
 	}
-
-	public static createRoom(room: any): Room | null {
-		if (!room || typeof room !== "object") {
-			return null;
-		}
-
-		// Validate required fields exist and have correct types
-		if (
-			typeof room.buildingFullName !== "string" ||
-			typeof room.buildingShortName !== "string" ||
-			typeof room.number !== "string" ||
-			typeof room.name !== "string" ||
-			typeof room.address !== "string" ||
-			typeof room.lat !== "number" ||
-			typeof room.lon !== "number" ||
-			typeof room.seats !== "number" ||
-			typeof room.type !== "string" ||
-			typeof room.furniture !== "string" ||
-			typeof room.href !== "string"
-		) {
-			return null;
-		}
-
-		return new Room(
-			room.buildingFullName,
-			room.buildingShortName,
-			room.number,
-			room.name,
-			room.address,
-			room.lat,
-			room.lon,
-			room.seats,
-			room.type,
-			room.furniture,
-			room.href
-		);
-	}
 }
