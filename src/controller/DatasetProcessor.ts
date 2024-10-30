@@ -163,41 +163,44 @@ export default class DatasetProcessor {
 	}
 
 	private static async extractRoomsFromRows(roomRows: ChildNode[], buildingData: BuildingData): Promise<Room[]> {
-		const rooms: Room[] = [];
-		for (const row of roomRows) {
+		// Create an array of promises to process rooms in parallel
+		const roomPromises = roomRows.map(async (row) => {
 			try {
 				const cells = getTableCells(row);
 				const roomData = this.getRoomDataFromCells(cells);
 				if (roomData) {
 					const name = `${buildingData.shortName}_${roomData.number}`;
 
+					// Fetch geolocation data for the building address
 					const geoResponse = await GeolocationService.getGeolocation(buildingData.address);
 
 					if (geoResponse.error) {
-						throw new InsightError("No location found for " + name);
+						throw new InsightError(`No location found for ${name}`);
 					}
 
-					rooms.push(
-						new Room(
-							buildingData.fullName,
-							buildingData.shortName,
-							roomData.number,
-							name,
-							buildingData.address,
-							geoResponse.lat!,
-							geoResponse.lon!,
-							roomData.seats,
-							roomData.type,
-							roomData.furniture,
-							roomData.href
-						)
+					// Return the created Room instance
+					return new Room(
+						buildingData.fullName,
+						buildingData.shortName,
+						roomData.number,
+						name,
+						buildingData.address,
+						geoResponse.lat!,
+						geoResponse.lon!,
+						roomData.seats,
+						roomData.type,
+						roomData.furniture,
+						roomData.href
 					);
 				}
 			} catch {
-				continue;
+				return null; // Skip invalid rows
 			}
-		}
-		return rooms;
+		});
+
+		// Wait for all room promises to complete and filter out any null results
+		const rooms = await Promise.all(roomPromises);
+		return rooms.filter((room): room is Room => room !== null);
 	}
 
 	private static findFileInZip(zipContent: JSZip, targetPath: string): JSZip.JSZipObject | null {

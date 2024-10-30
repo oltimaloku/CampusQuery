@@ -7,7 +7,7 @@ interface GeoResponse {
 }
 
 export default class GeolocationService {
-	private uri: string = "http://cs310.students.cs.ubc.ca:11316/api/v1/project_team/";
+	private uri = "http://cs310.students.cs.ubc.ca:11316/api/v1/project_team/";
 
 	public static async getGeolocation(address: string): Promise<GeoResponse> {
 		const encodedAddress = encodeURIComponent(address);
@@ -27,7 +27,7 @@ export default class GeolocationService {
 							const geoResponse: GeoResponse = JSON.parse(data);
 							resolve(geoResponse);
 						} catch (error) {
-							reject({ error: "Failed to parse response" });
+							reject({ error: "Failed to parse response" + error });
 						}
 					});
 				})
