@@ -11,9 +11,11 @@ import {
 	getBuildingTable,
 	getHrefFromLink,
 	getLinkText,
+	getRoomRows,
 	getTableCells,
 	getTextContent,
 } from "./HtmlParseHelpers";
+import GeolocationService from "./GeolocationService";
 
 interface BuildingData {
 	fullName: string;
@@ -146,7 +148,7 @@ export default class DatasetProcessor {
 			return [];
 		}
 
-		const roomRows = this.getRoomRows(roomsTable);
+		const roomRows = getRoomRows(roomsTable);
 		return this.extractRoomsFromRows(roomRows, buildingData);
 	}
 
@@ -160,7 +162,7 @@ export default class DatasetProcessor {
 		return parse5.parse(content);
 	}
 
-	private static extractRoomsFromRows(roomRows: ChildNode[], buildingData: BuildingData): Room[] {
+	private static async extractRoomsFromRows(roomRows: ChildNode[], buildingData: BuildingData): Promise<Room[]> {
 		const rooms: Room[] = [];
 		for (const row of roomRows) {
 			try {
@@ -168,6 +170,13 @@ export default class DatasetProcessor {
 				const roomData = this.getRoomDataFromCells(cells);
 				if (roomData) {
 					const name = `${buildingData.shortName}_${roomData.number}`;
+
+					const geoResponse = await GeolocationService.getGeolocation(buildingData.address);
+
+					if (geoResponse.error) {
+						throw new InsightError("No location found for " + name);
+					}
+
 					rooms.push(
 						new Room(
 							buildingData.fullName,
@@ -175,8 +184,8 @@ export default class DatasetProcessor {
 							roomData.number,
 							name,
 							buildingData.address,
-							1,
-							1,
+							geoResponse.lat!,
+							geoResponse.lon!,
 							roomData.seats,
 							roomData.type,
 							roomData.furniture,
@@ -209,22 +218,6 @@ export default class DatasetProcessor {
 	private static normalizeZipPath(path: string): string {
 		path = path.replace(/^\.\//, "").replace(/\\/g, "/");
 		return path.replace(/^\//, "");
-	}
-
-	private static getRoomRows(roomsTable: ChildNode): ChildNode[] {
-		const rows: ChildNode[] = [];
-		if ("childNodes" in roomsTable) {
-			for (const node of roomsTable.childNodes) {
-				if (node.nodeName === "tbody" && "childNodes" in node) {
-					for (const child of node.childNodes) {
-						if (child.nodeName === "tr") {
-							rows.push(child);
-						}
-					}
-				}
-			}
-		}
-		return rows;
 	}
 
 	private static getRoomDataFromCells(cells: ChildNode[]): RoomData | null {
