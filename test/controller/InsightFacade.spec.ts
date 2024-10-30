@@ -99,7 +99,7 @@ describe("InsightFacade", function () {
 			return expect(result).to.eventually.have.members(["ubc"]);
 		});
 
-		it.only("should successfully add rooms dataset with only 1 reference building in index", function () {
+		it("should successfully add rooms dataset with only 1 reference building in index", function () {
 			const result = facade.addDataset("acu", onlyACU, InsightDatasetKind.Rooms);
 
 			return expect(result).to.eventually.have.members(["acu"]);
