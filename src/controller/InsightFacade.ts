@@ -157,7 +157,7 @@ export default class InsightFacade implements IInsightFacade {
 
 			const optionsData: OptionResult = this.getOptions(options, InsightFacade.MFIELDS, InsightFacade.SFIELDS);
 			const sections = await this.getDataset(optionsData.onlyID);
-			let results: Section[] = [];
+			let results: (Section| Room)[] = [];
 
 			if (typeof sections !== "undefined") {
 				results = this.runFilter(where, optionsData.onlyID, sections);
@@ -183,8 +183,8 @@ export default class InsightFacade implements IInsightFacade {
 		}
 	}
 
-	private mapResults(results: Section[], colVals: string[]): InsightResult[] {
-		return results.map((section) => {
+	private mapResults(results: (Section | Room)[], colVals: string[]): InsightResult[] {
+		return results.map((section: (Room | Section)) => {
 			const result: InsightResult = {};
 			for (const colKey of colVals) {
 				const field = colKey.split("_")[1] as keyof Section;
@@ -194,11 +194,11 @@ export default class InsightFacade implements IInsightFacade {
 		});
 	}
 
-	public runFilter(obj: unknown, onlyID: string, current: any): any {
+	public runFilter(obj: unknown, onlyID: string, current: (Room | Section)[]): (Room | Section)[] {
 		if (typeof obj === "object" && obj !== null) {
 			if ("NOT" in obj) {
-				const inverse: Section[] = this.runFilter(obj.NOT, onlyID, current);
-				return current.filter((section: Section) => !inverse.includes(section));
+				const inverse: (Section | Room)[] = this.runFilter(obj.NOT, onlyID, current);
+				return current.filter((section: (Room | Section)) => !inverse.includes(section));
 			}
 			if ("AND" in obj) {
 				if (Array.isArray(obj.AND)) {
@@ -212,10 +212,10 @@ export default class InsightFacade implements IInsightFacade {
 			if ("OR" in obj) {
 				if (Array.isArray(obj.OR)) {
 					const or: unknown[] = obj.OR;
-					let builtArray: Section[] = [];
+					let builtArray: (Room | Section)[] = [];
 					for (const query of or) {
 						const filteredSections = this.runFilter(query, onlyID, current).filter(
-							(section: Section) => !builtArray.includes(section)
+							(section) => !builtArray.includes(section)
 						);
 
 						builtArray = builtArray.concat(filteredSections);
@@ -243,7 +243,7 @@ export default class InsightFacade implements IInsightFacade {
 		throw new InsightError(`Invalid mcomp comparator`);
 	}
 
-	public runMFilter(obj: unknown, current: Section[]): Section[] {
+	public runMFilter(obj: unknown, current: (Room | Section)[]): (Room | Section)[] {
 		if (typeof obj === "object" && obj !== null) {
 			let mcomp: unknown = null;
 			let comp = "";
@@ -263,7 +263,13 @@ export default class InsightFacade implements IInsightFacade {
 				const mkey = Object.keys(mcomp)[0].split("_")[1];
 				const mval = Object.values(mcomp)[0];
 				try {
-					return current.filter((section) => this.mComparisons(comp, section[mkey as keyof Section], mval));
+					return current.filter((section: (Room | Section)) => {
+						if (section instanceof Section) {
+							return this.mComparisons(comp, section[mkey as keyof Section], mval)
+						} else {
+							return this.mComparisons(comp, section[mkey as keyof Room], mval)
+						}
+					});
 				} catch {
 					throw new InsightError("mkey not found");
 				}
@@ -272,7 +278,7 @@ export default class InsightFacade implements IInsightFacade {
 		return [];
 	}
 
-	public runSMFilter(obj: unknown, current: Section[]): Section[] {
+	public runSMFilter(obj: unknown, current: (Section | Room)[]): (Section | Room)[] {
 		if (typeof obj === "object" && obj !== null) {
 			if ("IS" in obj) {
 				const scomp: unknown = obj.IS;
@@ -282,8 +288,14 @@ export default class InsightFacade implements IInsightFacade {
 					try {
 						sval = "^" + sval.replace(/\*/gi, ".*") + "$";
 						const regex = new RegExp(sval);
-						return current.filter((section) => {
-							return regex.test(section[skey as keyof Section]);
+						return current.filter((section: (Section | Room)) => {
+							if (section instanceof Section) {
+								return regex.test(section[skey as keyof Section]);
+							} else {
+								console.log("SUCCESS");
+								console.log(section);
+								return regex.test(section[skey as keyof Room]);
+							}
 						});
 					} catch {
 						throw new InsightError("skey not found");
