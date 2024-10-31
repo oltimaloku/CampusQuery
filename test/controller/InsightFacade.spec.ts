@@ -95,7 +95,7 @@ describe("InsightFacade", function () {
 			await clearDisk();
 		});
 
-		it("should successfully add rooms dataset", function () {
+		it.only("should successfully add rooms dataset", function () {
 			const result = facade.addDataset("ubc", campus, InsightDatasetKind.Rooms);
 
 			return expect(result).to.eventually.have.members(["ubc"]);

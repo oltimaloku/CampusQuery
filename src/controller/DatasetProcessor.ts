@@ -151,6 +151,15 @@ export default class DatasetProcessor {
 			return [];
 		}
 
+		const geoResponse = await GeolocationService.getGeolocation(buildingData.address);
+
+		if (geoResponse.error) {
+			throw new InsightError(`No location found for ${buildingData.shortName}`);
+		}
+
+		buildingData.lat = geoResponse.lat!;
+		buildingData.lon = geoResponse.lon!;
+
 		const roomRows = getRoomRows(roomsTable);
 		return this.extractRoomsFromRows(roomRows, buildingData);
 	}
@@ -169,14 +178,9 @@ export default class DatasetProcessor {
 		const roomPromises = roomRows.map(async (row) => {
 			try {
 				const cells = getTableCells(row);
-				const roomData = this.getRoomDataFromCells(cells); // May throw an InsightError
+				const roomData = this.getRoomDataFromCells(cells);
+
 				const name = `${buildingData.shortName}_${roomData.number}`;
-
-				const geoResponse = await GeolocationService.getGeolocation(buildingData.address);
-
-				if (geoResponse.error) {
-					throw new InsightError(`No location found for ${name}`);
-				}
 
 				const room = new Room(
 					buildingData.fullName,
@@ -184,8 +188,8 @@ export default class DatasetProcessor {
 					roomData.number,
 					name,
 					buildingData.address,
-					geoResponse.lat!,
-					geoResponse.lon!,
+					buildingData.lat!,
+					buildingData.lon!,
 					roomData.seats,
 					roomData.type,
 					roomData.furniture,
@@ -242,11 +246,9 @@ export default class DatasetProcessor {
 
 		cells.forEach((cell) => this.processRoomCell(cell, result));
 
-		// Destructure updated values from result object
 		({ number, seats, furniture, type, href, numberPresent, seatsPresent, furnPresent, typePresent } = result);
 
 		if (numberPresent && seatsPresent && furnPresent && typePresent) {
-			// If seats is NaN (e.g., seatsText was empty or invalid), default to 0
 			if (isNaN(seats)) {
 				seats = 0;
 			}
@@ -261,7 +263,7 @@ export default class DatasetProcessor {
 		} else {
 			throw new InsightError(
 				`Invalid room data:\nNumber Present: ${numberPresent}\nSeats Present: ${seatsPresent}` +
-					`\nFurniture Present: ${furnPresent}\nType Present: ${typePresent}`
+					`\nFurniture Present: ${furnPresent}: ${furniture} \nType Present: ${typePresent}`
 			);
 		}
 	}
@@ -280,7 +282,7 @@ export default class DatasetProcessor {
 				result.seatsPresent = true;
 			} else if (classAttr.includes("views-field-field-room-furniture")) {
 				result.furniture = getTextContent(cell);
-				result.furniturePresent = true;
+				result.furnPresent = true;
 			} else if (classAttr.includes("views-field-field-room-type")) {
 				result.type = getTextContent(cell);
 				result.typePresent = true;
@@ -299,18 +301,15 @@ export default class DatasetProcessor {
 				if (child.nodeName === "td" && child.attrs) {
 					const classAttr = child.attrs.find((attr) => attr.name === "class")?.value || "";
 
-					// Extract the building code
 					if (classAttr.includes("views-field-field-building-code")) {
 						shortName = getTextContent(child);
 					}
 
-					// Extract the building name
 					if (classAttr.includes("views-field-title")) {
 						fullName = getLinkText(child); // Updated to handle <a> tag
 						roomsLink = getHrefFromLink(child);
 					}
 
-					// Extract the building address
 					if (classAttr.includes("views-field-field-building-address")) {
 						address = getTextContent(child);
 					}
