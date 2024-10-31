@@ -309,7 +309,7 @@ export default class InsightFacade implements IInsightFacade {
 			const data = resolved[i];
 			let kind: InsightDatasetKind;
 
-			if (data.length > 0 && data[0] instanceof Room) {
+			if (data.length > 0 && "fullname" in data[0]) {
 				kind = InsightDatasetKind.Rooms;
 			} else {
 				kind = InsightDatasetKind.Sections;
