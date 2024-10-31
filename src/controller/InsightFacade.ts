@@ -9,7 +9,7 @@ import {
 	ResultTooLargeError,
 } from "./IInsightFacade";
 import Section from "./Section";
-import { validateQuery, validateCols, isEmpty, OptionResult, MFIELDS, SFIELDS, OrderObject } from "./ValidationHelpers";
+import { validateQuery, validateCols, isEmpty, OptionResult, MFIELDS, SFIELDS, OrderObject, TransformInterface, validateTransformations } from "./ValidationHelpers";
 import DatasetProcessor from "./DatasetProcessor";
 import Room from "./Room";
 
@@ -111,7 +111,7 @@ export default class InsightFacade implements IInsightFacade {
 		return id;
 	}
 
-	public getOptions(options: unknown, mfields: string[], sfields: string[]): OptionResult {
+	public getOptions(options: unknown, mfields: string[], sfields: string[], applyKeys: string[]): OptionResult {
 		let onlyID = "";
 		let orderField: (string | OrderObject) = "";
 		let colVals: string[] = [];
@@ -119,8 +119,14 @@ export default class InsightFacade implements IInsightFacade {
 			if ("COLUMNS" in options) {
 				const cols = options.COLUMNS;
 				try {
-					colVals = validateCols(cols, mfields, sfields, []);
-					onlyID = colVals[0].split("_")[0];
+					console.log('Fix');
+					colVals = validateCols(cols, mfields, sfields, applyKeys);
+					console.log('Success');
+					if (colVals[0].includes('_')) {
+						onlyID = colVals[0].split("_")[0];
+					} else {
+						onlyID = '';
+					}
 				} catch {
 					throw new InsightError(`No cols`);
 				}
@@ -149,6 +155,7 @@ export default class InsightFacade implements IInsightFacade {
 		try {
 			let where: unknown;
 			let options: unknown;
+			let transformation: TransformInterface | null = null;
 
 			if (!validateQuery(query)) {
 				throw new InsightError(`Invalid format for query`);
@@ -159,16 +166,23 @@ export default class InsightFacade implements IInsightFacade {
 				options = query.OPTIONS;
 			}
 
-			let optionsData: OptionResult = this.getOptions(options, InsightFacade.MFIELDS, InsightFacade.SFIELDS);
+			let applyKeys: string[] = []
 
 			if (typeof query === "object" && query && 'TRANSFORMATIONS' in query) {
 				let transformations: unknown = query.TRANSFORMATIONS;
-				if (typeof transformations === 'object' && transformations && 'GROUP' in transformations) {
+				applyKeys = validateTransformations(transformations, MFIELDS, SFIELDS);
+				if (typeof transformations === 'object' && transformations && 'GROUP' in transformations && 'APPLY' in transformations) {
 					let group: unknown = transformations.GROUP;
-					if (Array.isArray(group) && typeof group[0] === 'string') {
-						optionsData.onlyID = group[0].split('_')[0];
+					if (Array.isArray(group) && group.every(item => typeof item === 'string') && Array.isArray(transformations.APPLY)) {
+						transformation = {group: group, apply: transformations.APPLY}
 					}
 				}
+			}
+
+			let optionsData: OptionResult = this.getOptions(options, InsightFacade.MFIELDS, InsightFacade.SFIELDS, applyKeys);
+
+			if (transformation) {
+				optionsData.onlyID = transformation.group[0].split('_')[0];
 			}
 			const sections = await this.getDataset(optionsData.onlyID);
 			let results: (Section| Room)[] = [];
@@ -224,6 +238,37 @@ export default class InsightFacade implements IInsightFacade {
 			}
 			return 0; // if all fields are equal
 		});
+	}
+
+	private applyRecords(grouped: (Section | Room)[][], colVals: string[], applyRules: unknown[]): InsightResult[] {
+		return grouped.map((grp: (Section | Room)[]) => {
+			const result: InsightResult = {};
+			let rules: Map<string, string | number> = new Map;
+			for (const rule of applyRules) {
+				if (typeof rule === 'object' && rule) {
+					rules.set(Object.keys(rule)[0], this.applyRule(grp, Object.values(rule)[0]));
+				}
+			}
+			for (const colKey of colVals) {
+				if (colKey.split('_').length > 1) {
+					const field = colKey.split("_")[1] as keyof (Section | Room);
+					result[colKey] = grp[0][field];
+				} else {
+					const colVal = rules.get(colKey)
+					if (colVal !== undefined) {
+						result[colKey] = colVal;
+					} else {
+						throw new InsightError('Not a valid rule');
+					}
+				}
+			}
+
+			return result;
+		})
+	}
+
+	private applyRule(grp: (Section | Room)[], rule: unknown): (string | number) {
+		return 0;
 	}
 
 	private groupRecords(results: (Section | Room)[], fields: string[]): (Section | Room)[][] {
