@@ -69,6 +69,7 @@ export default class InsightFacade implements IInsightFacade {
 				processedContent = await DatasetProcessor.processSectionsContent(content);
 			} else if (kind === InsightDatasetKind.Rooms) {
 				processedContent = await DatasetProcessor.processRoomsContent(content);
+				console.log(processedContent);
 			} else {
 				throw new InsightError("Unsupported dataset kind");
 			}
@@ -187,7 +188,7 @@ export default class InsightFacade implements IInsightFacade {
 		return results.map((section: (Room | Section)) => {
 			const result: InsightResult = {};
 			for (const colKey of colVals) {
-				const field = colKey.split("_")[1] as keyof Section;
+				const field = colKey.split("_")[1] as keyof (Section | Room);
 				result[colKey] = section[field];
 			}
 			return result;
@@ -292,8 +293,6 @@ export default class InsightFacade implements IInsightFacade {
 							if (section instanceof Section) {
 								return regex.test(section[skey as keyof Section]);
 							} else {
-								console.log("SUCCESS");
-								console.log(section);
 								return regex.test(section[skey as keyof Room]);
 							}
 						});
