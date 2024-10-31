@@ -266,6 +266,11 @@ export interface OptionResult {
 	orderField: string | OrderObject;
 }
 
+export interface TransformInterface {
+	group: string[];
+	apply: unknown[];
+}
+
 export const requiredFields: Record<string, string> = {
 	id: "number",
 	Course: "string",
