@@ -22,6 +22,7 @@ import {
 } from "./ValidationHelpers";
 import DatasetProcessor from "./DatasetProcessor";
 import Room from "./Room";
+import Decimal from "decimal.js";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -223,7 +224,11 @@ export default class InsightFacade implements IInsightFacade {
 
 			let output: InsightResult[];
 			if (transformation) {
-				output = this.applyRecords(this.groupRecords(results, transformation.group), optionsData.colVals, transformation.apply);
+				output = this.applyRecords(
+					this.groupRecords(results, transformation.group),
+					optionsData.colVals,
+					transformation.apply
+				);
 			} else {
 				output = this.mapResults(results, optionsData.colVals);
 			}
@@ -298,7 +303,41 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	private applyRule(grp: (Section | Room)[], rule: unknown): string | number {
+		if (rule && typeof rule === "object") {
+			let func: string;
+			if ("MAX" in rule) {
+				if (typeof rule.MAX === "string") {
+					func = rule.MAX;
+					if (MFIELDS.includes(func.split("_")[1])) {
+						return Math.max(...grp.map((item) => item[func.split("_")[1] as keyof (Section | Room)]));
+					}
+				}
+			} else if ("MIN" in rule) {
+				if (typeof rule.MIN === "string") {
+					func = rule.MIN;
+					if (MFIELDS.includes(func.split("_")[1])) {
+						return Math.min(...grp.map((item) => item[func.split("_")[1] as keyof (Section | Room)]));
+					}
+				}
+			} else if ("AVG" in rule) {
+				if (typeof rule.AVG === "string") {
+					func = rule.AVG;
+					if (MFIELDS.includes(func.split("_")[1])) {
+						return this.calcAverage(func.split("_")[1], grp);
+					}
+				}
+			}
+		}
 		return 0;
+	}
+
+	private calcAverage(func: string, grp: (Room | Section)[]): number {
+		let total = new Decimal(0)
+		for (const item of grp) {
+			total = Decimal.add(total, new Decimal(item[func as keyof (Section | Room)]));
+		}
+		let avg = total.toNumber() / grp.length;
+		return Number(avg.toFixed(2));
 	}
 
 	private groupRecords(results: (Section | Room)[], fields: string[]): (Section | Room)[][] {
