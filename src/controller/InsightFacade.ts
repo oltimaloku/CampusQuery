@@ -187,7 +187,7 @@ export default class InsightFacade implements IInsightFacade {
 			if (typeof optionsData.orderField === 'string') {
 				const orderField: string = optionsData.orderField;
 				if (orderField !== "") {
-					return this.sortField(output, orderField);
+					return this.sortField(output, [orderField], true);
 				}
 			}
 
@@ -202,17 +202,26 @@ export default class InsightFacade implements IInsightFacade {
 		}
 	}
 
-	private sortField(results: InsightResult[], field: string) {
+	private sortField(results: InsightResult[], fields: string[], ascending: boolean) {
 		return results.sort((a, b) => {
-			const valueA = a[field];
-        	const valueB = b[field];
-			if (typeof valueA === 'number' && typeof valueB === 'number') {
-				return (valueA - valueB);
-			} else if (typeof valueA === "string" && typeof valueB === "string") {
-				return valueA.localeCompare(valueB);
+			for (const field of fields) {
+				const valueA = a[field];
+				const valueB = b[field];
+				let comparison = 0;
+	
+				if (typeof valueA === "number" && typeof valueB === "number") {
+					comparison = valueA - valueB;
+				} else if (typeof valueA === "string" && typeof valueB === "string") {
+					comparison = valueA.localeCompare(valueB);
+				}
+	
+				// If comparison result is non-zero, apply sorting order and return
+				if (comparison !== 0) {
+					return ascending ? comparison : -comparison;
+				}
 			}
-			return 0;
-		})
+			return 0; // if all fields are equal
+		});
 	}
 
 	private mapResults(results: (Section | Room)[], colVals: string[]): InsightResult[] {
