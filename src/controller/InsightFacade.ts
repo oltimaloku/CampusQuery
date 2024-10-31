@@ -189,6 +189,8 @@ export default class InsightFacade implements IInsightFacade {
 				if (orderField !== "") {
 					return this.sortField(output, [orderField], true);
 				}
+			} else {
+				return this.sortField(output, optionsData.orderField.keys, optionsData.orderField.dir === 'UP')
 			}
 
 			return output;
