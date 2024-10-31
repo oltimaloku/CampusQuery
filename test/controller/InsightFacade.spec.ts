@@ -528,6 +528,7 @@ describe("InsightFacade", function () {
 						if (useDeepEquals) {
 							expect(result).to.deep.equal(expected);
 						} else {
+							//console.log(result);
 							expect(result).to.have.deep.members(expected);
 						}
 					}
@@ -556,6 +557,7 @@ describe("InsightFacade", function () {
 			const loadDatasetPromises: Promise<string[]>[] = [
 				facade.addDataset("sections", sections, InsightDatasetKind.Sections),
 				facade.addDataset("sections2", oneCourseOneSection, InsightDatasetKind.Sections),
+				facade.addDataset("rooms", campus, InsightDatasetKind.Rooms),
 			];
 
 			try {
@@ -615,5 +617,7 @@ describe("InsightFacade", function () {
 		it("[invalid/excess_keys_in_query.json] excess_keys_in_query", checkQuery(false));
 		it("[valid/test_order_skey.json] order by skey", checkQuery(true));
 		it("[valid/test_order_mkey.json] order by mkey", checkQuery(true));
+		it("[valid/basic_rooms_query.json] basic_rooms_query", checkQuery(false));
+		it("[valid/basic_ordering_rooms.json] basic_ordering_rooms", checkQuery(true));
 	});
 });
