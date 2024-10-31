@@ -156,7 +156,17 @@ export default class InsightFacade implements IInsightFacade {
 				options = query.OPTIONS;
 			}
 
-			const optionsData: OptionResult = this.getOptions(options, InsightFacade.MFIELDS, InsightFacade.SFIELDS);
+			let optionsData: OptionResult = this.getOptions(options, InsightFacade.MFIELDS, InsightFacade.SFIELDS);
+
+			if (typeof query === "object" && query && 'TRANSFORMATIONS' in query) {
+				let transformations: unknown = query.TRANSFORMATIONS;
+				if (typeof transformations === 'object' && transformations && 'GROUP' in transformations) {
+					let group: unknown = transformations.GROUP;
+					if (Array.isArray(group) && typeof group[0] === 'string') {
+						optionsData.onlyID = group[0].split('_')[0];
+					}
+				}
+			}
 			const sections = await this.getDataset(optionsData.onlyID);
 			let results: (Section| Room)[] = [];
 
@@ -168,9 +178,11 @@ export default class InsightFacade implements IInsightFacade {
 				throw new ResultTooLargeError("Result too large");
 			}
 
-			const orderField: string = optionsData.orderField;
-			if (orderField !== "") {
-				results.sort((a, b) => (a[orderField as keyof Section] < b[orderField as keyof Section] ? -1 : 1));
+			if (typeof optionsData.orderField === 'string') {
+				const orderField: string = optionsData.orderField;
+				if (orderField !== "") {
+					results.sort((a, b) => (a[orderField as keyof Section] < b[orderField as keyof Section] ? -1 : 1));
+				}
 			}
 
 			return this.mapResults(results, optionsData.colVals);
