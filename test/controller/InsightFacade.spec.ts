@@ -618,5 +618,6 @@ describe("InsightFacade", function () {
 		it("[valid/test_order_skey.json] order by skey", checkQuery(true));
 		it("[valid/test_order_mkey.json] order by mkey", checkQuery(true));
 		it("[valid/basic_rooms_query.json] basic_rooms_query", checkQuery(false));
+		it("[valid/basic_ordering_rooms.json] basic_ordering_rooms", checkQuery(true));
 	});
 });
