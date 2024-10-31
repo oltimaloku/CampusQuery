@@ -107,7 +107,7 @@ describe("InsightFacade", function () {
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
-		it.only("should reject rooms dataset with invalid rooms fields", function () {
+		it("should reject rooms dataset with invalid rooms fields", function () {
 			const result = facade.addDataset("acu", invalidRoomFields, InsightDatasetKind.Rooms);
 
 			return expect(result).to.eventually.be.rejectedWith(InsightError);

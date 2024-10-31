@@ -92,6 +92,7 @@ export default class DatasetProcessor {
 			if (rooms.length === 0) {
 				throw new InsightError("No valid rooms found");
 			}
+
 			return rooms;
 		} catch (e) {
 			throw new InsightError("Error processing content: " + e);
@@ -129,7 +130,9 @@ export default class DatasetProcessor {
 			if (!buildingData) {
 				return [];
 			}
-			return this.getRoomsForBuilding(buildingData, zipContent);
+
+			const rooms = await this.getRoomsForBuilding(buildingData, zipContent);
+			return rooms;
 		});
 
 		const roomArrays = await Promise.all(buildingPromises);
@@ -163,42 +166,43 @@ export default class DatasetProcessor {
 	}
 
 	private static async extractRoomsFromRows(roomRows: ChildNode[], buildingData: BuildingData): Promise<Room[]> {
-		// Create an array of promises to process rooms in parallel
 		const roomPromises = roomRows.map(async (row) => {
 			try {
 				const cells = getTableCells(row);
-				const roomData = this.getRoomDataFromCells(cells);
-				if (roomData) {
-					const name = `${buildingData.shortName}_${roomData.number}`;
+				const roomData = this.getRoomDataFromCells(cells); // May throw an InsightError
+				const name = `${buildingData.shortName}_${roomData.number}`;
 
-					// Fetch geolocation data for the building address
-					const geoResponse = await GeolocationService.getGeolocation(buildingData.address);
+				const geoResponse = await GeolocationService.getGeolocation(buildingData.address);
 
-					if (geoResponse.error) {
-						throw new InsightError(`No location found for ${name}`);
-					}
-
-					// Return the created Room instance
-					return new Room(
-						buildingData.fullName,
-						buildingData.shortName,
-						roomData.number,
-						name,
-						buildingData.address,
-						geoResponse.lat!,
-						geoResponse.lon!,
-						roomData.seats,
-						roomData.type,
-						roomData.furniture,
-						roomData.href
-					);
+				if (geoResponse.error) {
+					throw new InsightError(`No location found for ${name}`);
 				}
-			} catch {
-				return null; // Skip invalid rows
+
+				const room = new Room(
+					buildingData.fullName,
+					buildingData.shortName,
+					roomData.number,
+					name,
+					buildingData.address,
+					geoResponse.lat!,
+					geoResponse.lon!,
+					roomData.seats,
+					roomData.type,
+					roomData.furniture,
+					roomData.href
+				);
+
+				return room;
+			} catch (error) {
+				if (error instanceof InsightError) {
+					// Re-throw the InsightError to be handled by the caller
+					throw error;
+				} else {
+					return null;
+				}
 			}
 		});
 
-		// Wait for all room promises to complete and filter out any null results
 		const rooms = await Promise.all(roomPromises);
 		return rooms.filter((room): room is Room => room !== null);
 	}
@@ -223,32 +227,30 @@ export default class DatasetProcessor {
 		return path.replace(/^\//, "");
 	}
 
-	private static getRoomDataFromCells(cells: ChildNode[]): RoomData | null {
+	private static getRoomDataFromCells(cells: ChildNode[]): RoomData {
 		let number = "",
 			seats = 0,
 			furniture = "",
 			type = "",
 			href = "";
+		let numberPresent = false,
+			seatsPresent = false,
+			furnPresent = false,
+			typePresent = false;
 
-		for (const cell of cells) {
-			if ("attrs" in cell) {
-				const classAttr = cell.attrs?.find((attr) => attr.name === "class")?.value || "";
+		const result = { number, seats, furniture, type, href, numberPresent, seatsPresent, furnPresent, typePresent };
 
-				if (classAttr.includes("views-field-field-room-number")) {
-					number = getLinkText(cell);
-					href = getHrefFromLink(cell);
-				} else if (classAttr.includes("views-field-field-room-capacity")) {
-					const seatsText = getTextContent(cell);
-					seats = parseInt(seatsText, 10);
-				} else if (classAttr.includes("views-field-field-room-furniture")) {
-					furniture = getTextContent(cell);
-				} else if (classAttr.includes("views-field-field-room-type")) {
-					type = getTextContent(cell);
-				}
+		cells.forEach((cell) => this.processRoomCell(cell, result));
+
+		// Destructure updated values from result object
+		({ number, seats, furniture, type, href, numberPresent, seatsPresent, furnPresent, typePresent } = result);
+
+		if (numberPresent && seatsPresent && furnPresent && typePresent) {
+			// If seats is NaN (e.g., seatsText was empty or invalid), default to 0
+			if (isNaN(seats)) {
+				seats = 0;
 			}
-		}
 
-		if (number && seats && furniture && type) {
 			return {
 				number,
 				seats,
@@ -256,8 +258,34 @@ export default class DatasetProcessor {
 				type,
 				href,
 			};
+		} else {
+			throw new InsightError(
+				`Invalid room data:\nNumber Present: ${numberPresent}\nSeats Present: ${seatsPresent}` +
+					`\nFurniture Present: ${furnPresent}\nType Present: ${typePresent}`
+			);
 		}
-		return null;
+	}
+
+	private static processRoomCell(cell: ChildNode, result: any): void {
+		if ("attrs" in cell) {
+			const classAttr = cell.attrs?.find((attr) => attr.name === "class")?.value || "";
+
+			if (classAttr.includes("views-field-field-room-number")) {
+				result.number = getLinkText(cell);
+				result.href = getHrefFromLink(cell);
+				result.numberPresent = true;
+			} else if (classAttr.includes("views-field-field-room-capacity")) {
+				const seatsText = getTextContent(cell);
+				result.seats = parseInt(seatsText, 10);
+				result.seatsPresent = true;
+			} else if (classAttr.includes("views-field-field-room-furniture")) {
+				result.furniture = getTextContent(cell);
+				result.furniturePresent = true;
+			} else if (classAttr.includes("views-field-field-room-type")) {
+				result.type = getTextContent(cell);
+				result.typePresent = true;
+			}
+		}
 	}
 
 	private static getBuildingDataFromRow(buildingRow: ChildNode): BuildingData | null {
