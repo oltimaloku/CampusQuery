@@ -1,6 +1,6 @@
 export default class Room {
-	private readonly buildingFullName: string;
-	private readonly buildingShortName: string;
+	private readonly fullname: string;
+	private readonly shortname: string;
 	private readonly number: string;
 	private readonly name: string;
 	private readonly address: string;
@@ -12,8 +12,8 @@ export default class Room {
 	private readonly href: string;
 
 	public constructor(
-		buildingFullName: string,
-		buildingShortName: string,
+		fullname: string,
+		shortname: string,
 		number: string,
 		name: string,
 		address: string,
@@ -24,8 +24,8 @@ export default class Room {
 		furniture: string,
 		href: string
 	) {
-		this.buildingFullName = buildingFullName;
-		this.buildingShortName = buildingShortName;
+		this.fullname = fullname;
+		this.shortname = shortname;
 		this.number = number;
 		this.name = name;
 		this.address = address;
