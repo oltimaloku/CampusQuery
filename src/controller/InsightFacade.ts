@@ -9,7 +9,7 @@ import {
 	ResultTooLargeError,
 } from "./IInsightFacade";
 import Section from "./Section";
-import { validateQuery, validateCols, isEmpty, OptionResult, MFIELDS, SFIELDS } from "./ValidationHelpers";
+import { validateQuery, validateCols, isEmpty, OptionResult, MFIELDS, SFIELDS, OrderObject } from "./ValidationHelpers";
 import DatasetProcessor from "./DatasetProcessor";
 import Room from "./Room";
 
@@ -113,7 +113,7 @@ export default class InsightFacade implements IInsightFacade {
 
 	public getOptions(options: unknown, mfields: string[], sfields: string[]): OptionResult {
 		let onlyID = "";
-		let orderField = "";
+		let orderField: (string | OrderObject) = "";
 		let colVals: string[] = [];
 		if (typeof options === "object" && options !== null) {
 			if ("COLUMNS" in options) {
@@ -129,9 +129,13 @@ export default class InsightFacade implements IInsightFacade {
 				const order: unknown = options.ORDER;
 				if (typeof order === "string") {
 					if (colVals.includes(order)) {
-						orderField = order.split("_")[1];
+						orderField = order;
 					} else {
 						throw new InsightError(`Invalid order field`);
+					}
+				} else if (typeof order === 'object' && order && 'dir' in order && 'keys' in order) {
+					if (typeof order.dir === 'string' && Array.isArray(order.keys) && order.keys.every(it => typeof it === 'string')) {
+						orderField = order as OrderObject
 					}
 				} else {
 					throw new InsightError(`Order field not a string`);
@@ -177,14 +181,17 @@ export default class InsightFacade implements IInsightFacade {
 				throw new ResultTooLargeError("Result too large");
 			}
 
+			let output: InsightResult[]
+			output = this.mapResults(results, optionsData.colVals);
+
 			if (typeof optionsData.orderField === 'string') {
 				const orderField: string = optionsData.orderField;
 				if (orderField !== "") {
-					results.sort((a, b) => (a[orderField as keyof Section] < b[orderField as keyof Section] ? -1 : 1));
+					return this.sortField(output, orderField);
 				}
 			}
 
-			return this.mapResults(results, optionsData.colVals);
+			return output;
 		} catch (error) {
 			// NotFoundError from getDataset must be caught and converted to InsightError
 			// since performQuery only returns InsightError or ResultTooLargeError
@@ -193,6 +200,19 @@ export default class InsightFacade implements IInsightFacade {
 			}
 			throw error;
 		}
+	}
+
+	private sortField(results: InsightResult[], field: string) {
+		return results.sort((a, b) => {
+			const valueA = a[field];
+        	const valueB = b[field];
+			if (typeof valueA === 'number' && typeof valueB === 'number') {
+				return (valueA - valueB);
+			} else if (typeof valueA === "string" && typeof valueB === "string") {
+				return valueA.localeCompare(valueB);
+			}
+			return 0;
+		})
 	}
 
 	private mapResults(results: (Section | Room)[], colVals: string[]): InsightResult[] {
