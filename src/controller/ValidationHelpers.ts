@@ -255,10 +255,15 @@ export function validateApplyToken(item: unknown, mfields: string[], sfields: st
 	return false;
 }
 
+export interface OrderObject {
+	dir: 'UP' | 'DOWN';
+	keys: string[];
+}
+
 export interface OptionResult {
 	onlyID: string;
 	colVals: string[];
-	orderField: string;
+	orderField: string | OrderObject;
 }
 
 export const requiredFields: Record<string, string> = {
