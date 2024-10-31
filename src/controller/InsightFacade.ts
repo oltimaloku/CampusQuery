@@ -18,11 +18,19 @@ import {
 	SFIELDS,
 	OrderObject,
 	TransformInterface,
-	validateTransformations,
 } from "./ValidationHelpers";
 import DatasetProcessor from "./DatasetProcessor";
 import Room from "./Room";
-import Decimal from "decimal.js";
+import {
+	applyRecords,
+	assignTransformation,
+	groupRecords,
+	mapResults,
+	MAX_RESULTS,
+	sortField,
+	TransformationAssignment,
+} from "./TransformationHelpers";
+import { runSMFilter } from "./FilterSpecifics";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -33,7 +41,6 @@ export default class InsightFacade implements IInsightFacade {
 	private datasets: Map<string, Section[] | Room[]> = new Map<string, Section[] | Room[]>();
 	private static readonly MFIELDS = MFIELDS;
 	private static readonly SFIELDS = SFIELDS;
-	private static readonly MAX_RESULTS = 5000;
 
 	public async getDataset(id: string): Promise<Section[] | Room[]> {
 		if (this.datasets.has(id)) {
@@ -124,8 +131,8 @@ export default class InsightFacade implements IInsightFacade {
 
 	public getOptions(options: unknown, mfields: string[], sfields: string[], applyKeys: string[]): OptionResult {
 		let onlyID = "";
-		let orderField: string | OrderObject = "";
 		let colVals: string[] = [];
+		let order: OrderObject | string = "";
 		if (typeof options === "object" && options !== null) {
 			if ("COLUMNS" in options) {
 				const cols = options.COLUMNS;
@@ -141,27 +148,32 @@ export default class InsightFacade implements IInsightFacade {
 				}
 			}
 			if ("ORDER" in options) {
-				const order: unknown = options.ORDER;
-				if (typeof order === "string") {
-					if (colVals.includes(order)) {
-						orderField = order;
-					} else {
-						throw new InsightError(`Invalid order field`);
-					}
-				} else if (typeof order === "object" && order && "dir" in order && "keys" in order) {
-					if (
-						typeof order.dir === "string" &&
-						Array.isArray(order.keys) &&
-						order.keys.every((it) => typeof it === "string")
-					) {
-						orderField = order as OrderObject;
-					}
-				} else {
-					throw new InsightError(`Order field not a string`);
-				}
+				order = this.handleOrder(options.ORDER, colVals);
 			}
 		}
-		return { onlyID: onlyID, colVals: colVals, orderField: orderField };
+		return { onlyID: onlyID, colVals: colVals, orderField: order };
+	}
+
+	private handleOrder(order: unknown, colVals: string[]): OrderObject | string {
+		let orderField: string | OrderObject = "";
+		if (typeof order === "string") {
+			if (colVals.includes(order)) {
+				orderField = order;
+			} else {
+				throw new InsightError(`Invalid order field`);
+			}
+		} else if (typeof order === "object" && order && "dir" in order && "keys" in order) {
+			if (
+				typeof order.dir === "string" &&
+				Array.isArray(order.keys) &&
+				order.keys.every((it) => typeof it === "string")
+			) {
+				orderField = order as OrderObject;
+			}
+		} else {
+			throw new InsightError(`Order field not a string`);
+		}
+		return orderField;
 	}
 
 	public async performQuery(query: unknown): Promise<InsightResult[]> {
@@ -179,27 +191,9 @@ export default class InsightFacade implements IInsightFacade {
 				options = query.OPTIONS;
 			}
 
-			let applyKeys: string[] = [];
-
-			if (typeof query === "object" && query && "TRANSFORMATIONS" in query) {
-				const transformations: unknown = query.TRANSFORMATIONS;
-				applyKeys = validateTransformations(transformations, MFIELDS, SFIELDS);
-				if (
-					typeof transformations === "object" &&
-					transformations &&
-					"GROUP" in transformations &&
-					"APPLY" in transformations
-				) {
-					const group: unknown = transformations.GROUP;
-					if (
-						Array.isArray(group) &&
-						group.every((item) => typeof item === "string") &&
-						Array.isArray(transformations.APPLY)
-					) {
-						transformation = { group: group, apply: transformations.APPLY };
-					}
-				}
-			}
+			const transformAssignmnet: TransformationAssignment = assignTransformation(query);
+			transformation = transformAssignmnet.transformation;
+			const applyKeys = transformAssignmnet.applyKeys;
 
 			const optionsData: OptionResult = this.getOptions(
 				options,
@@ -211,41 +205,9 @@ export default class InsightFacade implements IInsightFacade {
 			if (transformation) {
 				optionsData.onlyID = transformation.group[0].split("_")[0];
 			}
-			const sections = await this.getDataset(optionsData.onlyID);
-			let results: (Section | Room)[] = [];
 
-			if (typeof sections !== "undefined") {
-				results = this.runFilter(where, optionsData.onlyID, sections);
-			}
-
-			if (results.length > InsightFacade.MAX_RESULTS) {
-				throw new ResultTooLargeError("Result too large");
-			}
-
-			let output: InsightResult[];
-			if (transformation) {
-				output = this.applyRecords(
-					this.groupRecords(results, transformation.group),
-					optionsData.colVals,
-					transformation.apply
-				);
-			} else {
-				output = this.mapResults(results, optionsData.colVals);
-			}
-
-			if (typeof optionsData.orderField === "string") {
-				const orderField: string = optionsData.orderField;
-				if (orderField !== "") {
-					return this.sortField(output, [orderField], true);
-				}
-			} else {
-				return this.sortField(output, optionsData.orderField.keys, optionsData.orderField.dir === "UP");
-			}
-
-			return output;
+			return await this.handlePost(transformation, where, optionsData);
 		} catch (error) {
-			// NotFoundError from getDataset must be caught and converted to InsightError
-			// since performQuery only returns InsightError or ResultTooLargeError
 			if (error instanceof NotFoundError) {
 				throw new InsightError("Error performing query: " + error);
 			}
@@ -253,131 +215,40 @@ export default class InsightFacade implements IInsightFacade {
 		}
 	}
 
-	private sortField(results: InsightResult[], fields: string[], ascending: boolean) {
-		return results.sort((a, b) => {
-			for (const field of fields) {
-				const valueA = a[field];
-				const valueB = b[field];
-				let comparison = 0;
+	private async handlePost(
+		transformation: TransformInterface | null,
+		where: unknown,
+		optionsData: OptionResult
+	): Promise<InsightResult[]> {
+		const sections = await this.getDataset(optionsData.onlyID);
+		let res: (Section | Room)[] = [];
 
-				if (typeof valueA === "number" && typeof valueB === "number") {
-					comparison = valueA - valueB;
-				} else if (typeof valueA === "string" && typeof valueB === "string") {
-					comparison = valueA.localeCompare(valueB);
-				}
-
-				// If comparison result is non-zero, apply sorting order and return
-				if (comparison !== 0) {
-					return ascending ? comparison : -comparison;
-				}
-			}
-			return 0; // if all fields are equal
-		});
-	}
-
-	private applyRecords(grouped: (Section | Room)[][], colVals: string[], applyRules: unknown[]): InsightResult[] {
-		return grouped.map((grp: (Section | Room)[]) => {
-			const result: InsightResult = {};
-			const rules = new Map<string, string | number>();
-			for (const rule of applyRules) {
-				if (typeof rule === "object" && rule) {
-					rules.set(Object.keys(rule)[0], this.applyRule(grp, Object.values(rule)[0]));
-				}
-			}
-			for (const colKey of colVals) {
-				if (colKey.split("_").length > 1) {
-					const field = colKey.split("_")[1] as keyof (Section | Room);
-					result[colKey] = grp[0][field];
-				} else {
-					const colVal = rules.get(colKey);
-					if (colVal !== undefined) {
-						result[colKey] = colVal;
-					} else {
-						throw new InsightError("Not a valid rule");
-					}
-				}
-			}
-
-			return result;
-		});
-	}
-
-	private applyRule(grp: (Section | Room)[], rule: unknown): string | number {
-		if (rule && typeof rule === "object") {
-			let func: string;
-			if ("MAX" in rule) {
-				if (typeof rule.MAX === "string") {
-					func = rule.MAX;
-					if (MFIELDS.includes(func.split("_")[1])) {
-						return Math.max(...grp.map((item) => item[func.split("_")[1] as keyof (Section | Room)]));
-					}
-				}
-			} else if ("MIN" in rule) {
-				if (typeof rule.MIN === "string") {
-					func = rule.MIN;
-					if (MFIELDS.includes(func.split("_")[1])) {
-						return Math.min(...grp.map((item) => item[func.split("_")[1] as keyof (Section | Room)]));
-					}
-				}
-			} else if ("AVG" in rule) {
-				if (typeof rule.AVG === "string") {
-					func = rule.AVG;
-					if (MFIELDS.includes(func.split("_")[1])) {
-						return this.calcAverage(func.split("_")[1], grp);
-					}
-				}
-			}
+		if (typeof sections !== "undefined") {
+			res = this.runFilter(where, optionsData.onlyID, sections);
 		}
-		return 0;
-	}
 
-	private calcAverage(func: string, grp: (Room | Section)[]): number {
-		let total = new Decimal(0)
-		for (const item of grp) {
-			total = Decimal.add(total, new Decimal(item[func as keyof (Section | Room)]));
+		let output: InsightResult[];
+
+		if (res.length > MAX_RESULTS) {
+			throw new ResultTooLargeError("Result too large");
 		}
-		let avg = total.toNumber() / grp.length;
-		return Number(avg.toFixed(2));
-	}
 
-	private groupRecords(results: (Section | Room)[], fields: string[]): (Section | Room)[][] {
-		const groups: (Section | Room)[][] = [];
-		const groupMap: Record<string, (Section | Room)[]> = {};
+		if (transformation) {
+			output = applyRecords(groupRecords(res, transformation.group), optionsData.colVals, transformation.apply);
+		} else {
+			output = mapResults(res, optionsData.colVals);
+		}
 
-		results.forEach((record) => {
-			// Create a unique key based on the specified fields
-			const key = fields
-				.map((field) => {
-					if (record instanceof Section) {
-						return record[field.split("_")[1] as keyof Section];
-					} else {
-						return record[field.split("_")[1] as keyof Room];
-					}
-				})
-				.join("|");
-
-			// Initialize the group if it doesn't exist
-			if (!groupMap[key]) {
-				groupMap[key] = [];
-				groups.push(groupMap[key]); // Add the new group to the output array
+		if (typeof optionsData.orderField === "string") {
+			const orderField: string = optionsData.orderField;
+			if (orderField !== "") {
+				return sortField(output, [orderField], true);
 			}
+		} else {
+			return sortField(output, optionsData.orderField.keys, optionsData.orderField.dir === "UP");
+		}
 
-			// Add the record to the group
-			groupMap[key].push(record);
-		});
-
-		return groups;
-	}
-
-	private mapResults(results: (Section | Room)[], colVals: string[]): InsightResult[] {
-		return results.map((section: Room | Section) => {
-			const result: InsightResult = {};
-			for (const colKey of colVals) {
-				const field = colKey.split("_")[1] as keyof (Section | Room);
-				result[colKey] = section[field];
-			}
-			return result;
-		});
+		return output;
 	}
 
 	public runFilter(obj: unknown, onlyID: string, current: (Room | Section)[]): (Room | Section)[] {
@@ -412,81 +283,7 @@ export default class InsightFacade implements IInsightFacade {
 			if (isEmpty(obj)) {
 				return current;
 			}
-			return this.runSMFilter(obj, current);
-		}
-		return [];
-	}
-
-	public mComparisons(comp: string, val: number, mval: number): boolean {
-		switch (comp) {
-			case "LT":
-				return val < mval;
-			case "EQ":
-				return val === mval;
-			case "GT":
-				return val > mval;
-		}
-		throw new InsightError(`Invalid mcomp comparator`);
-	}
-
-	public runMFilter(obj: unknown, current: (Room | Section)[]): (Room | Section)[] {
-		if (typeof obj === "object" && obj !== null) {
-			let mcomp: unknown = null;
-			let comp = "";
-			if ("LT" in obj) {
-				mcomp = obj.LT;
-				comp = "LT";
-			}
-			if ("GT" in obj) {
-				mcomp = obj.GT;
-				comp = "GT";
-			}
-			if ("EQ" in obj) {
-				mcomp = obj.EQ;
-				comp = "EQ";
-			}
-			if (typeof mcomp === "object" && mcomp !== null) {
-				const mkey = Object.keys(mcomp)[0].split("_")[1];
-				const mval = Object.values(mcomp)[0];
-				try {
-					return current.filter((section: Room | Section) => {
-						if (section instanceof Section) {
-							return this.mComparisons(comp, section[mkey as keyof Section], mval);
-						} else {
-							return this.mComparisons(comp, section[mkey as keyof Room], mval);
-						}
-					});
-				} catch {
-					throw new InsightError("mkey not found");
-				}
-			}
-		}
-		return [];
-	}
-
-	public runSMFilter(obj: unknown, current: (Section | Room)[]): (Section | Room)[] {
-		if (typeof obj === "object" && obj !== null) {
-			if ("IS" in obj) {
-				const scomp: unknown = obj.IS;
-				if (typeof scomp === "object" && scomp !== null) {
-					const skey = Object.keys(scomp)[0].split("_")[1];
-					let sval = Object.values(scomp)[0];
-					try {
-						sval = "^" + sval.replace(/\*/gi, ".*") + "$";
-						const regex = new RegExp(sval);
-						return current.filter((section: Section | Room) => {
-							if (section instanceof Section) {
-								return regex.test(section[skey as keyof Section]);
-							} else {
-								return regex.test(section[skey as keyof Room]);
-							}
-						});
-					} catch {
-						throw new InsightError("skey not found");
-					}
-				}
-			}
-			return this.runMFilter(obj, current);
+			return runSMFilter(obj, current);
 		}
 		return [];
 	}
