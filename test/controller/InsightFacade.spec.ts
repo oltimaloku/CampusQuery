@@ -440,6 +440,27 @@ describe("InsightFacade", function () {
 				);
 		});
 
+		it.only("should list one rooms dataset and one sections dataset", async function () {
+			return facade
+				.addDataset("ubc", oneCourseOneSection, InsightDatasetKind.Sections)
+				.then(async (res) => {
+					expect(res).to.have.members(["ubc"]);
+					return facade.addDataset("campus", campus, InsightDatasetKind.Rooms);
+				})
+				.then(async (res2) => {
+					expect(res2).to.have.members(["ubc", "campus"]);
+					return facade.listDatasets();
+				})
+				.then(
+					(res3) =>
+						expect(res3).to.deep.equal([
+							{ id: "campus", kind: InsightDatasetKind.Rooms, numRows: 364 },
+							{ id: "ubc", kind: InsightDatasetKind.Sections, numRows: 1 },
+						]),
+					async (_err) => Promise.reject(new Error("List did not succeed"))
+				);
+		});
+
 		it("should list items after remove", async function () {
 			return facade
 				.addDataset("ubc", oneCourseOneSection, InsightDatasetKind.Sections)
