@@ -88,38 +88,34 @@ export function applyRecords(grouped: (Section | Room)[][], colVals: string[], a
 
 export function applyRule(grp: (Section | Room)[], rule: unknown): string | number {
 	if (rule && typeof rule === "object") {
-		let func: string;
-		if ("MAX" in rule) {
-			if (typeof rule.MAX === "string") {
-				func = rule.MAX;
-				if (MFIELDS.includes(func.split("_")[1])) {
-					return Math.max(...grp.map((item) => item[func.split("_")[1] as keyof (Section | Room)]));
+		const func: string = Object.keys(rule)[0];
+		const field: string = Object.values(rule)[0].split("_")[1];
+		switch (func) {
+			case "MAX":
+				if (MFIELDS.includes(field)) {
+					return Math.max(...grp.map((item) => item[field as keyof (Section | Room)]));
 				}
-			}
-		} else if ("MIN" in rule) {
-			if (typeof rule.MIN === "string") {
-				func = rule.MIN;
-				if (MFIELDS.includes(func.split("_")[1])) {
-					return Math.min(...grp.map((item) => item[func.split("_")[1] as keyof (Section | Room)]));
+				break;
+			case "MIN":
+				if (MFIELDS.includes(field)) {
+					return Math.min(...grp.map((item) => item[field as keyof (Section | Room)]));
 				}
-			}
-		} else if ("AVG" in rule) {
-			if (typeof rule.AVG === "string") {
-				func = rule.AVG;
-				if (MFIELDS.includes(func.split("_")[1])) {
-					return calcAverage(func.split("_")[1], grp);
+				break;
+			case "AVG":
+				if (MFIELDS.includes(field)) {
+					return calcAverage(field, grp);
 				}
-			}
-		} else if ("SUM" in rule) {
-			if (typeof rule.SUM === "string") {
-				func = rule.SUM;
-				if (MFIELDS.includes(func.split("_")[1])) {
-					return Number(grp.reduce((a, b) => a + b[func.split("_")[1] as keyof (Section | Room)], 0).toFixed(DECIMALS));
+				break;
+			case "SUM":
+				if (MFIELDS.includes(field)) {
+					return Number(grp.reduce((a, b) => a + b[field as keyof (Section | Room)], 0).toFixed(DECIMALS));
 				}
-			}
+				break;
+			case "COUNT":
+				return new Set(grp.map((item) => item[field as keyof (Room | Section)])).size;
 		}
 	}
-	return 0;
+	throw new InsightError("Not correct field type for apply");
 }
 
 export function calcAverage(func: string, grp: (Room | Section)[]): number {
