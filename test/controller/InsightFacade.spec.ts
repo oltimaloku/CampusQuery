@@ -50,7 +50,12 @@ describe("InsightFacade", function () {
 	let emptyBuildingsZip: string;
 	let onlyACU: string;
 	let invalidRoomFields: string;
+	// One building -> ANGU
 	let oneBuilding: string;
+	// ANGU address changed
+	let oneBuildingInvalidAddress: string;
+	// Same as oneBuilding except index.htm does not include references to non-existent building files
+	let oneBuildingNoReferences: string;
 
 	before(async function () {
 		// This block runs once and loads the datasets.
@@ -80,6 +85,8 @@ describe("InsightFacade", function () {
 		onlyACU = await getContentFromArchives("only_ACU.zip");
 		invalidRoomFields = await getContentFromArchives("invalid_room_fields.zip");
 		oneBuilding = await getContentFromArchives("one_building.zip");
+		oneBuildingInvalidAddress = await getContentFromArchives("one_building_invalid_address.zip");
+		oneBuildingNoReferences = await getContentFromArchives("one_building_no_references.zip");
 		// Just in case there is anything hanging around from a previous run of the test suite
 		await clearDisk();
 	});
@@ -112,6 +119,18 @@ describe("InsightFacade", function () {
 			const result = facade.addDataset("acu", onlyACU, InsightDatasetKind.Rooms);
 
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
+		});
+
+		it("should reject rooms dataset that contains an invalid address", function () {
+			const result = facade.addDataset("acu", oneBuildingInvalidAddress, InsightDatasetKind.Rooms);
+
+			return expect(result).to.eventually.be.rejectedWith(InsightError);
+		});
+
+		it("should accept rooms dataset that contains one building with one reference to it in index.htm", function () {
+			const result = facade.addDataset("oneBuildingNoReferences", oneBuildingNoReferences, InsightDatasetKind.Rooms);
+
+			return expect(result).to.eventually.have.members(["oneBuildingNoReferences"]);
 		});
 
 		it("should reject rooms dataset with invalid rooms fields", function () {
