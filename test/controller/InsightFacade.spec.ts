@@ -57,6 +57,9 @@ describe("InsightFacade", function () {
 	// Same as oneBuilding except index.htm does not include references to non-existent building files
 	let oneBuildingNoReferences: string;
 
+	let validCampus: string;
+	let validCampus1: string;
+
 	before(async function () {
 		// This block runs once and loads the datasets.
 		sections = await getContentFromArchives("pair.zip");
@@ -87,6 +90,8 @@ describe("InsightFacade", function () {
 		oneBuilding = await getContentFromArchives("one_building.zip");
 		oneBuildingInvalidAddress = await getContentFromArchives("one_building_invalid_address.zip");
 		oneBuildingNoReferences = await getContentFromArchives("one_building_no_references.zip");
+		validCampus = await getContentFromArchives("valid_campus.zip");
+		validCampus1 = await getContentFromArchives("valid_campus_1.zip");
 		// Just in case there is anything hanging around from a previous run of the test suite
 		await clearDisk();
 	});
@@ -102,6 +107,18 @@ describe("InsightFacade", function () {
 			// This section resets the data directory (removing any cached data)
 			// This runs after each test, which should make each test independent of the previous one
 			await clearDisk();
+		});
+
+		it("should successfully add rooms dataset", function () {
+			const result = facade.addDataset("validCampus", validCampus, InsightDatasetKind.Rooms);
+
+			return expect(result).to.eventually.have.members(["validCampus"]);
+		});
+
+		it("should successfully add rooms dataset", function () {
+			const result = facade.addDataset("validCampus1", validCampus1, InsightDatasetKind.Rooms);
+
+			return expect(result).to.eventually.have.members(["validCampus1"]);
 		});
 
 		it("should successfully add rooms dataset", function () {
