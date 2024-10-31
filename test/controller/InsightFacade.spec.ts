@@ -702,9 +702,9 @@ describe("InsightFacade", function () {
 		it("[valid/basic_multi_sort_asc.json] basic_multi_sort_asc", checkQuery(true));
 		it("[valid/basic_multi_sort_desc.json] basic_multi_sort_desc", checkQuery(true));
 		it("[invalid/cols_not_in_group.json] cols_not_in_group", checkQuery(false));
-        it("[invalid/duplicate_apply_key.json] duplicate_apply_key", checkQuery(false));
-        it("[valid/empty_apply_valid.json] empty_apply_valid", checkQuery(false));
-        it("[valid/valid_apply.json] valid_apply", checkQuery(false));
-        it("[valid/valid_room_multi_apply.json] valid_room_multi_apply", checkQuery(false));
+		it("[invalid/duplicate_apply_key.json] duplicate_apply_key", checkQuery(false));
+		it("[valid/empty_apply_valid.json] empty_apply_valid", checkQuery(false));
+		it("[valid/valid_apply.json] valid_apply", checkQuery(false));
+		it("[valid/valid_room_multi_apply.json] valid_room_multi_apply", checkQuery(false));
 	});
 });

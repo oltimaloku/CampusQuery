@@ -256,7 +256,7 @@ export function validateApplyToken(item: unknown, mfields: string[], sfields: st
 }
 
 export interface OrderObject {
-	dir: 'UP' | 'DOWN';
+	dir: "UP" | "DOWN";
 	keys: string[];
 }
 

@@ -9,7 +9,17 @@ import {
 	ResultTooLargeError,
 } from "./IInsightFacade";
 import Section from "./Section";
-import { validateQuery, validateCols, isEmpty, OptionResult, MFIELDS, SFIELDS, OrderObject, TransformInterface, validateTransformations } from "./ValidationHelpers";
+import {
+	validateQuery,
+	validateCols,
+	isEmpty,
+	OptionResult,
+	MFIELDS,
+	SFIELDS,
+	OrderObject,
+	TransformInterface,
+	validateTransformations,
+} from "./ValidationHelpers";
 import DatasetProcessor from "./DatasetProcessor";
 import Room from "./Room";
 
@@ -113,19 +123,17 @@ export default class InsightFacade implements IInsightFacade {
 
 	public getOptions(options: unknown, mfields: string[], sfields: string[], applyKeys: string[]): OptionResult {
 		let onlyID = "";
-		let orderField: (string | OrderObject) = "";
+		let orderField: string | OrderObject = "";
 		let colVals: string[] = [];
 		if (typeof options === "object" && options !== null) {
 			if ("COLUMNS" in options) {
 				const cols = options.COLUMNS;
 				try {
-					console.log('Fix');
 					colVals = validateCols(cols, mfields, sfields, applyKeys);
-					console.log('Success');
-					if (colVals[0].includes('_')) {
+					if (colVals[0].includes("_")) {
 						onlyID = colVals[0].split("_")[0];
 					} else {
-						onlyID = '';
+						onlyID = "";
 					}
 				} catch {
 					throw new InsightError(`No cols`);
@@ -139,9 +147,13 @@ export default class InsightFacade implements IInsightFacade {
 					} else {
 						throw new InsightError(`Invalid order field`);
 					}
-				} else if (typeof order === 'object' && order && 'dir' in order && 'keys' in order) {
-					if (typeof order.dir === 'string' && Array.isArray(order.keys) && order.keys.every(it => typeof it === 'string')) {
-						orderField = order as OrderObject
+				} else if (typeof order === "object" && order && "dir" in order && "keys" in order) {
+					if (
+						typeof order.dir === "string" &&
+						Array.isArray(order.keys) &&
+						order.keys.every((it) => typeof it === "string")
+					) {
+						orderField = order as OrderObject;
 					}
 				} else {
 					throw new InsightError(`Order field not a string`);
@@ -166,23 +178,37 @@ export default class InsightFacade implements IInsightFacade {
 				options = query.OPTIONS;
 			}
 
-			let applyKeys: string[] = []
+			let applyKeys: string[] = [];
 
-			if (typeof query === "object" && query && 'TRANSFORMATIONS' in query) {
-				let transformations: unknown = query.TRANSFORMATIONS;
+			if (typeof query === "object" && query && "TRANSFORMATIONS" in query) {
+				const transformations: unknown = query.TRANSFORMATIONS;
 				applyKeys = validateTransformations(transformations, MFIELDS, SFIELDS);
-				if (typeof transformations === 'object' && transformations && 'GROUP' in transformations && 'APPLY' in transformations) {
-					let group: unknown = transformations.GROUP;
-					if (Array.isArray(group) && group.every(item => typeof item === 'string') && Array.isArray(transformations.APPLY)) {
-						transformation = {group: group, apply: transformations.APPLY}
+				if (
+					typeof transformations === "object" &&
+					transformations &&
+					"GROUP" in transformations &&
+					"APPLY" in transformations
+				) {
+					const group: unknown = transformations.GROUP;
+					if (
+						Array.isArray(group) &&
+						group.every((item) => typeof item === "string") &&
+						Array.isArray(transformations.APPLY)
+					) {
+						transformation = { group: group, apply: transformations.APPLY };
 					}
 				}
 			}
 
-			let optionsData: OptionResult = this.getOptions(options, InsightFacade.MFIELDS, InsightFacade.SFIELDS, applyKeys);
+			const optionsData: OptionResult = this.getOptions(
+				options,
+				InsightFacade.MFIELDS,
+				InsightFacade.SFIELDS,
+				applyKeys
+			);
 
 			if (transformation) {
-				optionsData.onlyID = transformation.group[0].split('_')[0];
+				optionsData.onlyID = transformation.group[0].split("_")[0];
 			}
 			const sections = await this.getDataset(optionsData.onlyID);
 			let results: (Section | Room)[] = [];
@@ -195,16 +221,20 @@ export default class InsightFacade implements IInsightFacade {
 				throw new ResultTooLargeError("Result too large");
 			}
 
-			let output: InsightResult[]
-			output = this.mapResults(results, optionsData.colVals);
+			let output: InsightResult[];
+			if (transformation) {
+				output = this.applyRecords(this.groupRecords(results, transformation.group), optionsData.colVals, transformation.apply);
+			} else {
+				output = this.mapResults(results, optionsData.colVals);
+			}
 
-			if (typeof optionsData.orderField === 'string') {
+			if (typeof optionsData.orderField === "string") {
 				const orderField: string = optionsData.orderField;
 				if (orderField !== "") {
 					return this.sortField(output, [orderField], true);
 				}
 			} else {
-				return this.sortField(output, optionsData.orderField.keys, optionsData.orderField.dir === 'UP')
+				return this.sortField(output, optionsData.orderField.keys, optionsData.orderField.dir === "UP");
 			}
 
 			return output;
@@ -224,13 +254,13 @@ export default class InsightFacade implements IInsightFacade {
 				const valueA = a[field];
 				const valueB = b[field];
 				let comparison = 0;
-	
+
 				if (typeof valueA === "number" && typeof valueB === "number") {
 					comparison = valueA - valueB;
 				} else if (typeof valueA === "string" && typeof valueB === "string") {
 					comparison = valueA.localeCompare(valueB);
 				}
-	
+
 				// If comparison result is non-zero, apply sorting order and return
 				if (comparison !== 0) {
 					return ascending ? comparison : -comparison;
@@ -243,58 +273,60 @@ export default class InsightFacade implements IInsightFacade {
 	private applyRecords(grouped: (Section | Room)[][], colVals: string[], applyRules: unknown[]): InsightResult[] {
 		return grouped.map((grp: (Section | Room)[]) => {
 			const result: InsightResult = {};
-			let rules: Map<string, string | number> = new Map;
+			const rules = new Map<string, string | number>();
 			for (const rule of applyRules) {
-				if (typeof rule === 'object' && rule) {
+				if (typeof rule === "object" && rule) {
 					rules.set(Object.keys(rule)[0], this.applyRule(grp, Object.values(rule)[0]));
 				}
 			}
 			for (const colKey of colVals) {
-				if (colKey.split('_').length > 1) {
+				if (colKey.split("_").length > 1) {
 					const field = colKey.split("_")[1] as keyof (Section | Room);
 					result[colKey] = grp[0][field];
 				} else {
-					const colVal = rules.get(colKey)
+					const colVal = rules.get(colKey);
 					if (colVal !== undefined) {
 						result[colKey] = colVal;
 					} else {
-						throw new InsightError('Not a valid rule');
+						throw new InsightError("Not a valid rule");
 					}
 				}
 			}
 
 			return result;
-		})
+		});
 	}
 
-	private applyRule(grp: (Section | Room)[], rule: unknown): (string | number) {
+	private applyRule(grp: (Section | Room)[], rule: unknown): string | number {
 		return 0;
 	}
 
 	private groupRecords(results: (Section | Room)[], fields: string[]): (Section | Room)[][] {
 		const groups: (Section | Room)[][] = [];
 		const groupMap: Record<string, (Section | Room)[]> = {};
-	
+
 		results.forEach((record) => {
 			// Create a unique key based on the specified fields
-			const key = fields.map((field) => {
-				if (record instanceof Section) {
-					return record[field.split('_')[1] as keyof Section]
-				} else {
-					return record[field.split('_')[1] as keyof Room]
-				}
-			}).join('|');
-	
+			const key = fields
+				.map((field) => {
+					if (record instanceof Section) {
+						return record[field.split("_")[1] as keyof Section];
+					} else {
+						return record[field.split("_")[1] as keyof Room];
+					}
+				})
+				.join("|");
+
 			// Initialize the group if it doesn't exist
 			if (!groupMap[key]) {
 				groupMap[key] = [];
 				groups.push(groupMap[key]); // Add the new group to the output array
 			}
-	
+
 			// Add the record to the group
 			groupMap[key].push(record);
 		});
-	
+
 		return groups;
 	}
 
