@@ -226,6 +226,33 @@ export default class InsightFacade implements IInsightFacade {
 		});
 	}
 
+	private groupRecords(results: (Section | Room)[], fields: string[]): (Section | Room)[][] {
+		const groups: (Section | Room)[][] = [];
+		const groupMap: Record<string, (Section | Room)[]> = {};
+	
+		results.forEach((record) => {
+			// Create a unique key based on the specified fields
+			const key = fields.map((field) => {
+				if (record instanceof Section) {
+					return record[field.split('_')[1] as keyof Section]
+				} else {
+					return record[field.split('_')[1] as keyof Room]
+				}
+			}).join('|');
+	
+			// Initialize the group if it doesn't exist
+			if (!groupMap[key]) {
+				groupMap[key] = [];
+				groups.push(groupMap[key]); // Add the new group to the output array
+			}
+	
+			// Add the record to the group
+			groupMap[key].push(record);
+		});
+	
+		return groups;
+	}
+
 	private mapResults(results: (Section | Room)[], colVals: string[]): InsightResult[] {
 		return results.map((section: Room | Section) => {
 			const result: InsightResult = {};
