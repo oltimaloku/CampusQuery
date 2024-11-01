@@ -150,18 +150,21 @@ export default class DatasetProcessor {
 		if (!roomsTable) {
 			return [];
 		}
+		try {
+			const geoResponse = await GeolocationService.getGeolocation(buildingData.address);
 
-		const geoResponse = await GeolocationService.getGeolocation(buildingData.address);
+			if (geoResponse.error) {
+				return [];
+			}
 
-		if (geoResponse.error) {
-			throw new InsightError(`No location found for ${buildingData.shortName}`);
+			buildingData.lat = geoResponse.lat!;
+			buildingData.lon = geoResponse.lon!;
+
+			const roomRows = getRoomRows(roomsTable);
+			return this.extractRoomsFromRows(roomRows, buildingData);
+		} catch (e) {
+			return [];
 		}
-
-		buildingData.lat = geoResponse.lat!;
-		buildingData.lon = geoResponse.lon!;
-
-		const roomRows = getRoomRows(roomsTable);
-		return this.extractRoomsFromRows(roomRows, buildingData);
 	}
 
 	private static findBuildingFile(zipContent: JSZip, link: string): JSZip.JSZipObject | null {
