@@ -69,7 +69,6 @@ export default class InsightFacade implements IInsightFacade {
 				processedContent = await DatasetProcessor.processSectionsContent(content);
 			} else if (kind === InsightDatasetKind.Rooms) {
 				processedContent = await DatasetProcessor.processRoomsContent(content);
-				console.log(processedContent);
 			} else {
 				throw new InsightError("Unsupported dataset kind");
 			}
@@ -158,7 +157,7 @@ export default class InsightFacade implements IInsightFacade {
 
 			const optionsData: OptionResult = this.getOptions(options, InsightFacade.MFIELDS, InsightFacade.SFIELDS);
 			const sections = await this.getDataset(optionsData.onlyID);
-			let results: (Section| Room)[] = [];
+			let results: (Section | Room)[] = [];
 
 			if (typeof sections !== "undefined") {
 				results = this.runFilter(where, optionsData.onlyID, sections);
@@ -185,7 +184,7 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	private mapResults(results: (Section | Room)[], colVals: string[]): InsightResult[] {
-		return results.map((section: (Room | Section)) => {
+		return results.map((section: Room | Section) => {
 			const result: InsightResult = {};
 			for (const colKey of colVals) {
 				const field = colKey.split("_")[1] as keyof (Section | Room);
@@ -199,7 +198,7 @@ export default class InsightFacade implements IInsightFacade {
 		if (typeof obj === "object" && obj !== null) {
 			if ("NOT" in obj) {
 				const inverse: (Section | Room)[] = this.runFilter(obj.NOT, onlyID, current);
-				return current.filter((section: (Room | Section)) => !inverse.includes(section));
+				return current.filter((section: Room | Section) => !inverse.includes(section));
 			}
 			if ("AND" in obj) {
 				if (Array.isArray(obj.AND)) {
@@ -264,11 +263,11 @@ export default class InsightFacade implements IInsightFacade {
 				const mkey = Object.keys(mcomp)[0].split("_")[1];
 				const mval = Object.values(mcomp)[0];
 				try {
-					return current.filter((section: (Room | Section)) => {
+					return current.filter((section: Room | Section) => {
 						if (section instanceof Section) {
-							return this.mComparisons(comp, section[mkey as keyof Section], mval)
+							return this.mComparisons(comp, section[mkey as keyof Section], mval);
 						} else {
-							return this.mComparisons(comp, section[mkey as keyof Room], mval)
+							return this.mComparisons(comp, section[mkey as keyof Room], mval);
 						}
 					});
 				} catch {
@@ -289,7 +288,7 @@ export default class InsightFacade implements IInsightFacade {
 					try {
 						sval = "^" + sval.replace(/\*/gi, ".*") + "$";
 						const regex = new RegExp(sval);
-						return current.filter((section: (Section | Room)) => {
+						return current.filter((section: Section | Room) => {
 							if (section instanceof Section) {
 								return regex.test(section[skey as keyof Section]);
 							} else {
