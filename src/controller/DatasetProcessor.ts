@@ -162,7 +162,7 @@ export default class DatasetProcessor {
 
 			const roomRows = getRoomRows(roomsTable);
 			return this.extractRoomsFromRows(roomRows, buildingData);
-		} catch (e) {
+		} catch {
 			return [];
 		}
 	}
