@@ -229,14 +229,14 @@ export default class InsightFacade implements IInsightFacade {
 
 		let output: InsightResult[];
 
-		if (res.length > MAX_RESULTS) {
-			throw new ResultTooLargeError("Result too large");
-		}
-
 		if (transformation) {
 			output = applyRecords(groupRecords(res, transformation.group), optionsData.colVals, transformation.apply);
 		} else {
 			output = mapResults(res, optionsData.colVals);
+		}
+
+		if (output.length > MAX_RESULTS) {
+			throw new ResultTooLargeError("Result too large");
 		}
 
 		if (typeof optionsData.orderField === "string") {
