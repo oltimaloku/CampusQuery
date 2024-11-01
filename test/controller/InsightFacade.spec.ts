@@ -49,7 +49,6 @@ describe("InsightFacade", function () {
 	let missingIndexZip: string;
 	let emptyBuildingsZip: string;
 	let onlyACU: string;
-	let invalidRoomFields: string;
 	// One building -> ANGU
 	let oneBuilding: string;
 	// ANGU address changed
@@ -86,7 +85,6 @@ describe("InsightFacade", function () {
 		missingIndexZip = await getContentFromArchives("rooms_no_index.zip");
 		emptyBuildingsZip = await getContentFromArchives("no_buildings.zip");
 		onlyACU = await getContentFromArchives("only_ACU.zip");
-		invalidRoomFields = await getContentFromArchives("invalid_room_fields.zip");
 		oneBuilding = await getContentFromArchives("one_building.zip");
 		oneBuildingInvalidAddress = await getContentFromArchives("one_building_invalid_address.zip");
 		oneBuildingNoReferences = await getContentFromArchives("one_building_no_references.zip");
