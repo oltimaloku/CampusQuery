@@ -1,0 +1,27 @@
+{
+	"title": "invalid_mkey_id",
+	"input": {
+		"WHERE": {
+			"AND": [
+				{
+					"GT": {
+						"sections2_avg": 68.9
+					}
+				},
+				{
+					"IS": {
+						"sections_dept": "apsc"
+					}
+				}
+			]
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"sections_dept",
+				"sections_avg"
+			]
+		}
+	},
+	"errorExpected": true,
+	"expected": "InsightError"
+}

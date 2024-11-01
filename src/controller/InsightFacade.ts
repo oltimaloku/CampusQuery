@@ -9,9 +9,28 @@ import {
 	ResultTooLargeError,
 } from "./IInsightFacade";
 import Section from "./Section";
-import { validateQuery, validateCols, isEmpty, OptionResult, MFIELDS, SFIELDS } from "./ValidationHelpers";
+import {
+	validateQuery,
+	validateCols,
+	isEmpty,
+	OptionResult,
+	MFIELDS,
+	SFIELDS,
+	OrderObject,
+	TransformInterface,
+} from "./ValidationHelpers";
 import DatasetProcessor from "./DatasetProcessor";
 import Room from "./Room";
+import {
+	applyRecords,
+	assignTransformation,
+	groupRecords,
+	mapResults,
+	MAX_RESULTS,
+	sortField,
+	TransformationAssignment,
+} from "./TransformationHelpers";
+import { runSMFilter } from "./FilterSpecifics";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -22,7 +41,6 @@ export default class InsightFacade implements IInsightFacade {
 	private datasets: Map<string, Section[] | Room[]> = new Map<string, Section[] | Room[]>();
 	private static readonly MFIELDS = MFIELDS;
 	private static readonly SFIELDS = SFIELDS;
-	private static readonly MAX_RESULTS = 5000;
 
 	public async getDataset(id: string): Promise<Section[] | Room[]> {
 		if (this.datasets.has(id)) {
@@ -111,40 +129,58 @@ export default class InsightFacade implements IInsightFacade {
 		return id;
 	}
 
-	public getOptions(options: unknown, mfields: string[], sfields: string[]): OptionResult {
+	public getOptions(options: unknown, mfields: string[], sfields: string[], applyKeys: string[]): OptionResult {
 		let onlyID = "";
-		let orderField = "";
 		let colVals: string[] = [];
+		let order: OrderObject | string = "";
 		if (typeof options === "object" && options !== null) {
 			if ("COLUMNS" in options) {
 				const cols = options.COLUMNS;
 				try {
-					colVals = validateCols(cols, mfields, sfields, []);
-					onlyID = colVals[0].split("_")[0];
+					colVals = validateCols(cols, mfields, sfields, applyKeys);
+					if (colVals[0].includes("_")) {
+						onlyID = colVals[0].split("_")[0];
+					} else {
+						onlyID = "";
+					}
 				} catch {
 					throw new InsightError(`No cols`);
 				}
 			}
 			if ("ORDER" in options) {
-				const order: unknown = options.ORDER;
-				if (typeof order === "string") {
-					if (colVals.includes(order)) {
-						orderField = order.split("_")[1];
-					} else {
-						throw new InsightError(`Invalid order field`);
-					}
-				} else {
-					throw new InsightError(`Order field not a string`);
-				}
+				order = this.handleOrder(options.ORDER, colVals);
 			}
 		}
-		return { onlyID: onlyID, colVals: colVals, orderField: orderField };
+		return { onlyID: onlyID, colVals: colVals, orderField: order };
+	}
+
+	private handleOrder(order: unknown, colVals: string[]): OrderObject | string {
+		let orderField: string | OrderObject = "";
+		if (typeof order === "string") {
+			if (colVals.includes(order)) {
+				orderField = order;
+			} else {
+				throw new InsightError(`Invalid order field`);
+			}
+		} else if (typeof order === "object" && order && "dir" in order && "keys" in order) {
+			if (
+				typeof order.dir === "string" &&
+				Array.isArray(order.keys) &&
+				order.keys.every((it) => typeof it === "string")
+			) {
+				orderField = order as OrderObject;
+			}
+		} else {
+			throw new InsightError(`Order field not a string`);
+		}
+		return orderField;
 	}
 
 	public async performQuery(query: unknown): Promise<InsightResult[]> {
 		try {
 			let where: unknown;
 			let options: unknown;
+			let transformation: TransformInterface | null = null;
 
 			if (!validateQuery(query)) {
 				throw new InsightError(`Invalid format for query`);
@@ -155,27 +191,23 @@ export default class InsightFacade implements IInsightFacade {
 				options = query.OPTIONS;
 			}
 
-			const optionsData: OptionResult = this.getOptions(options, InsightFacade.MFIELDS, InsightFacade.SFIELDS);
-			const sections = await this.getDataset(optionsData.onlyID);
-			let results: (Section | Room)[] = [];
+			const transformAssignmnet: TransformationAssignment = assignTransformation(query);
+			transformation = transformAssignmnet.transformation;
+			const applyKeys = transformAssignmnet.applyKeys;
 
-			if (typeof sections !== "undefined") {
-				results = this.runFilter(where, optionsData.onlyID, sections);
+			const optionsData: OptionResult = this.getOptions(
+				options,
+				InsightFacade.MFIELDS,
+				InsightFacade.SFIELDS,
+				applyKeys
+			);
+
+			if (transformation) {
+				optionsData.onlyID = transformation.group[0].split("_")[0];
 			}
 
-			if (results.length > InsightFacade.MAX_RESULTS) {
-				throw new ResultTooLargeError("Result too large");
-			}
-
-			const orderField: string = optionsData.orderField;
-			if (orderField !== "") {
-				results.sort((a, b) => (a[orderField as keyof Section] < b[orderField as keyof Section] ? -1 : 1));
-			}
-
-			return this.mapResults(results, optionsData.colVals);
+			return await this.handlePost(transformation, where, optionsData);
 		} catch (error) {
-			// NotFoundError from getDataset must be caught and converted to InsightError
-			// since performQuery only returns InsightError or ResultTooLargeError
 			if (error instanceof NotFoundError) {
 				throw new InsightError("Error performing query: " + error);
 			}
@@ -183,15 +215,40 @@ export default class InsightFacade implements IInsightFacade {
 		}
 	}
 
-	private mapResults(results: (Section | Room)[], colVals: string[]): InsightResult[] {
-		return results.map((section: Room | Section) => {
-			const result: InsightResult = {};
-			for (const colKey of colVals) {
-				const field = colKey.split("_")[1] as keyof (Section | Room);
-				result[colKey] = section[field];
+	private async handlePost(
+		transformation: TransformInterface | null,
+		where: unknown,
+		optionsData: OptionResult
+	): Promise<InsightResult[]> {
+		const sections = await this.getDataset(optionsData.onlyID);
+		let res: (Section | Room)[] = [];
+
+		if (typeof sections !== "undefined") {
+			res = this.runFilter(where, optionsData.onlyID, sections);
+		}
+
+		let output: InsightResult[];
+
+		if (res.length > MAX_RESULTS) {
+			throw new ResultTooLargeError("Result too large");
+		}
+
+		if (transformation) {
+			output = applyRecords(groupRecords(res, transformation.group), optionsData.colVals, transformation.apply);
+		} else {
+			output = mapResults(res, optionsData.colVals);
+		}
+
+		if (typeof optionsData.orderField === "string") {
+			const orderField: string = optionsData.orderField;
+			if (orderField !== "") {
+				return sortField(output, [orderField], true);
 			}
-			return result;
-		});
+		} else {
+			return sortField(output, optionsData.orderField.keys, optionsData.orderField.dir === "UP");
+		}
+
+		return output;
 	}
 
 	public runFilter(obj: unknown, onlyID: string, current: (Room | Section)[]): (Room | Section)[] {
@@ -226,81 +283,7 @@ export default class InsightFacade implements IInsightFacade {
 			if (isEmpty(obj)) {
 				return current;
 			}
-			return this.runSMFilter(obj, current);
-		}
-		return [];
-	}
-
-	public mComparisons(comp: string, val: number, mval: number): boolean {
-		switch (comp) {
-			case "LT":
-				return val < mval;
-			case "EQ":
-				return val === mval;
-			case "GT":
-				return val > mval;
-		}
-		throw new InsightError(`Invalid mcomp comparator`);
-	}
-
-	public runMFilter(obj: unknown, current: (Room | Section)[]): (Room | Section)[] {
-		if (typeof obj === "object" && obj !== null) {
-			let mcomp: unknown = null;
-			let comp = "";
-			if ("LT" in obj) {
-				mcomp = obj.LT;
-				comp = "LT";
-			}
-			if ("GT" in obj) {
-				mcomp = obj.GT;
-				comp = "GT";
-			}
-			if ("EQ" in obj) {
-				mcomp = obj.EQ;
-				comp = "EQ";
-			}
-			if (typeof mcomp === "object" && mcomp !== null) {
-				const mkey = Object.keys(mcomp)[0].split("_")[1];
-				const mval = Object.values(mcomp)[0];
-				try {
-					return current.filter((section: Room | Section) => {
-						if (section instanceof Section) {
-							return this.mComparisons(comp, section[mkey as keyof Section], mval);
-						} else {
-							return this.mComparisons(comp, section[mkey as keyof Room], mval);
-						}
-					});
-				} catch {
-					throw new InsightError("mkey not found");
-				}
-			}
-		}
-		return [];
-	}
-
-	public runSMFilter(obj: unknown, current: (Section | Room)[]): (Section | Room)[] {
-		if (typeof obj === "object" && obj !== null) {
-			if ("IS" in obj) {
-				const scomp: unknown = obj.IS;
-				if (typeof scomp === "object" && scomp !== null) {
-					const skey = Object.keys(scomp)[0].split("_")[1];
-					let sval = Object.values(scomp)[0];
-					try {
-						sval = "^" + sval.replace(/\*/gi, ".*") + "$";
-						const regex = new RegExp(sval);
-						return current.filter((section: Section | Room) => {
-							if (section instanceof Section) {
-								return regex.test(section[skey as keyof Section]);
-							} else {
-								return regex.test(section[skey as keyof Room]);
-							}
-						});
-					} catch {
-						throw new InsightError("skey not found");
-					}
-				}
-			}
-			return this.runMFilter(obj, current);
+			return runSMFilter(obj, current);
 		}
 		return [];
 	}

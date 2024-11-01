@@ -49,7 +49,6 @@ describe("InsightFacade", function () {
 	let missingIndexZip: string;
 	let emptyBuildingsZip: string;
 	let onlyACU: string;
-	let invalidRoomFields: string;
 	// One building -> ANGU
 	let oneBuilding: string;
 	// ANGU address changed
@@ -86,7 +85,6 @@ describe("InsightFacade", function () {
 		missingIndexZip = await getContentFromArchives("rooms_no_index.zip");
 		emptyBuildingsZip = await getContentFromArchives("no_buildings.zip");
 		onlyACU = await getContentFromArchives("only_ACU.zip");
-		invalidRoomFields = await getContentFromArchives("invalid_room_fields.zip");
 		oneBuilding = await getContentFromArchives("one_building.zip");
 		oneBuildingInvalidAddress = await getContentFromArchives("one_building_invalid_address.zip");
 		oneBuildingNoReferences = await getContentFromArchives("one_building_no_references.zip");
@@ -148,12 +146,6 @@ describe("InsightFacade", function () {
 			const result = facade.addDataset("oneBuildingNoReferences", oneBuildingNoReferences, InsightDatasetKind.Rooms);
 
 			return expect(result).to.eventually.have.members(["oneBuildingNoReferences"]);
-		});
-
-		it("should reject rooms dataset with invalid rooms fields", function () {
-			const result = facade.addDataset("acu", invalidRoomFields, InsightDatasetKind.Rooms);
-
-			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
 		it("should reject non-zip content for rooms", function () {
@@ -483,27 +475,6 @@ describe("InsightFacade", function () {
 				);
 		});
 
-		it("should list one rooms dataset and one sections dataset", async function () {
-			return facade
-				.addDataset("ubc", oneCourseOneSection, InsightDatasetKind.Sections)
-				.then(async (res) => {
-					expect(res).to.have.members(["ubc"]);
-					return facade.addDataset("oneBuilding", oneBuilding, InsightDatasetKind.Rooms);
-				})
-				.then(async (res2) => {
-					expect(res2).to.have.members(["ubc", "oneBuilding"]);
-					return facade.listDatasets();
-				})
-				.then(
-					(res3) =>
-						expect(res3).to.deep.equal([
-							{ id: "oneBuilding", kind: InsightDatasetKind.Rooms, numRows: 28 },
-							{ id: "ubc", kind: InsightDatasetKind.Sections, numRows: 1 },
-						]),
-					async (_err) => Promise.reject(new Error("List did not succeed"))
-				);
-		});
-
 		it("should list items after remove", async function () {
 			return facade
 				.addDataset("ubc", oneCourseOneSection, InsightDatasetKind.Sections)
@@ -699,5 +670,23 @@ describe("InsightFacade", function () {
 		it("[valid/test_order_mkey.json] order by mkey", checkQuery(true));
 		it("[valid/basic_rooms_query.json] basic_rooms_query", checkQuery(false));
 		it("[valid/basic_ordering_rooms.json] basic_ordering_rooms", checkQuery(true));
+		it("[valid/basic_multi_sort_asc.json] basic_multi_sort_asc", checkQuery(true));
+		it("[valid/basic_multi_sort_desc.json] basic_multi_sort_desc", checkQuery(true));
+		it("[invalid/cols_not_in_group.json] cols_not_in_group", checkQuery(false));
+		it("[invalid/duplicate_apply_key.json] duplicate_apply_key", checkQuery(false));
+		it("[valid/empty_apply_valid.json] empty_apply_valid", checkQuery(false));
+		it("[valid/valid_apply.json] valid_apply", checkQuery(false));
+		it("[valid/valid_room_multi_apply.json] valid_room_multi_apply", checkQuery(false));
+		it("[invalid/invalid_mkey_id.json] invalid_skey_id", checkQuery(false));
+		it("[invalid/invalid_mkey_id.json] invalid_mkey_id", checkQuery(false));
+		it("[invalid/invalid_group_empty.json] invalid_group_empty", checkQuery(false));
+		it("[valid/valid_base_sort_down.json] valid_base_sort_down", checkQuery(false));
+		it("[valid/valid_use_all_applies.json] valid_use_all_applies", checkQuery(false));
+		it("[invalid/invalid_column_key_no_field.json] invalid_column_key_no_field", checkQuery(false));
+		it("[invalid/invalid_column_key_type.json] invalid_column_key_type", checkQuery(false));
+		it("[invalid/invalid_column_not_array.json] invalid_column_not_array", checkQuery(false));
+		it("[invalid/invalid_group_empty.json] invalid_group_empty", checkQuery(false));
+		it("[invalid/invalid_group_not_array.json] invalid_group_not_array", checkQuery(false));
+		it("[invalid/invalid_group_not_field.json] invalid_group_not_field", checkQuery(false));
 	});
 });

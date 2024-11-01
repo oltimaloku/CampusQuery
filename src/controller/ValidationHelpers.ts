@@ -31,7 +31,7 @@ export function isFilter(obj: unknown, idVal: string, mfields: string[], sfields
 			return isSMComp(obj, mfields, sfields, idVal);
 		}
 	}
-	return true;
+	return false;
 }
 
 export function validateCols(cols: unknown, mfields: string[], sfields: string[], applykeys: string[]): string[] {
@@ -255,10 +255,20 @@ export function validateApplyToken(item: unknown, mfields: string[], sfields: st
 	return false;
 }
 
+export interface OrderObject {
+	dir: "UP" | "DOWN";
+	keys: string[];
+}
+
 export interface OptionResult {
 	onlyID: string;
 	colVals: string[];
-	orderField: string;
+	orderField: string | OrderObject;
+}
+
+export interface TransformInterface {
+	group: string[];
+	apply: unknown[];
 }
 
 export const requiredFields: Record<string, string> = {
