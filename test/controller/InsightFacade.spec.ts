@@ -48,6 +48,17 @@ describe("InsightFacade", function () {
 	let campus: string;
 	let missingIndexZip: string;
 	let emptyBuildingsZip: string;
+	let onlyACU: string;
+	let invalidRoomFields: string;
+	// One building -> ANGU
+	let oneBuilding: string;
+	// ANGU address changed
+	let oneBuildingInvalidAddress: string;
+	// Same as oneBuilding except index.htm does not include references to non-existent building files
+	let oneBuildingNoReferences: string;
+
+	let validCampus: string;
+	let validCampus1: string;
 
 	before(async function () {
 		// This block runs once and loads the datasets.
@@ -74,6 +85,13 @@ describe("InsightFacade", function () {
 		campus = await getContentFromArchives("campus.zip");
 		missingIndexZip = await getContentFromArchives("rooms_no_index.zip");
 		emptyBuildingsZip = await getContentFromArchives("no_buildings.zip");
+		onlyACU = await getContentFromArchives("only_ACU.zip");
+		invalidRoomFields = await getContentFromArchives("invalid_room_fields.zip");
+		oneBuilding = await getContentFromArchives("one_building.zip");
+		oneBuildingInvalidAddress = await getContentFromArchives("one_building_invalid_address.zip");
+		oneBuildingNoReferences = await getContentFromArchives("one_building_no_references.zip");
+		validCampus = await getContentFromArchives("valid_campus.zip");
+		validCampus1 = await getContentFromArchives("valid_campus_1.zip");
 		// Just in case there is anything hanging around from a previous run of the test suite
 		await clearDisk();
 	});
@@ -92,9 +110,50 @@ describe("InsightFacade", function () {
 		});
 
 		it("should successfully add rooms dataset", function () {
+			const result = facade.addDataset("validCampus", validCampus, InsightDatasetKind.Rooms);
+
+			return expect(result).to.eventually.have.members(["validCampus"]);
+		});
+
+		it("should successfully add rooms dataset", function () {
+			const result = facade.addDataset("validCampus1", validCampus1, InsightDatasetKind.Rooms);
+
+			return expect(result).to.eventually.have.members(["validCampus1"]);
+		});
+
+		it("should successfully add rooms dataset", function () {
 			const result = facade.addDataset("ubc", campus, InsightDatasetKind.Rooms);
 
 			return expect(result).to.eventually.have.members(["ubc"]);
+		});
+
+		it("should successfully add rooms dataset with one building", function () {
+			const result = facade.addDataset("angu", oneBuilding, InsightDatasetKind.Rooms);
+			return expect(result).to.eventually.have.members(["angu"]);
+		});
+
+		it("should reject rooms dataset with only 1 reference building in index", function () {
+			const result = facade.addDataset("acu", onlyACU, InsightDatasetKind.Rooms);
+
+			return expect(result).to.eventually.be.rejectedWith(InsightError);
+		});
+
+		it("should reject rooms dataset that contains an invalid address", function () {
+			const result = facade.addDataset("acu", oneBuildingInvalidAddress, InsightDatasetKind.Rooms);
+
+			return expect(result).to.eventually.be.rejectedWith(InsightError);
+		});
+
+		it("should accept rooms dataset that contains one building with one reference to it in index.htm", function () {
+			const result = facade.addDataset("oneBuildingNoReferences", oneBuildingNoReferences, InsightDatasetKind.Rooms);
+
+			return expect(result).to.eventually.have.members(["oneBuildingNoReferences"]);
+		});
+
+		it("should reject rooms dataset with invalid rooms fields", function () {
+			const result = facade.addDataset("acu", invalidRoomFields, InsightDatasetKind.Rooms);
+
+			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
 		it("should reject non-zip content for rooms", function () {
@@ -419,6 +478,27 @@ describe("InsightFacade", function () {
 						expect(res3).to.deep.equal([
 							{ id: "ubc", kind: InsightDatasetKind.Sections, numRows: 1 },
 							{ id: "ubc2", kind: InsightDatasetKind.Sections, numRows: 2 },
+						]),
+					async (_err) => Promise.reject(new Error("List did not succeed"))
+				);
+		});
+
+		it("should list one rooms dataset and one sections dataset", async function () {
+			return facade
+				.addDataset("ubc", oneCourseOneSection, InsightDatasetKind.Sections)
+				.then(async (res) => {
+					expect(res).to.have.members(["ubc"]);
+					return facade.addDataset("oneBuilding", oneBuilding, InsightDatasetKind.Rooms);
+				})
+				.then(async (res2) => {
+					expect(res2).to.have.members(["ubc", "oneBuilding"]);
+					return facade.listDatasets();
+				})
+				.then(
+					(res3) =>
+						expect(res3).to.deep.equal([
+							{ id: "oneBuilding", kind: InsightDatasetKind.Rooms, numRows: 28 },
+							{ id: "ubc", kind: InsightDatasetKind.Sections, numRows: 1 },
 						]),
 					async (_err) => Promise.reject(new Error("List did not succeed"))
 				);
