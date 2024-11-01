@@ -31,7 +31,7 @@ export function isFilter(obj: unknown, idVal: string, mfields: string[], sfields
 			return isSMComp(obj, mfields, sfields, idVal);
 		}
 	}
-	return true;
+	return false;
 }
 
 export function validateCols(cols: unknown, mfields: string[], sfields: string[], applykeys: string[]): string[] {
