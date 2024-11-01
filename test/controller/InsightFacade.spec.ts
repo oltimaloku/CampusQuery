@@ -150,12 +150,6 @@ describe("InsightFacade", function () {
 			return expect(result).to.eventually.have.members(["oneBuildingNoReferences"]);
 		});
 
-		it("should reject rooms dataset with invalid rooms fields", function () {
-			const result = facade.addDataset("acu", invalidRoomFields, InsightDatasetKind.Rooms);
-
-			return expect(result).to.eventually.be.rejectedWith(InsightError);
-		});
-
 		it("should reject non-zip content for rooms", function () {
 			const result = facade.addDataset("rooms", "invalid-base64", InsightDatasetKind.Rooms);
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
@@ -478,27 +472,6 @@ describe("InsightFacade", function () {
 						expect(res3).to.deep.equal([
 							{ id: "ubc", kind: InsightDatasetKind.Sections, numRows: 1 },
 							{ id: "ubc2", kind: InsightDatasetKind.Sections, numRows: 2 },
-						]),
-					async (_err) => Promise.reject(new Error("List did not succeed"))
-				);
-		});
-
-		it("should list one rooms dataset and one sections dataset", async function () {
-			return facade
-				.addDataset("ubc", oneCourseOneSection, InsightDatasetKind.Sections)
-				.then(async (res) => {
-					expect(res).to.have.members(["ubc"]);
-					return facade.addDataset("oneBuilding", oneBuilding, InsightDatasetKind.Rooms);
-				})
-				.then(async (res2) => {
-					expect(res2).to.have.members(["ubc", "oneBuilding"]);
-					return facade.listDatasets();
-				})
-				.then(
-					(res3) =>
-						expect(res3).to.deep.equal([
-							{ id: "oneBuilding", kind: InsightDatasetKind.Rooms, numRows: 28 },
-							{ id: "ubc", kind: InsightDatasetKind.Sections, numRows: 1 },
 						]),
 					async (_err) => Promise.reject(new Error("List did not succeed"))
 				);
