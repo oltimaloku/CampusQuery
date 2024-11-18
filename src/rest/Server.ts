@@ -4,10 +4,11 @@ import Log from "@ubccpsc310/folder-test/build/Log";
 import * as http from "http";
 import cors from "cors";
 import { clearDisk } from "../../test/TestUtil";
-import { IInsightFacade } from "../controller/IInsightFacade";
+import { IInsightFacade, NotFoundError } from "../controller/IInsightFacade";
 import InsightFacade from "../controller/InsightFacade";
 import { performGetDatasets } from "./GetDatasets";
 import { performPutDataset } from "./PutDataset";
+import { performDeleteDataset } from "./DeleteDataset";
 
 export default class Server {
 	private readonly port: number;
@@ -97,6 +98,7 @@ export default class Server {
 		this.express.get("/echo/:msg", Server.echo);
 		this.express.get("/datasets", this.getDatasets);
 		this.express.put("/dataset/:id/:kind", this.putDataset);
+		this.express.delete("/dataset/:id", this.deleteDataset);
 	}
 
 	// The next two methods handle the echo service.
@@ -139,6 +141,21 @@ export default class Server {
 			})
 			.catch((err) => {
 				res.status(StatusCodes.BAD_REQUEST).json({ error: err.message });
+			});
+	}
+
+	private deleteDataset(req: Request, res: Response): void {
+		Log.info(`Server::deleteDataset(..) - params: ${JSON.stringify(req.params)}`);
+		performDeleteDataset(new InsightFacade(), req.params.id)
+			.then((value) => {
+				res.status(StatusCodes.OK).json({ result: value });
+			})
+			.catch((err) => {
+				if (err instanceof NotFoundError) {
+					res.status(StatusCodes.NOT_FOUND).json({ error: err.message });
+				} else {
+					res.status(StatusCodes.BAD_REQUEST).json({ error: err.message });
+				}
 			});
 	}
 }
