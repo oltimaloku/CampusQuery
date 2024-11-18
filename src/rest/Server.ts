@@ -9,6 +9,7 @@ import InsightFacade from "../controller/InsightFacade";
 import { performGetDatasets } from "./GetDatasets";
 import { performPutDataset } from "./PutDataset";
 import { performDeleteDataset } from "./DeleteDataset";
+import performPostQuery from "./PostQuery";
 
 export default class Server {
 	private readonly port: number;
@@ -99,6 +100,7 @@ export default class Server {
 		this.express.get("/datasets", this.getDatasets);
 		this.express.put("/dataset/:id/:kind", this.putDataset);
 		this.express.delete("/dataset/:id", this.deleteDataset);
+		this.express.post("/query/", this.postQuery);
 	}
 
 	// The next two methods handle the echo service.
@@ -156,6 +158,17 @@ export default class Server {
 				} else {
 					res.status(StatusCodes.BAD_REQUEST).json({ error: err.message });
 				}
+			});
+	}
+
+	private postQuery(req: Request, res: Response): void {
+		Log.info(`Server::postQuery(..) - params: ${JSON.stringify(req.params)}`);
+		performPostQuery(new InsightFacade(), req.body)
+			.then((value) => {
+				res.status(StatusCodes.OK).json({ result: value });
+			})
+			.catch((err) => {
+				res.status(StatusCodes.BAD_REQUEST).json({ error: err.message });
 			});
 	}
 }
