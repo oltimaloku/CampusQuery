@@ -7,6 +7,7 @@ import { clearDisk } from "../../test/TestUtil";
 import { IInsightFacade } from "../controller/IInsightFacade";
 import InsightFacade from "../controller/InsightFacade";
 import { performGetDatasets } from "./GetDatasets";
+import { performPutDataset } from "./PutDataset";
 
 export default class Server {
 	private readonly port: number;
@@ -65,6 +66,7 @@ export default class Server {
 	 */
 	public async stop(): Promise<void> {
 		Log.info("Server::stop()");
+		await clearDisk();
 		return new Promise((resolve, reject) => {
 			if (this.server === undefined) {
 				Log.error("Server::stop() - ERROR: server not started");
@@ -73,7 +75,6 @@ export default class Server {
 				this.server.close(() => {
 					Log.info("Server::stop() - server closed");
 					resolve();
-					clearDisk();
 				});
 			}
 		});
@@ -95,7 +96,7 @@ export default class Server {
 		// http://localhost:4321/echo/hello
 		this.express.get("/echo/:msg", Server.echo);
 		this.express.get("/datasets", this.getDatasets);
-		// TODO: your other endpoints should go here
+		this.express.put("/dataset/:id/:kind", this.putDataset);
 	}
 
 	// The next two methods handle the echo service.
@@ -119,12 +120,25 @@ export default class Server {
 		}
 	}
 
-	private getDatasets(req: Request, res: Response): void {
+	private getDatasets(_req: Request, res: Response): void {
 		Log.info(`Server::datasets`);
-		performGetDatasets(new InsightFacade()).then(value => {
-			res.status(StatusCodes.OK).json({ result: value });
-		}).catch((err) => {
-			res.status(StatusCodes.BAD_REQUEST).json({ error: err });
-		});
+		performGetDatasets(new InsightFacade())
+			.then((value) => {
+				res.status(StatusCodes.OK).json({ result: value });
+			})
+			.catch((err) => {
+				res.status(StatusCodes.BAD_REQUEST).json({ error: err.message });
+			});
+	}
+
+	private putDataset(req: Request, res: Response): void {
+		Log.info(`Server::putDataset(..) - params: ${JSON.stringify(req.params)}`);
+		performPutDataset(new InsightFacade(), req.params.id, req.params.kind, req.body.toString("base64"))
+			.then((value) => {
+				res.status(StatusCodes.OK).json({ result: value });
+			})
+			.catch((err) => {
+				res.status(StatusCodes.BAD_REQUEST).json({ error: err.message });
+			});
 	}
 }

@@ -1,5 +1,5 @@
-import { IInsightFacade } from "../controller/IInsightFacade";
+import { IInsightFacade, InsightDataset } from "../controller/IInsightFacade";
 
-export async function performGetDatasets(facade: IInsightFacade): Promise<string> {
-    return JSON.stringify(facade.listDatasets());
+export async function performGetDatasets(facade: IInsightFacade): Promise<InsightDataset[]> {
+	return facade.listDatasets();
 }
