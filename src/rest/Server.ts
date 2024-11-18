@@ -3,16 +3,22 @@ import { StatusCodes } from "http-status-codes";
 import Log from "@ubccpsc310/folder-test/build/Log";
 import * as http from "http";
 import cors from "cors";
+import { clearDisk } from "../../test/TestUtil";
+import { IInsightFacade } from "../controller/IInsightFacade";
+import InsightFacade from "../controller/InsightFacade";
+import { performGetDatasets } from "./GetDatasets";
 
 export default class Server {
 	private readonly port: number;
 	private express: Application;
 	private server: http.Server | undefined;
+	private facade: IInsightFacade;
 
 	constructor(port: number) {
 		Log.info(`Server::<init>( ${port} )`);
 		this.port = port;
 		this.express = express();
+		this.facade = new InsightFacade();
 
 		this.registerMiddleware();
 		this.registerRoutes();
@@ -67,6 +73,7 @@ export default class Server {
 				this.server.close(() => {
 					Log.info("Server::stop() - server closed");
 					resolve();
+					clearDisk();
 				});
 			}
 		});
@@ -87,7 +94,7 @@ export default class Server {
 		// This is an example endpoint this you can invoke by accessing this URL in your browser:
 		// http://localhost:4321/echo/hello
 		this.express.get("/echo/:msg", Server.echo);
-
+		this.express.get("/datasets", this.getDatasets);
 		// TODO: your other endpoints should go here
 	}
 
@@ -110,5 +117,14 @@ export default class Server {
 		} else {
 			return "Message not provided";
 		}
+	}
+
+	private getDatasets(req: Request, res: Response): void {
+		Log.info(`Server::datasets`);
+		performGetDatasets(new InsightFacade()).then(value => {
+			res.status(StatusCodes.OK).json({ result: value });
+		}).catch((err) => {
+			res.status(StatusCodes.BAD_REQUEST).json({ error: err });
+		});
 	}
 }
