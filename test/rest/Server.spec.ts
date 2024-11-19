@@ -41,7 +41,7 @@ describe("Facade C3", function () {
 		// might want to add some process logging here to keep track of what is going on
 	});
 
-	afterEach(function () {
+	afterEach(async function () {
 		// might want to add some process logging here to keep track of what is going on
 	});
 
@@ -70,6 +70,29 @@ describe("Facade C3", function () {
 			// and some more logging here!
 		}
 	});
+
+	it("DELETE test for existing course", function () {
+		const SERVER_URL = `http://localhost:${port}`;
+		const ENDPOINT_URL = "/dataset/sections/";
+
+		try {
+			return request(SERVER_URL)
+				.del(ENDPOINT_URL)
+				.then(function (res: Response) {
+					// some logging here please!
+					expect(res.status).to.be.equal(StatusCodes.OK);
+					expect(res.body).to.deep.equal({ result: "sections" });
+					return;
+				})
+				.catch(function (err) {
+					Log.error(err.message);
+					expect.fail();
+				});
+		} catch (err) {
+			Log.error(err);
+			// and some more logging here!
+		}
+	})
 
 	it("PUT test for simple courses dataset", function () {
 		const SERVER_URL = `http://localhost:${port}`;
