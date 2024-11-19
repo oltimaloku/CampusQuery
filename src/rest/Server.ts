@@ -3,16 +3,24 @@ import { StatusCodes } from "http-status-codes";
 import Log from "@ubccpsc310/folder-test/build/Log";
 import * as http from "http";
 import cors from "cors";
+import { IInsightFacade, NotFoundError } from "../controller/IInsightFacade";
+import InsightFacade from "../controller/InsightFacade";
+import { performGetDatasets } from "./GetDatasets";
+import { performPutDataset } from "./PutDataset";
+import { performDeleteDataset } from "./DeleteDataset";
+import performPostQuery from "./PostQuery";
 
 export default class Server {
 	private readonly port: number;
 	private express: Application;
 	private server: http.Server | undefined;
+	private facade: IInsightFacade;
 
 	constructor(port: number) {
 		Log.info(`Server::<init>( ${port} )`);
 		this.port = port;
 		this.express = express();
+		this.facade = new InsightFacade();
 
 		this.registerMiddleware();
 		this.registerRoutes();
@@ -87,8 +95,10 @@ export default class Server {
 		// This is an example endpoint this you can invoke by accessing this URL in your browser:
 		// http://localhost:4321/echo/hello
 		this.express.get("/echo/:msg", Server.echo);
-
-		// TODO: your other endpoints should go here
+		this.express.get("/datasets", this.getDatasets);
+		this.express.put("/dataset/:id/:kind", this.putDataset);
+		this.express.delete("/dataset/:id", this.deleteDataset);
+		this.express.post("/query/", this.postQuery);
 	}
 
 	// The next two methods handle the echo service.
@@ -110,5 +120,53 @@ export default class Server {
 		} else {
 			return "Message not provided";
 		}
+	}
+
+	private getDatasets(_req: Request, res: Response): void {
+		Log.info(`Server::datasets`);
+		performGetDatasets(new InsightFacade())
+			.then((value) => {
+				res.status(StatusCodes.OK).json({ result: value });
+			})
+			.catch((err) => {
+				res.status(StatusCodes.BAD_REQUEST).json({ error: err.message });
+			});
+	}
+
+	private putDataset(req: Request, res: Response): void {
+		Log.info(`Server::putDataset(..) - params: ${JSON.stringify(req.params)}`);
+		performPutDataset(new InsightFacade(), req.params.id, req.params.kind, req.body.toString("base64"))
+			.then((value) => {
+				res.status(StatusCodes.OK).json({ result: value });
+			})
+			.catch((err) => {
+				res.status(StatusCodes.BAD_REQUEST).json({ error: err.message });
+			});
+	}
+
+	private deleteDataset(req: Request, res: Response): void {
+		Log.info(`Server::deleteDataset(..) - params: ${JSON.stringify(req.params)}`);
+		performDeleteDataset(new InsightFacade(), req.params.id)
+			.then((value) => {
+				res.status(StatusCodes.OK).json({ result: value });
+			})
+			.catch((err) => {
+				if (err instanceof NotFoundError) {
+					res.status(StatusCodes.NOT_FOUND).json({ error: err.message });
+				} else {
+					res.status(StatusCodes.BAD_REQUEST).json({ error: err.message });
+				}
+			});
+	}
+
+	private postQuery(req: Request, res: Response): void {
+		Log.info(`Server::postQuery(..) - params: ${JSON.stringify(req.params)}`);
+		performPostQuery(new InsightFacade(), req.body)
+			.then((value) => {
+				res.status(StatusCodes.OK).json({ result: value });
+			})
+			.catch((err) => {
+				res.status(StatusCodes.BAD_REQUEST).json({ error: err.message });
+			});
 	}
 }

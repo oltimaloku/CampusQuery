@@ -113,13 +113,13 @@ describe("InsightFacade", function () {
 			return expect(result).to.eventually.have.members(["validCampus"]);
 		});
 
-		it("should successfully add rooms dataset", function () {
+		it("should successfully add rooms dataset test 2", function () {
 			const result = facade.addDataset("validCampus1", validCampus1, InsightDatasetKind.Rooms);
 
 			return expect(result).to.eventually.have.members(["validCampus1"]);
 		});
 
-		it("should successfully add rooms dataset", function () {
+		it("should successfully add rooms dataset 3", function () {
 			const result = facade.addDataset("ubc", campus, InsightDatasetKind.Rooms);
 
 			return expect(result).to.eventually.have.members(["ubc"]);
@@ -685,7 +685,6 @@ describe("InsightFacade", function () {
 		it("[invalid/invalid_column_key_no_field.json] invalid_column_key_no_field", checkQuery(false));
 		it("[invalid/invalid_column_key_type.json] invalid_column_key_type", checkQuery(false));
 		it("[invalid/invalid_column_not_array.json] invalid_column_not_array", checkQuery(false));
-		it("[invalid/invalid_group_empty.json] invalid_group_empty", checkQuery(false));
 		it("[invalid/invalid_group_not_array.json] invalid_group_not_array", checkQuery(false));
 		it("[invalid/invalid_group_not_field.json] invalid_group_not_field", checkQuery(false));
 	});

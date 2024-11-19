@@ -292,6 +292,9 @@ export default class InsightFacade implements IInsightFacade {
 		const datasets: InsightDataset[] = [];
 		const ids: string[] = [];
 		const results = [];
+		if (!(await fs.pathExists(`${__dirname}/../../data`))) {
+			return [];
+		}
 		for (const filename of await fs.readdir(`${__dirname}/../../data`)) {
 			const id: string = filename.split(".")[0];
 			ids.push(id);
