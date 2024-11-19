@@ -3,7 +3,6 @@ import { StatusCodes } from "http-status-codes";
 import Log from "@ubccpsc310/folder-test/build/Log";
 import * as http from "http";
 import cors from "cors";
-import { clearDisk } from "../../test/TestUtil";
 import { IInsightFacade, NotFoundError } from "../controller/IInsightFacade";
 import InsightFacade from "../controller/InsightFacade";
 import { performGetDatasets } from "./GetDatasets";
@@ -68,7 +67,6 @@ export default class Server {
 	 */
 	public async stop(): Promise<void> {
 		Log.info("Server::stop()");
-		await clearDisk();
 		return new Promise((resolve, reject) => {
 			if (this.server === undefined) {
 				Log.error("Server::stop() - ERROR: server not started");
