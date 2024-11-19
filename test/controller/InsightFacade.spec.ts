@@ -119,7 +119,7 @@ describe("InsightFacade", function () {
 			return expect(result).to.eventually.have.members(["validCampus1"]);
 		});
 
-		it("should successfully add rooms dataset", function () {
+		it("should successfully add rooms dataset 3", function () {
 			const result = facade.addDataset("ubc", campus, InsightDatasetKind.Rooms);
 
 			return expect(result).to.eventually.have.members(["ubc"]);
