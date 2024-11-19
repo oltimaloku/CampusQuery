@@ -10,7 +10,7 @@ describe("Facade C3", function () {
 	const port = 4321;
 	const server = new Server(port);
 	let sections: Buffer;
-	let ubc_sections: Buffer;
+	let ubcSections: Buffer;
 	before(async function () {
 		server
 			.start()
@@ -21,7 +21,7 @@ describe("Facade C3", function () {
 				Log.error(`before tests - ERROR: ${err.message}`);
 			});
 		sections = await fs.readFile(`${__dirname}/../../test/resources/archives/pair.zip`);
-		ubc_sections = await fs.readFile(`${__dirname}/../../test/resources/archives/minimal_example.zip`);
+		ubcSections = await fs.readFile(`${__dirname}/../../test/resources/archives/minimal_example.zip`);
 		// TODO: start server here once and handle errors properly
 	});
 
@@ -78,13 +78,13 @@ describe("Facade C3", function () {
 		try {
 			return request(SERVER_URL)
 				.put(ENDPOINT_URL)
-				.send(ubc_sections)
+				.send(ubcSections)
 				.set("Content-Type", "application/x-zip-compressed")
 				.then(function (res: Response) {
 					// some logging here please!
 					expect(res.status).to.be.equal(StatusCodes.OK);
 					expect(res.body).to.deep.equal({ result: ["ubc"] });
-					return 
+					return;
 				})
 				.catch(function (err) {
 					Log.error(err.message);
