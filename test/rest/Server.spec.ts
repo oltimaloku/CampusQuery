@@ -10,6 +10,7 @@ describe("Facade C3", function () {
 	const port = 4321;
 	const server = new Server(port);
 	let sections: Buffer;
+	let ubc_sections: Buffer;
 	before(async function () {
 		server
 			.start()
@@ -20,6 +21,7 @@ describe("Facade C3", function () {
 				Log.error(`before tests - ERROR: ${err.message}`);
 			});
 		sections = await fs.readFile(`${__dirname}/../../test/resources/archives/pair.zip`);
+		ubc_sections = await fs.readFile(`${__dirname}/../../test/resources/archives/minimal_example.zip`);
 		// TODO: start server here once and handle errors properly
 	});
 
@@ -58,6 +60,31 @@ describe("Facade C3", function () {
 					// some logging here please!
 					expect(res.status).to.be.equal(StatusCodes.OK);
 					expect(res.body).to.deep.equal({ result: ["sections"] });
+				})
+				.catch(function (err) {
+					Log.error(err.message);
+					expect.fail();
+				});
+		} catch (err) {
+			Log.error(err);
+			// and some more logging here!
+		}
+	});
+
+	it("PUT test for simple courses dataset", function () {
+		const SERVER_URL = `http://localhost:${port}`;
+		const ENDPOINT_URL = "/dataset/ubc/sections";
+
+		try {
+			return request(SERVER_URL)
+				.put(ENDPOINT_URL)
+				.send(ubc_sections)
+				.set("Content-Type", "application/x-zip-compressed")
+				.then(function (res: Response) {
+					// some logging here please!
+					expect(res.status).to.be.equal(StatusCodes.OK);
+					expect(res.body).to.deep.equal({ result: ["ubc"] });
+					return 
 				})
 				.catch(function (err) {
 					Log.error(err.message);
