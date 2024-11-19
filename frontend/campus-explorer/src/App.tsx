@@ -1,8 +1,18 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { API_URL } from './constants';
 
 function App() {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    fetch(API_URL+'datasets/')
+      .then(response => response.json())
+      .then(json => setData(json['result']))
+      .catch(error => console.error(error));
+  }, []);
+
   return (
     <div className="App">
       <header className="App-header">
@@ -10,6 +20,9 @@ function App() {
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
+        <div>
+          {data ? JSON.stringify(data, null, 2) : 'Loading...'}
+        </div>
         <a
           className="App-link"
           href="https://reactjs.org"
