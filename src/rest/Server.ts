@@ -95,10 +95,18 @@ export default class Server {
 		// This is an example endpoint this you can invoke by accessing this URL in your browser:
 		// http://localhost:4321/echo/hello
 		this.express.get("/echo/:msg", Server.echo);
-		this.express.get("/datasets", this.getDatasets);
-		this.express.put("/dataset/:id/:kind", this.putDataset);
-		this.express.delete("/dataset/:id", this.deleteDataset);
-		this.express.post("/query/", this.postQuery);
+		this.express.get("/datasets", (req, res) => {
+			this.getDatasets(req, res);
+		});
+		this.express.put("/dataset/:id/:kind", (req, res) => {
+			this.putDataset(req, res);
+		});
+		this.express.delete("/dataset/:id", (req, res) => {
+			this.deleteDataset(req, res);
+		});
+		this.express.post("/query/", (req, res) => {
+			this.postQuery(req, res);
+		});
 	}
 
 	// The next two methods handle the echo service.
@@ -124,7 +132,7 @@ export default class Server {
 
 	private getDatasets(_req: Request, res: Response): void {
 		Log.info(`Server::datasets`);
-		performGetDatasets(new InsightFacade())
+		performGetDatasets(this.facade)
 			.then((value) => {
 				res.status(StatusCodes.OK).json({ result: value });
 			})
@@ -135,7 +143,7 @@ export default class Server {
 
 	private putDataset(req: Request, res: Response): void {
 		Log.info(`Server::putDataset(..) - params: ${JSON.stringify(req.params)}`);
-		performPutDataset(new InsightFacade(), req.params.id, req.params.kind, req.body.toString("base64"))
+		performPutDataset(this.facade, req.params.id, req.params.kind, req.body.toString("base64"))
 			.then((value) => {
 				res.status(StatusCodes.OK).json({ result: value });
 			})
@@ -146,7 +154,7 @@ export default class Server {
 
 	private deleteDataset(req: Request, res: Response): void {
 		Log.info(`Server::deleteDataset(..) - params: ${JSON.stringify(req.params)}`);
-		performDeleteDataset(new InsightFacade(), req.params.id)
+		performDeleteDataset(this.facade, req.params.id)
 			.then((value) => {
 				res.status(StatusCodes.OK).json({ result: value });
 			})
@@ -161,7 +169,7 @@ export default class Server {
 
 	private postQuery(req: Request, res: Response): void {
 		Log.info(`Server::postQuery(..) - params: ${JSON.stringify(req.params)}`);
-		performPostQuery(new InsightFacade(), req.body)
+		performPostQuery(this.facade, req.body)
 			.then((value) => {
 				res.status(StatusCodes.OK).json({ result: value });
 			})
