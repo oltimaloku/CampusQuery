@@ -4,7 +4,7 @@ import { GOOGLE_API_KEY } from "../constants";
 
 const MapContainer = () => {
 	const mapStyles = {
-		height: "400px",
+		height: "600px",
 		width: "100%",
 	};
 
@@ -14,11 +14,9 @@ const MapContainer = () => {
 	};
 
 	return (
-		<LoadScript googleMapsApiKey={GOOGLE_API_KEY}>
-			<GoogleMap mapContainerStyle={mapStyles} zoom={10} center={defaultCenter}>
-				<Marker position={defaultCenter} />
-			</GoogleMap>
-		</LoadScript>
+		<GoogleMap mapContainerStyle={mapStyles} zoom={10} center={defaultCenter}>
+			<Marker position={defaultCenter} />
+		</GoogleMap>
 	);
 };
 
