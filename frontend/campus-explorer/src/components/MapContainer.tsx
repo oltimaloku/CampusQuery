@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { GoogleMap, Marker } from "@react-google-maps/api";
+import { GoogleMap, InfoWindow, Marker } from "@react-google-maps/api";
 
 interface MarkerData {
 	c2rooms_lat: number;
@@ -11,6 +11,7 @@ interface MarkerData {
 
 const MapContainer = () => {
 	const [markers, setMarkers] = useState<MarkerData[]>([]);
+	const [selectedMarker, setSelectedMarker] = useState<MarkerData | null>(null);
 
 	const mapStyles = {
 		height: "600px",
@@ -56,10 +57,10 @@ const MapContainer = () => {
 					}
 					setMarkers(markerData);
 				} else {
-					//console.error("Error fetching data:", data.error);
+					console.error("Error fetching data:", data.error);
 				}
 			} catch (error) {
-				//console.error("Network error:", error);
+				console.error("Network error:", error);
 			}
 		};
 
@@ -73,8 +74,22 @@ const MapContainer = () => {
 					key={index}
 					position={{ lat: marker.c2rooms_lat, lng: marker.c2rooms_lon }}
 					title={marker.c2rooms_fullname}
+					onClick={() => setSelectedMarker(marker)}
 				/>
 			))}
+
+			{selectedMarker && (
+				<InfoWindow
+					position={{ lat: selectedMarker.c2rooms_lat, lng: selectedMarker.c2rooms_lon }}
+					onCloseClick={() => setSelectedMarker(null)}
+				>
+					<div>
+						<h2>{selectedMarker.c2rooms_fullname}</h2>
+						<p>{selectedMarker.c2rooms_address}</p>
+						<p>Short Name: {selectedMarker.c2rooms_shortname}</p>
+					</div>
+				</InfoWindow>
+			)}
 		</GoogleMap>
 	);
 };
