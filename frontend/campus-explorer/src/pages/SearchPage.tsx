@@ -12,6 +12,7 @@ function SearchPage() {
     const [selectedRoom, setSelectedRoom] = useState<RoomData | null>(null);
     const [rating, setRating] = useState<number | null>(null);
     const [ratingData, setRatingData] = useState<RatingData>({ ratingSum: 0, numOfRatings: 0 });
+    const [searchInput, setSearchInput] = useState("");
 
 	const [columnDefs] = useState<ColDef[]>([
 		{ headerName: "Room Name", field: "c2rooms_name" },
@@ -35,11 +36,18 @@ function SearchPage() {
 
 	useEffect(() => {
 		fetchRooms();
-	});
+	},
+    [searchInput]);
+
+    const handleChange = (e: React.FormEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        setSearchInput(e.currentTarget.value);
+      };
 
 	const fetchRooms = async () => {
 		const query = {
 			WHERE: {
+                IS: {c2rooms_name: searchInput}
 			},
 			OPTIONS: {
 				COLUMNS: [
@@ -100,6 +108,12 @@ function SearchPage() {
 	};
 
 	return (
+        <div>
+            <input
+                type="text"
+                placeholder="Search here"
+                onChange={handleChange}
+                value={searchInput} />
 		<div className="p-4">
 			<div className="ag-theme-quartz" style={{ height: 500 }}>
 				<AgGridReact rowData={data} columnDefs={columnDefs} domLayout="normal"/>
@@ -138,6 +152,7 @@ function SearchPage() {
 				</div>
 			)}
 		</div>
+        </div>
 	);
 }
 
