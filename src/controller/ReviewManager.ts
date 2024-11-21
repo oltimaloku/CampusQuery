@@ -41,27 +41,29 @@ export default class ReviewManager {
 	}
 
 	// Fetch the review of a specific room
-	public getReview(roomFullname: string): [number, number] {
-		if (!(roomFullname in this.roomReviews)) {
-			throw new NotFoundError(`No reviews found for room: ${roomFullname}`);
+	public getReview(roomShortname: string, roomNumber: string): [number, number] {
+		const roomCode = `${roomShortname}_${roomNumber}`;
+		if (!(roomCode in this.roomReviews)) {
+			throw new NotFoundError(`No reviews found for room: ${roomCode}`);
 		}
-		return this.roomReviews[roomFullname];
+		return this.roomReviews[roomCode];
 	}
 
 	// Update the review of a specific room
-	public updateReview(roomFullname: string, review: number): void {
-		if (!(roomFullname in this.roomReviews)) {
-			this.roomReviews[roomFullname] = [0, 0];
+	public updateReview(roomShortname: string, roomNumber: string, review: number): void {
+		const roomCode = `${roomShortname}_${roomNumber}`;
+		if (!(roomCode in this.roomReviews)) {
+			this.roomReviews[roomCode] = [0, 0];
 		}
 
-		const [currentSum, currentCount] = this.roomReviews[roomFullname];
-		this.roomReviews[roomFullname] = [currentSum + review, currentCount + 1];
+		const [currentSum, currentCount] = this.roomReviews[roomCode];
+		this.roomReviews[roomCode] = [currentSum + review, currentCount + 1];
 	}
 
 	// Initialize review entry for a room if it doesn't exist
-	public initializeReview(roomFullname: string): void {
-		if (!(roomFullname in this.roomReviews)) {
-			this.roomReviews[roomFullname] = [0, 0];
+	public initializeReview(roomCode: string): void {
+		if (!(roomCode in this.roomReviews)) {
+			this.roomReviews[roomCode] = [0, 0];
 		}
 	}
 }

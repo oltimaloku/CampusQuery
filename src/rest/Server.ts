@@ -111,11 +111,11 @@ export default class Server {
 			this.postQuery(req, res);
 		});
 
-		this.express.get("/review/:roomName", (req, res) => {
+		this.express.get("/review/:roomShortname/:roomNumber", (req, res) => {
 			this.getReview(req, res);
 		});
 
-		this.express.post("/review/:roomName/:review", (req, res) => {
+		this.express.post("/review/:roomShortname/:roomNumber/:review", (req, res) => {
 			this.updateReview(req, res);
 		});
 	}
@@ -192,12 +192,13 @@ export default class Server {
 	private async getReview(req: Request, res: Response): Promise<void> {
 		Log.info(`Server::postQuery(..) - params: ${JSON.stringify(req.params)}`);
 		try {
-			const roomName = req.params.roomName;
+			const roomShortname = req.params.roomShortname;
+			const roomNumber = req.params.roomNumber;
 
 			// Ensure reviews are loaded
 			await this.reviewManager.loadRoomReviews();
 
-			const review = this.reviewManager.getReview(roomName);
+			const review = this.reviewManager.getReview(roomShortname, roomNumber);
 			res.status(StatusCodes.OK).json({ result: review });
 		} catch (err) {
 			if (err instanceof NotFoundError) {
@@ -211,7 +212,8 @@ export default class Server {
 	private async updateReview(req: Request, res: Response): Promise<void> {
 		Log.info(`Server::postQuery(..) - params: ${JSON.stringify(req.params)}`);
 		try {
-			const roomName = req.params.roomName;
+			const roomShortname = req.params.roomShortname;
+			const roomNumber = req.params.roomNumber;
 			const reviewString = req.params.review;
 
 			const review = Number(reviewString);
@@ -222,7 +224,7 @@ export default class Server {
 
 			await this.reviewManager.loadRoomReviews();
 
-			this.reviewManager.updateReview(roomName, review);
+			this.reviewManager.updateReview(roomShortname, roomNumber, review);
 
 			await this.reviewManager.saveRoomReviews();
 

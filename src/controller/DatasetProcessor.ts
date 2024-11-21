@@ -207,7 +207,7 @@ export default class DatasetProcessor {
 					roomData.href
 				);
 
-				this.reviewManager.initializeReview(buildingData.fullName);
+				this.reviewManager.initializeReview(name);
 
 				return room;
 			} catch (error) {
