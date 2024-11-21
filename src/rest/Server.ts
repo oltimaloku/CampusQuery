@@ -9,18 +9,21 @@ import { performGetDatasets } from "./GetDatasets";
 import { performPutDataset } from "./PutDataset";
 import { performDeleteDataset } from "./DeleteDataset";
 import performPostQuery from "./PostQuery";
+import ReviewManager from "../controller/ReviewManager";
 
 export default class Server {
 	private readonly port: number;
 	private express: Application;
 	private server: http.Server | undefined;
 	private facade: IInsightFacade;
+	private reviewManager: ReviewManager;
 
 	constructor(port: number) {
 		Log.info(`Server::<init>( ${port} )`);
 		this.port = port;
 		this.express = express();
 		this.facade = new InsightFacade();
+		this.reviewManager = ReviewManager.getInstance();
 
 		this.registerMiddleware();
 		this.registerRoutes();
@@ -107,6 +110,10 @@ export default class Server {
 		this.express.post("/query/", (req, res) => {
 			this.postQuery(req, res);
 		});
+
+		this.express.get("/review/:roomName", (req, res) => {
+			this.getReview(req, res);
+		});
 	}
 
 	// The next two methods handle the echo service.
@@ -176,5 +183,23 @@ export default class Server {
 			.catch((err) => {
 				res.status(StatusCodes.BAD_REQUEST).json({ error: err.message });
 			});
+	}
+
+	private async getReview(req: Request, res: Response): Promise<void> {
+		try {
+			const roomName = req.params.roomName;
+
+			// Ensure reviews are loaded
+			await this.reviewManager.loadRoomReviews();
+
+			const review = this.reviewManager.getReview(roomName);
+			res.status(StatusCodes.OK).json({ result: review });
+		} catch (err) {
+			if (err instanceof NotFoundError) {
+				res.status(StatusCodes.NOT_FOUND).json({ error: err.message });
+			} else {
+				res.status(StatusCodes.BAD_REQUEST).json({ error: err });
+			}
+		}
 	}
 }
