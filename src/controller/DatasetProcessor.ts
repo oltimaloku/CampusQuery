@@ -4,6 +4,7 @@ import { InsightError } from "./IInsightFacade";
 import Section from "./Section";
 import Room from "./Room";
 import * as parse5 from "parse5";
+
 import { ChildNode, Document } from "parse5/dist/tree-adapters/default";
 import {
 	findTableWithClass,
@@ -16,6 +17,7 @@ import {
 	getTextContent,
 } from "./HtmlParseHelpers";
 import GeolocationService from "./GeolocationService";
+import ReviewManager from "./ReviewManager";
 
 interface BuildingData {
 	fullName: string;
@@ -35,6 +37,8 @@ interface RoomData {
 }
 
 export default class DatasetProcessor {
+	private static reviewManager = ReviewManager.getInstance();
+
 	public static async processSectionsContent(content: string): Promise<Section[]> {
 		try {
 			const buf = Buffer.from(content, "base64");
@@ -85,6 +89,8 @@ export default class DatasetProcessor {
 
 	public static async processRoomsContent(content: string): Promise<Room[]> {
 		try {
+			await this.reviewManager.loadRoomReviews();
+
 			const buf = Buffer.from(content, "base64");
 			const zip = new JSZip();
 			const zipContent = await zip.loadAsync(buf);
@@ -92,6 +98,8 @@ export default class DatasetProcessor {
 			if (rooms.length === 0) {
 				throw new InsightError("No valid rooms found");
 			}
+
+			await this.reviewManager.saveRoomReviews();
 
 			return rooms;
 		} catch (e) {
@@ -198,6 +206,8 @@ export default class DatasetProcessor {
 					roomData.furniture,
 					roomData.href
 				);
+
+				this.reviewManager.initializeReview(buildingData.fullName);
 
 				return room;
 			} catch (error) {
