@@ -150,7 +150,7 @@ function BuildingDetails() {
 	return (
 		<div className="p-4">
 			<div className="ag-theme-quartz" style={{ height: 500 }}>
-				<AgGridReact rowData={data} columnDefs={columnDefs} domLayout="autoHeight" />
+				<AgGridReact rowData={data} columnDefs={columnDefs} domLayout="normal"/>
 			</div>
 
 			{selectedRoom && (
