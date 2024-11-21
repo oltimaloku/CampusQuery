@@ -114,6 +114,10 @@ export default class Server {
 		this.express.get("/review/:roomName", (req, res) => {
 			this.getReview(req, res);
 		});
+
+		this.express.post("/review/:roomName/:review", (req, res) => {
+			this.updateReview(req, res);
+		});
 	}
 
 	// The next two methods handle the echo service.
@@ -186,6 +190,7 @@ export default class Server {
 	}
 
 	private async getReview(req: Request, res: Response): Promise<void> {
+		Log.info(`Server::postQuery(..) - params: ${JSON.stringify(req.params)}`);
 		try {
 			const roomName = req.params.roomName;
 
@@ -194,6 +199,34 @@ export default class Server {
 
 			const review = this.reviewManager.getReview(roomName);
 			res.status(StatusCodes.OK).json({ result: review });
+		} catch (err) {
+			if (err instanceof NotFoundError) {
+				res.status(StatusCodes.NOT_FOUND).json({ error: err.message });
+			} else {
+				res.status(StatusCodes.BAD_REQUEST).json({ error: err });
+			}
+		}
+	}
+
+	private async updateReview(req: Request, res: Response): Promise<void> {
+		Log.info(`Server::postQuery(..) - params: ${JSON.stringify(req.params)}`);
+		try {
+			const roomName = req.params.roomName;
+			const reviewString = req.params.review;
+
+			const review = Number(reviewString);
+
+			if (isNaN(review) || review < 0 || review > 5) {
+				throw new Error("Review must be a valid number between 0 and 5");
+			}
+
+			await this.reviewManager.loadRoomReviews();
+
+			this.reviewManager.updateReview(roomName, review);
+
+			await this.reviewManager.saveRoomReviews();
+
+			res.status(StatusCodes.OK).json({ result: "Review updated successfully" });
 		} catch (err) {
 			if (err instanceof NotFoundError) {
 				res.status(StatusCodes.NOT_FOUND).json({ error: err.message });
