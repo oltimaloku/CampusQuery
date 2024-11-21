@@ -5,6 +5,7 @@ import MapContainer from "./components/MapContainer";
 import { LoadScript } from "@react-google-maps/api";
 import { GOOGLE_API_KEY } from "./constants";
 import BuildingDetails from "./pages/BuildingDetails";
+import SearchPage from "./pages/SearchPage";
 
 const App = () => {
 	return (
@@ -15,6 +16,7 @@ const App = () => {
 					<Route path="/" element={<Home />} />
 					<Route path="/map" element={<MapContainer />} />
           <Route path="/building/:shortName" element={<BuildingDetails />} />
+          <Route path="/search" element={<SearchPage />} />
 				</Routes>
 			</LoadScript>
 		</>
