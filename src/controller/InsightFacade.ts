@@ -297,9 +297,11 @@ export default class InsightFacade implements IInsightFacade {
 			return [];
 		}
 		for (const filename of await fs.readdir(`${__dirname}/../../data`)) {
-			const id: string = filename.split(".")[0];
-			ids.push(id);
-			results.push(this.getDataset(id));
+			if (filename.split(".")[0] !== "room_reviews"){
+				const id: string = filename.split(".")[0];
+				ids.push(id);
+				results.push(this.getDataset(id));
+			}
 		}
 		const resolved = await Promise.all(results);
 		for (let i = 0; i < ids.length; i++) {

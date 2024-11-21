@@ -1,18 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { API_URL, RoomData } from "../constants";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import { ColDef } from "ag-grid-community";
-import { calculateAverageRating, CustomButton, CustomButtonProps, handleShowReviews, RatingData } from "../components/Review";
+import { calculateAverageRating, CustomButton, handleShowReviews, RatingData } from "../components/Review";
+import { DistanceMatrixService } from "@react-google-maps/api";
 
 function SearchPage() {
+    const gridRef = useRef<AgGridReact<RoomData>>(null);
 	const [data, setData] = useState<RoomData[]>([]);
     const [selectedRoom, setSelectedRoom] = useState<RoomData | null>(null);
     const [rating, setRating] = useState<number | null>(null);
     const [ratingData, setRatingData] = useState<RatingData>({ ratingSum: 0, numOfRatings: 0 });
     const [searchInput, setSearchInput] = useState("");
+    const [selectedRooms, setSelectedRooms] = useState<RoomData[] | null>([]);
+    const [distanceMatrix, setDistanceMatrix] = useState<google.maps.DistanceMatrixResponseRow[]>([]);
+    var service = new google.maps.DistanceMatrixService();
+
+    const distanceCallback = (response: any, _status: any) => {
+        if (response !== null) {
+            console.log(response.rows)
+            setDistanceMatrix(response.rows)
+        }
+    }
 
 	const [columnDefs] = useState<ColDef[]>([
 		{ headerName: "Room Name", field: "c2rooms_name" },
@@ -44,6 +56,17 @@ function SearchPage() {
         setSearchInput(e.currentTarget.value);
       };
 
+      const onShowSelection = useCallback(() => {
+        // api.getSelectedRows() : ICar[]
+        const rooms: RoomData[] = gridRef.current!.api.getSelectedRows();
+        setSelectedRooms(rooms);
+        service.getDistanceMatrix({
+            destinations: rooms.map((room) => {return {lat:room.c2rooms_lat, lng:room.c2rooms_lon}}),
+            origins: rooms.map((room) => {return {lat:room.c2rooms_lat, lng:room.c2rooms_lon}}),
+            travelMode: google.maps.TravelMode.WALKING,
+            }, distanceCallback);
+      }, []);
+
 	const fetchRooms = async () => {
 		const query = {
 			WHERE: {
@@ -60,6 +83,8 @@ function SearchPage() {
 					"c2rooms_type",
 					"c2rooms_furniture",
 					"c2rooms_href",
+                    "c2rooms_lat",
+                    "c2rooms_lon",
 				],
 			},
 		};
@@ -113,10 +138,20 @@ function SearchPage() {
                 type="text"
                 placeholder="Search here"
                 onChange={handleChange}
-                value={searchInput} />
+                value={searchInput}
+            />
+            <button onClick={onShowSelection}>Show selected Rooms</button>
 		<div className="p-4">
 			<div className="ag-theme-quartz" style={{ height: 500 }}>
-				<AgGridReact rowData={data} columnDefs={columnDefs} domLayout="normal"/>
+				<AgGridReact
+                    rowData={data}
+                    columnDefs={columnDefs}
+                    domLayout="normal"
+                    rowSelection={{
+                        mode: "multiRow",
+                    }}
+                    ref={gridRef}
+                />
 			</div>
 
 			{selectedRoom && (
@@ -152,6 +187,26 @@ function SearchPage() {
 				</div>
 			)}
 		</div>
+        <table>
+        <tbody>
+        <tr>
+            <th>Duration between rooms</th>
+            {selectedRooms!.map((room) => (
+                <th>{room.c2rooms_name}</th>
+            ))}
+        </tr>
+            {distanceMatrix.map((row, index) => (
+                <tr>
+                <td> {selectedRooms![index].c2rooms_name } </td>
+                {row.elements.map((element) => (
+                    <td>
+                        {element.duration.text}
+                    </td>
+                ))}
+                </tr>
+            ))}
+        </tbody>
+        </table>
         </div>
 	);
 }

@@ -5,7 +5,7 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import { ColDef } from "ag-grid-community";
-import { calculateAverageRating, CustomButton, CustomButtonProps, handleShowReviews, RatingData } from "../components/Review";
+import { calculateAverageRating, CustomButton, handleShowReviews, RatingData } from "../components/Review";
 
 function BuildingDetails() {
 	const [data, setData] = useState<RoomData[]>([]);
@@ -54,6 +54,8 @@ function BuildingDetails() {
 					"c2rooms_type",
 					"c2rooms_furniture",
 					"c2rooms_href",
+                    "c2rooms_lat",
+                    "c2rooms_lon",
 				],
 			},
 		};
