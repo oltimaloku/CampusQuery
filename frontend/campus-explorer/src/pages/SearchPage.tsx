@@ -7,12 +7,12 @@ import "ag-grid-community/styles/ag-theme-quartz.css";
 import { ColDef } from "ag-grid-community";
 import { calculateAverageRating, CustomButton, CustomButtonProps, handleShowReviews, RatingData } from "../components/Review";
 
-function BuildingDetails() {
+function SearchPage() {
 	const [data, setData] = useState<RoomData[]>([]);
     const [selectedRoom, setSelectedRoom] = useState<RoomData | null>(null);
     const [rating, setRating] = useState<number | null>(null);
     const [ratingData, setRatingData] = useState<RatingData>({ ratingSum: 0, numOfRatings: 0 });
-	const { shortName } = useParams();
+    const [searchInput, setSearchInput] = useState("");
 
 	const [columnDefs] = useState<ColDef[]>([
 		{ headerName: "Room Name", field: "c2rooms_name" },
@@ -36,12 +36,18 @@ function BuildingDetails() {
 
 	useEffect(() => {
 		fetchRooms();
-	}, [shortName]);
+	},
+    [searchInput]);
+
+    const handleChange = (e: React.FormEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        setSearchInput(e.currentTarget.value);
+      };
 
 	const fetchRooms = async () => {
 		const query = {
 			WHERE: {
-				IS: { c2rooms_shortname: shortName },
+                IS: {c2rooms_name: searchInput}
 			},
 			OPTIONS: {
 				COLUMNS: [
@@ -102,6 +108,12 @@ function BuildingDetails() {
 	};
 
 	return (
+        <div>
+            <input
+                type="text"
+                placeholder="Search here"
+                onChange={handleChange}
+                value={searchInput} />
 		<div className="p-4">
 			<div className="ag-theme-quartz" style={{ height: 500 }}>
 				<AgGridReact rowData={data} columnDefs={columnDefs} domLayout="normal"/>
@@ -140,7 +152,8 @@ function BuildingDetails() {
 				</div>
 			)}
 		</div>
+        </div>
 	);
 }
 
-export default BuildingDetails;
+export default SearchPage;
