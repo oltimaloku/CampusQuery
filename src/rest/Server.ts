@@ -9,18 +9,21 @@ import { performGetDatasets } from "./GetDatasets";
 import { performPutDataset } from "./PutDataset";
 import { performDeleteDataset } from "./DeleteDataset";
 import performPostQuery from "./PostQuery";
+import ReviewManager from "../controller/ReviewManager";
 
 export default class Server {
 	private readonly port: number;
 	private express: Application;
 	private server: http.Server | undefined;
 	private facade: IInsightFacade;
+	private reviewManager: ReviewManager;
 
 	constructor(port: number) {
 		Log.info(`Server::<init>( ${port} )`);
 		this.port = port;
 		this.express = express();
 		this.facade = new InsightFacade();
+		this.reviewManager = ReviewManager.getInstance();
 
 		this.registerMiddleware();
 		this.registerRoutes();
@@ -107,6 +110,14 @@ export default class Server {
 		this.express.post("/query/", (req, res) => {
 			this.postQuery(req, res);
 		});
+
+		this.express.get("/review/:roomShortname/:roomNumber", (req, res) => {
+			this.getReview(req, res);
+		});
+
+		this.express.patch("/review/:roomShortname/:roomNumber/:review", (req, res) => {
+			this.updateReview(req, res);
+		});
 	}
 
 	// The next two methods handle the echo service.
@@ -176,5 +187,54 @@ export default class Server {
 			.catch((err) => {
 				res.status(StatusCodes.BAD_REQUEST).json({ error: err.message });
 			});
+	}
+
+	private async getReview(req: Request, res: Response): Promise<void> {
+		Log.info(`Server::postQuery(..) - params: ${JSON.stringify(req.params)}`);
+		try {
+			const roomShortname = req.params.roomShortname;
+			const roomNumber = req.params.roomNumber;
+
+			// Ensure reviews are loaded
+			await this.reviewManager.loadRoomReviews();
+
+			const review = this.reviewManager.getReview(roomShortname, roomNumber);
+			res.status(StatusCodes.OK).json({ result: review });
+		} catch (err) {
+			if (err instanceof NotFoundError) {
+				res.status(StatusCodes.NOT_FOUND).json({ error: err.message });
+			} else {
+				res.status(StatusCodes.BAD_REQUEST).json({ error: err });
+			}
+		}
+	}
+
+	private async updateReview(req: Request, res: Response): Promise<void> {
+		Log.info(`Server::postQuery(..) - params: ${JSON.stringify(req.params)}`);
+		try {
+			const roomShortname = req.params.roomShortname;
+			const roomNumber = req.params.roomNumber;
+			const reviewString = req.params.review;
+
+			const review = Number(reviewString);
+
+			if (isNaN(review) || review < 0 || review > 5) {
+				throw new Error("Review must be a valid number between 0 and 5");
+			}
+
+			await this.reviewManager.loadRoomReviews();
+
+			this.reviewManager.updateReview(roomShortname, roomNumber, review);
+
+			await this.reviewManager.saveRoomReviews();
+
+			res.status(StatusCodes.OK).json({ result: "Review updated successfully" });
+		} catch (err) {
+			if (err instanceof NotFoundError) {
+				res.status(StatusCodes.NOT_FOUND).json({ error: err.message });
+			} else {
+				res.status(StatusCodes.BAD_REQUEST).json({ error: err });
+			}
+		}
 	}
 }

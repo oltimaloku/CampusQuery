@@ -31,6 +31,7 @@ import {
 	TransformationAssignment,
 } from "./TransformationHelpers";
 import { runSMFilter } from "./FilterSpecifics";
+import ReviewManager from "./ReviewManager";
 
 /**
  * This is the main programmatic entry point for the project.
