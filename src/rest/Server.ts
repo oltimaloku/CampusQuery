@@ -115,7 +115,7 @@ export default class Server {
 			this.getReview(req, res);
 		});
 
-		this.express.post("/review/:roomShortname/:roomNumber/:review", (req, res) => {
+		this.express.patch("/review/:roomShortname/:roomNumber/:review", (req, res) => {
 			this.updateReview(req, res);
 		});
 	}
