@@ -1,13 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { GoogleMap, InfoWindow, Marker } from "@react-google-maps/api";
-
-interface MarkerData {
-	c2rooms_lat: number;
-	c2rooms_lon: number;
-	c2rooms_fullname: string;
-	c2rooms_shortname: string;
-	c2rooms_address: string;
-}
+import { API_URL, MarkerData } from '../constants';
+import { Link } from "react-router-dom";
 
 const MapContainer = () => {
 	const [markers, setMarkers] = useState<MarkerData[]>([]);
@@ -31,16 +25,25 @@ const MapContainer = () => {
 					COLUMNS: [
 						"c2rooms_shortname",
 						"c2rooms_fullname",
-						"c2rooms_seats",
-						"c2rooms_furniture",
 						"c2rooms_lat",
 						"c2rooms_lon",
+						"c2rooms_address",
 					],
 				},
+				TRANSFORMATIONS: {
+					GROUP: [
+					  "c2rooms_shortname",
+					  "c2rooms_fullname",
+					  "c2rooms_lat",
+					  "c2rooms_lon",
+					  "c2rooms_address"
+					],
+					APPLY: []
+				  }
 			};
 
 			try {
-				const response = await fetch("http://localhost:4321/query", {
+				const response = await fetch(API_URL+"query/", {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
@@ -87,6 +90,7 @@ const MapContainer = () => {
 						<h2>{selectedMarker.c2rooms_fullname}</h2>
 						<p>{selectedMarker.c2rooms_address}</p>
 						<p>Short Name: {selectedMarker.c2rooms_shortname}</p>
+						<Link to={"/building/"+selectedMarker.c2rooms_shortname}>Building Details</Link>
 					</div>
 				</InfoWindow>
 			)}
