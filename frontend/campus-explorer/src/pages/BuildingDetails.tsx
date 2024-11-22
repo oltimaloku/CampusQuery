@@ -63,6 +63,8 @@ function BuildingDetails() {
 					"c2rooms_type",
 					"c2rooms_furniture",
 					"c2rooms_href",
+                    "c2rooms_lat",
+                    "c2rooms_lon",
 				],
 			},
 		};

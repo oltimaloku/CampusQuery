@@ -13,6 +13,9 @@ const NavBar = () => {
 				<li>
 					<NavLink to="/search">Search</NavLink>
 				</li>
+				<li>
+					<NavLink to="/favourites">Favourites</NavLink>
+				</li>
 			</ul>
 		</nav>
 	);

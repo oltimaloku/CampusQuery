@@ -8,7 +8,7 @@ import { ColDef } from "ag-grid-community";
 import { calculateAverageRating, CustomButton, handleShowReviews, RatingData } from "../components/Review";
 import { DistanceMatrixService } from "@react-google-maps/api";
 
-function SearchPage() {
+function Favourites() {
     const gridRef = useRef<AgGridReact<RoomData>>(null);
 	const [data, setData] = useState<RoomData[]>([]);
     const [selectedRoom, setSelectedRoom] = useState<RoomData | null>(null);
@@ -17,6 +17,7 @@ function SearchPage() {
     const [searchInput, setSearchInput] = useState("");
     const [selectedRooms, setSelectedRooms] = useState<RoomData[] | null>([]);
     const [distanceMatrix, setDistanceMatrix] = useState<google.maps.DistanceMatrixResponseRow[]>([]);
+	const [favourites, setFavourites] = useState<string[]>([]);
     var service = new google.maps.DistanceMatrixService();
 
     const distanceCallback = (response: any, _status: any) => {
@@ -26,17 +27,18 @@ function SearchPage() {
         }
     }
 
-	const addToFavorites = async (roomName: string) => {
+	const removeFromFavorites = async (roomName: string) => {
         try {
             const response = await fetch(`${API_URL}favourite/${roomName}`, {
-                method: "PUT",
+                method: "DELETE",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ roomName }),
             });
-            if (!response.ok) throw new Error("Failed to add to favorites");
+            if (!response.ok) throw new Error("Failed to remove from favorites");
         } catch (error) {
-            console.error("Error adding to favorites:", error);
+            console.error("Error removing from favorites:", error);
         }
+		fetchRooms();
     };
 
 	const [columnDefs] = useState<ColDef[]>([
@@ -47,11 +49,11 @@ function SearchPage() {
 			{params.data.c2rooms_name}
 			</a>
 		)},
-		{ headerName: "Building Name", field: "c2rooms_fullname", filter: 'agTextColumnFilter' },
+		{ headerName: "Building Name", field: "c2rooms_fullname" },
 		{ headerName: "Address", field: "c2rooms_address" },
-		{ headerName: "Seats", field: "c2rooms_seats", filter: "agNumberColumnFilter"},
-		{ headerName: "Type", field: "c2rooms_type", filter: 'agTextColumnFilter' },
-		{ headerName: "Furniture", field: "c2rooms_furniture", filter: 'agTextColumnFilter' },
+		{ headerName: "Seats", field: "c2rooms_seats" },
+		{ headerName: "Type", field: "c2rooms_type" },
+		{ headerName: "Furniture", field: "c2rooms_furniture" },
 		{
 			headerName: "Actions",
 			field: "actions",
@@ -65,8 +67,8 @@ function SearchPage() {
 						setRating={setRating}
 						setSelectedRoom={setSelectedRoom}
 						setRatingData={setRatingData}/>
-						<button onClick={() => addToFavorites(roomName)}>
-							Add to favourites
+						<button onClick={() => removeFromFavorites(roomName)}>
+							Remove to favourites
 						</button>
 					</div>
 				)
@@ -96,9 +98,13 @@ function SearchPage() {
       }, []);
 
 	const fetchRooms = async () => {
+		const response1: any = await fetch(`${API_URL}favourite/`, {
+			method: "GET",
+			headers: { "Content-Type": "application/json" },
+		});
+		const favoriteRooms = await response1.json();
 		const query = {
 			WHERE: {
-                IS: {c2rooms_name: searchInput}
 			},
 			OPTIONS: {
 				COLUMNS: [
@@ -128,7 +134,7 @@ function SearchPage() {
 
 			const data = await response.json();
 			if (data.result) {
-				setData(data.result);
+				setData(data.result.filter((datum: any) => (favoriteRooms['result'].includes(datum.c2rooms_name))));
 			} else {
 				console.error("Error fetching data:", data.error);
 			}
@@ -240,4 +246,4 @@ function SearchPage() {
 	);
 }
 
-export default SearchPage;
+export default Favourites;
