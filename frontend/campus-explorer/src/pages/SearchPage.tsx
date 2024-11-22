@@ -9,96 +9,105 @@ import { calculateAverageRating, CustomButton, handleShowReviews, RatingData } f
 import { DistanceMatrixService } from "@react-google-maps/api";
 
 function SearchPage() {
-    const gridRef = useRef<AgGridReact<RoomData>>(null);
+	const gridRef = useRef<AgGridReact<RoomData>>(null);
 	const [data, setData] = useState<RoomData[]>([]);
-    const [selectedRoom, setSelectedRoom] = useState<RoomData | null>(null);
-    const [rating, setRating] = useState<number | null>(null);
-    const [ratingData, setRatingData] = useState<RatingData>({ ratingSum: 0, numOfRatings: 0 });
-    const [searchInput, setSearchInput] = useState("");
-    const [selectedRooms, setSelectedRooms] = useState<RoomData[] | null>([]);
-    const [distanceMatrix, setDistanceMatrix] = useState<google.maps.DistanceMatrixResponseRow[]>([]);
-    var service = new google.maps.DistanceMatrixService();
+	const [selectedRoom, setSelectedRoom] = useState<RoomData | null>(null);
+	const [rating, setRating] = useState<number | null>(null);
+	const [ratingData, setRatingData] = useState<RatingData>({ ratingSum: 0, numOfRatings: 0 });
+	const [searchInput, setSearchInput] = useState("");
+	const [selectedRooms, setSelectedRooms] = useState<RoomData[] | null>([]);
+	const [distanceMatrix, setDistanceMatrix] = useState<google.maps.DistanceMatrixResponseRow[]>([]);
+	var service = new google.maps.DistanceMatrixService();
 
-    const distanceCallback = (response: any, _status: any) => {
-        if (response !== null) {
-            console.log(response.rows)
-            setDistanceMatrix(response.rows)
-        }
-    }
+	const distanceCallback = (response: any, _status: any) => {
+		if (response !== null) {
+			console.log(response.rows);
+			setDistanceMatrix(response.rows);
+		}
+	};
 
 	const addToFavorites = async (roomName: string) => {
-        try {
-            const response = await fetch(`${API_URL}favourite/${roomName}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ roomName }),
-            });
-            if (!response.ok) throw new Error("Failed to add to favorites");
-        } catch (error) {
-            console.error("Error adding to favorites:", error);
-        }
-    };
+		try {
+			const response = await fetch(`${API_URL}favourite/${roomName}`, {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ roomName }),
+			});
+			if (!response.ok) throw new Error("Failed to add to favorites");
+		} catch (error) {
+			console.error("Error adding to favorites:", error);
+		}
+	};
 
 	const [columnDefs] = useState<ColDef[]>([
-		{ headerName: "Room Name",
-		field: "c2rooms_name",
-		cellRenderer: (params: any) => (
-			<a href={params.data.c2rooms_href} target="_blank">
-			{params.data.c2rooms_name}
-			</a>
-		)},
-		{ headerName: "Building Name", field: "c2rooms_fullname", filter: 'agTextColumnFilter' },
+		{
+			headerName: "Room Name",
+			field: "c2rooms_name",
+			cellRenderer: (params: any) => (
+				<a href={params.data.c2rooms_href} target="_blank">
+					{params.data.c2rooms_name}
+				</a>
+			),
+		},
+		{ headerName: "Building Full Name", field: "c2rooms_fullname", filter: "agTextColumnFilter" },
+		{ headerName: "Building Short Name", field: "c2rooms_shortname", filter: "agTextColumnFilter" },
+		{ headerName: "Building Number", field: "c2rooms_number", filter: "agTextColumnFilter" },
 		{ headerName: "Address", field: "c2rooms_address" },
-		{ headerName: "Seats", field: "c2rooms_seats", filter: "agNumberColumnFilter"},
-		{ headerName: "Type", field: "c2rooms_type", filter: 'agTextColumnFilter' },
-		{ headerName: "Furniture", field: "c2rooms_furniture", filter: 'agTextColumnFilter' },
+		{ headerName: "Seats", field: "c2rooms_seats", filter: "agNumberColumnFilter" },
+		{ headerName: "Type", field: "c2rooms_type", filter: "agTextColumnFilter" },
+		{ headerName: "Furniture", field: "c2rooms_furniture", filter: "agTextColumnFilter" },
 		{
 			headerName: "Actions",
 			field: "actions",
 			cellRenderer: (params: any) => {
 				const roomName = params.data.c2rooms_name;
-				return(
+				return (
 					<div>
 						<CustomButton
-						data={params.data}
-						handleShowReviews={handleShowReviews}
-						setRating={setRating}
-						setSelectedRoom={setSelectedRoom}
-						setRatingData={setRatingData}/>
-						<button onClick={() => addToFavorites(roomName)}>
-							Add to favourites
-						</button>
+							data={params.data}
+							handleShowReviews={handleShowReviews}
+							setRating={setRating}
+							setSelectedRoom={setSelectedRoom}
+							setRatingData={setRatingData}
+						/>
+						<button onClick={() => addToFavorites(roomName)}>Add to favourites</button>
 					</div>
-				)
+				);
 			},
 		},
 	]);
 
 	useEffect(() => {
 		fetchRooms();
-	},
-    [searchInput]);
+	}, [searchInput]);
 
-    const handleChange = (e: React.FormEvent<HTMLInputElement>) => {
-        e.preventDefault();
-        setSearchInput(e.currentTarget.value);
-      };
+	const handleChange = (e: React.FormEvent<HTMLInputElement>) => {
+		e.preventDefault();
+		setSearchInput(e.currentTarget.value);
+	};
 
-      const onShowSelection = useCallback(() => {
-        // api.getSelectedRows() : ICar[]
-        const rooms: RoomData[] = gridRef.current!.api.getSelectedRows();
-        setSelectedRooms(rooms);
-        service.getDistanceMatrix({
-            destinations: rooms.map((room) => {return {lat:room.c2rooms_lat, lng:room.c2rooms_lon}}),
-            origins: rooms.map((room) => {return {lat:room.c2rooms_lat, lng:room.c2rooms_lon}}),
-            travelMode: google.maps.TravelMode.WALKING,
-            }, distanceCallback);
-      }, []);
+	const onShowSelection = useCallback(() => {
+		// api.getSelectedRows() : ICar[]
+		const rooms: RoomData[] = gridRef.current!.api.getSelectedRows();
+		setSelectedRooms(rooms);
+		service.getDistanceMatrix(
+			{
+				destinations: rooms.map((room) => {
+					return { lat: room.c2rooms_lat, lng: room.c2rooms_lon };
+				}),
+				origins: rooms.map((room) => {
+					return { lat: room.c2rooms_lat, lng: room.c2rooms_lon };
+				}),
+				travelMode: google.maps.TravelMode.WALKING,
+			},
+			distanceCallback
+		);
+	}, []);
 
 	const fetchRooms = async () => {
 		const query = {
 			WHERE: {
-                IS: {c2rooms_name: searchInput}
+				IS: { c2rooms_name: searchInput },
 			},
 			OPTIONS: {
 				COLUMNS: [
@@ -111,8 +120,8 @@ function SearchPage() {
 					"c2rooms_type",
 					"c2rooms_furniture",
 					"c2rooms_href",
-                    "c2rooms_lat",
-                    "c2rooms_lon",
+					"c2rooms_lat",
+					"c2rooms_lon",
 				],
 			},
 		};
@@ -161,82 +170,75 @@ function SearchPage() {
 	};
 
 	return (
-        <div>
-            <input
-                type="text"
-                placeholder="Search here"
-                onChange={handleChange}
-                value={searchInput}
-            />
-            <button onClick={onShowSelection}>Show selected Rooms</button>
-		<div className="p-4">
-			<div className="ag-theme-quartz" style={{ height: 500 }}>
-				<AgGridReact
-                    rowData={data}
-                    columnDefs={columnDefs}
-                    domLayout="normal"
-                    rowSelection={{
-                        mode: "multiRow",
-                    }}
-                    ref={gridRef}
-					autoSizeStrategy={{type: "fitCellContents",}}
-                />
-			</div>
+		<div>
+			<input type="text" placeholder="Search here" onChange={handleChange} value={searchInput} />
+			<button onClick={onShowSelection}>Show selected Rooms</button>
+			<div className="p-4">
+				<div className="ag-theme-quartz" style={{ height: 500 }}>
+					<AgGridReact
+						rowData={data}
+						columnDefs={columnDefs}
+						domLayout="normal"
+						rowSelection={{
+							mode: "multiRow",
+						}}
+						ref={gridRef}
+						autoSizeStrategy={{ type: "fitCellContents" }}
+					/>
+				</div>
 
-			{selectedRoom && (
-				<div className="mt-8 p-4 border rounded-lg">
-					<h2 className="text-xl font-bold mb-4">Reviews for {selectedRoom.c2rooms_name}</h2>
-					<div className="mb-6">
-						<div className="bg-gray-100 p-4 rounded-lg text-center">
-							<p className="text-2xl font-bold text-blue-600">{calculateAverageRating(ratingData)}/5</p>
-							<p className="text-gray-600">Average Rating</p>
-							<p className="text-sm text-gray-500">({ratingData.numOfRatings} reviews)</p>
+				{selectedRoom && (
+					<div className="mt-8 p-4 border rounded-lg">
+						<h2 className="text-xl font-bold mb-4">Reviews for {selectedRoom.c2rooms_name}</h2>
+						<div className="mb-6">
+							<div className="bg-gray-100 p-4 rounded-lg text-center">
+								<p className="text-2xl font-bold text-blue-600">{calculateAverageRating(ratingData)}/5</p>
+								<p className="text-gray-600">Average Rating</p>
+								<p className="text-sm text-gray-500">({ratingData.numOfRatings} reviews)</p>
+							</div>
+						</div>
+						<div className="flex gap-4 items-center">
+							<label className="flex items-center gap-2">
+								Add Rating (0-5):
+								<input
+									type="number"
+									value={rating ?? ""}
+									min={0}
+									max={5}
+									onChange={(e) => setRating(Number(e.target.value))}
+									className="border rounded px-2 py-1 w-20"
+								/>
+							</label>
+							<button
+								onClick={handleSubmitReview}
+								className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+								disabled={rating === null}
+							>
+								Submit
+							</button>
 						</div>
 					</div>
-					<div className="flex gap-4 items-center">
-						<label className="flex items-center gap-2">
-							Add Rating (0-5):
-							<input
-								type="number"
-								value={rating ?? ""}
-								min={0}
-								max={5}
-								onChange={(e) => setRating(Number(e.target.value))}
-								className="border rounded px-2 py-1 w-20"
-							/>
-						</label>
-						<button
-							onClick={handleSubmitReview}
-							className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-							disabled={rating === null}
-						>
-							Submit
-						</button>
-					</div>
-				</div>
-			)}
+				)}
+			</div>
+			<table>
+				<tbody>
+					<tr>
+						<th>Duration between rooms</th>
+						{selectedRooms!.map((room) => (
+							<th>{room.c2rooms_name}</th>
+						))}
+					</tr>
+					{distanceMatrix.map((row, index) => (
+						<tr>
+							<td> {selectedRooms![index].c2rooms_name} </td>
+							{row.elements.map((element) => (
+								<td>{element.duration.text}</td>
+							))}
+						</tr>
+					))}
+				</tbody>
+			</table>
 		</div>
-        <table>
-        <tbody>
-        <tr>
-            <th>Duration between rooms</th>
-            {selectedRooms!.map((room) => (
-                <th>{room.c2rooms_name}</th>
-            ))}
-        </tr>
-            {distanceMatrix.map((row, index) => (
-                <tr>
-                <td> {selectedRooms![index].c2rooms_name } </td>
-                {row.elements.map((element) => (
-                    <td>
-                        {element.duration.text}
-                    </td>
-                ))}
-                </tr>
-            ))}
-        </tbody>
-        </table>
-        </div>
 	);
 }
 
