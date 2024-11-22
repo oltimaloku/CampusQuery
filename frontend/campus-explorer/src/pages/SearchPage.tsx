@@ -39,20 +39,6 @@ function SearchPage() {
         }
     };
 
-    const removeFromFavorites = async (roomName: string) => {
-        try {
-            const response = await fetch(`${API_URL}favourite/${roomName}`, {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ roomName }),
-            });
-            if (!response.ok) throw new Error("Failed to remove from favorites");
-        } catch (error) {
-            console.error("Error removing from favorites:", error);
-        }
-    };
-
-
 	const [columnDefs] = useState<ColDef[]>([
 		{ headerName: "Room Name",
 		field: "c2rooms_name",
@@ -82,10 +68,6 @@ function SearchPage() {
 						<button onClick={() => addToFavorites(roomName)}>
 							Add to favourites
 						</button>
-						<button onClick={() => removeFromFavorites(roomName)}>
-							Remove to favourites
-						</button>
-
 					</div>
 				)
 			},

@@ -27,15 +27,33 @@ function Favourites() {
         }
     }
 
+	const removeFromFavorites = async (roomName: string) => {
+        try {
+            const response = await fetch(`${API_URL}favourite/${roomName}`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ roomName }),
+            });
+            if (!response.ok) throw new Error("Failed to remove from favorites");
+        } catch (error) {
+            console.error("Error removing from favorites:", error);
+        }
+		fetchRooms();
+    };
 
 	const [columnDefs] = useState<ColDef[]>([
-		{ headerName: "Room Name", field: "c2rooms_name" },
+		{ headerName: "Room Name",
+		field: "c2rooms_name",
+		cellRenderer: (params: any) => (
+			<a href={params.data.c2rooms_href} target="_blank">
+			{params.data.c2rooms_name}
+			</a>
+		)},
 		{ headerName: "Building Name", field: "c2rooms_fullname" },
 		{ headerName: "Address", field: "c2rooms_address" },
 		{ headerName: "Seats", field: "c2rooms_seats" },
 		{ headerName: "Type", field: "c2rooms_type" },
 		{ headerName: "Furniture", field: "c2rooms_furniture" },
-		{ headerName: "Link", field: "c2rooms_href" },
 		{
 			headerName: "Actions",
 			field: "actions",
@@ -49,6 +67,9 @@ function Favourites() {
 						setRating={setRating}
 						setSelectedRoom={setSelectedRoom}
 						setRatingData={setRatingData}/>
+						<button onClick={() => removeFromFavorites(roomName)}>
+							Remove to favourites
+						</button>
 					</div>
 				)
 			},
@@ -164,6 +185,7 @@ function Favourites() {
                         mode: "multiRow",
                     }}
                     ref={gridRef}
+					autoSizeStrategy={{type: "fitCellContents",}}
                 />
 			</div>
 
