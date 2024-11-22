@@ -40,12 +40,10 @@ const MapContainer = () => {
 				});
 
 				const data = await response.json();
-				console.log(data);
+
 				if (data.result) {
 					const markerData = data.result as MarkerData[];
-					for (let marker in markerData) {
-						console.log(marker);
-					}
+
 					setMarkers(markerData);
 				} else {
 					console.error("Error fetching data:", data.error);
