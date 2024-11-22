@@ -15,7 +15,7 @@ export default class Server {
 	private readonly port: number;
 	private express: Application;
 	private server: http.Server | undefined;
-	private facade: IInsightFacade;
+	private facade: InsightFacade;
 	private reviewManager: ReviewManager;
 
 	constructor(port: number) {
@@ -110,6 +110,15 @@ export default class Server {
 		this.express.post("/query/", (req, res) => {
 			this.postQuery(req, res);
 		});
+		this.express.put("/favourite/:name", (req, res) => {
+			this.addFavourite(req, res);
+		})
+		this.express.delete("/favourite/:name", (req, res) => {
+			this.deleteFavourite(req, res);
+		})
+		this.express.get("/favourite/", (req, res) => {
+			this.getFavourites(req, res);
+		})
 
 		this.express.get("/review/:roomShortname/:roomNumber", (req, res) => {
 			this.getReview(req, res);
@@ -187,6 +196,25 @@ export default class Server {
 			.catch((err) => {
 				res.status(StatusCodes.BAD_REQUEST).json({ error: err.message });
 			});
+	}
+
+	private addFavourite(req: Request, res: Response): void {
+		Log.info(`Server::addFavourite(..) - params: ${JSON.stringify(req.params)}`);
+		this.facade.favRooms.push(req.params.name);
+		res.status(StatusCodes.OK).json({ result: this.facade.favRooms });
+	}
+
+	private deleteFavourite(req: Request, res: Response): void {
+		Log.info(`Server::deleteFavourite(..) - params: ${JSON.stringify(req.params)}`);
+			this.facade.favRooms = this.facade.favRooms.filter(function(item) {
+				return item !== req.params.name;
+			});
+		res.status(StatusCodes.OK).json({ result: this.facade.favRooms });
+	}
+
+	private getFavourites(req: Request, res: Response): void {
+		Log.info(`Server::getFavourites(..)`);
+		res.status(StatusCodes.OK).json({ result: this.facade.favRooms });
 	}
 
 	private async getReview(req: Request, res: Response): Promise<void> {
