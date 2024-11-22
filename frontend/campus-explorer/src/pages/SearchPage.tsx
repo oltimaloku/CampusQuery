@@ -26,6 +26,33 @@ function SearchPage() {
         }
     }
 
+	const addToFavorites = async (roomName: string) => {
+        try {
+            const response = await fetch(`${API_URL}favourite/${roomName}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ roomName }),
+            });
+            if (!response.ok) throw new Error("Failed to add to favorites");
+        } catch (error) {
+            console.error("Error adding to favorites:", error);
+        }
+    };
+
+    const removeFromFavorites = async (roomName: string) => {
+        try {
+            const response = await fetch(`${API_URL}favourite/${roomName}`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ roomName }),
+            });
+            if (!response.ok) throw new Error("Failed to remove from favorites");
+        } catch (error) {
+            console.error("Error removing from favorites:", error);
+        }
+    };
+
+
 	const [columnDefs] = useState<ColDef[]>([
 		{ headerName: "Room Name", field: "c2rooms_name" },
 		{ headerName: "Building Name", field: "c2rooms_fullname" },
@@ -37,12 +64,26 @@ function SearchPage() {
 		{
 			headerName: "Actions",
 			field: "actions",
-			cellRenderer: (params: any) => <CustomButton
-            data={params.data}
-            handleShowReviews={handleShowReviews}
-            setRating={setRating}
-            setSelectedRoom={setSelectedRoom}
-            setRatingData={setRatingData}/>,
+			cellRenderer: (params: any) => {
+				const roomName = params.data.c2rooms_name;
+				return(
+					<div>
+						<CustomButton
+						data={params.data}
+						handleShowReviews={handleShowReviews}
+						setRating={setRating}
+						setSelectedRoom={setSelectedRoom}
+						setRatingData={setRatingData}/>
+						<button onClick={() => addToFavorites(roomName)}>
+							Add to favourites
+						</button>
+						<button onClick={() => removeFromFavorites(roomName)}>
+							Remove to favourites
+						</button>
+
+					</div>
+				)
+			},
 		},
 	]);
 

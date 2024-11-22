@@ -43,6 +43,8 @@ export default class InsightFacade implements IInsightFacade {
 	private static readonly MFIELDS = MFIELDS;
 	private static readonly SFIELDS = SFIELDS;
 
+	public favRooms: string[] = [];
+
 	public async getDataset(id: string): Promise<Section[] | Room[]> {
 		if (this.datasets.has(id)) {
 			const dataObject = this.datasets.get(id);
