@@ -5,13 +5,19 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import { ColDef } from "ag-grid-community";
-import { calculateAverageRating, CustomButton, handleShowReviews, RatingData } from "../components/Review";
+import {
+	calculateAverageRating,
+	CustomButton,
+	CustomButtonProps,
+	handleShowReviews,
+	RatingData,
+} from "../components/Review";
 
 function BuildingDetails() {
 	const [data, setData] = useState<RoomData[]>([]);
-    const [selectedRoom, setSelectedRoom] = useState<RoomData | null>(null);
-    const [rating, setRating] = useState<number | null>(null);
-    const [ratingData, setRatingData] = useState<RatingData>({ ratingSum: 0, numOfRatings: 0 });
+	const [selectedRoom, setSelectedRoom] = useState<RoomData | null>(null);
+	const [rating, setRating] = useState<number | null>(null);
+	const [ratingData, setRatingData] = useState<RatingData>({ ratingSum: 0, numOfRatings: 0 });
 	const { shortName } = useParams();
 
 	const [columnDefs] = useState<ColDef[]>([
@@ -25,12 +31,15 @@ function BuildingDetails() {
 		{
 			headerName: "Actions",
 			field: "actions",
-			cellRenderer: (params: any) => <CustomButton
-            data={params.data}
-            handleShowReviews={handleShowReviews}
-            setRating={setRating}
-            setSelectedRoom={setSelectedRoom}
-            setRatingData={setRatingData}/>,
+			cellRenderer: (params: any) => (
+				<CustomButton
+					data={params.data}
+					handleShowReviews={handleShowReviews}
+					setRating={setRating}
+					setSelectedRoom={setSelectedRoom}
+					setRatingData={setRatingData}
+				/>
+			),
 		},
 	]);
 
@@ -106,7 +115,7 @@ function BuildingDetails() {
 	return (
 		<div className="p-4">
 			<div className="ag-theme-quartz" style={{ height: 500 }}>
-				<AgGridReact rowData={data} columnDefs={columnDefs} domLayout="normal"/>
+				<AgGridReact rowData={data} columnDefs={columnDefs} domLayout="normal" />
 			</div>
 
 			{selectedRoom && (
@@ -127,7 +136,14 @@ function BuildingDetails() {
 								value={rating ?? ""}
 								min={0}
 								max={5}
-								onChange={(e) => setRating(Number(e.target.value))}
+								onChange={(e) => {
+									const value = Number(e.target.value);
+									if (value >= 0 && value <= 5) {
+										setRating(value);
+									} else {
+										alert("Please enter a rating between 0 and 5.");
+									}
+								}}
 								className="border rounded px-2 py-1 w-20"
 							/>
 						</label>
