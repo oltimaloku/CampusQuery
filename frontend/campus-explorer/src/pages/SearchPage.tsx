@@ -54,13 +54,18 @@ function SearchPage() {
 
 
 	const [columnDefs] = useState<ColDef[]>([
-		{ headerName: "Room Name", field: "c2rooms_name" },
-		{ headerName: "Building Name", field: "c2rooms_fullname" },
+		{ headerName: "Room Name",
+		field: "c2rooms_name",
+		cellRenderer: (params: any) => (
+			<a href={params.data.c2rooms_href} target="_blank">
+			{params.data.c2rooms_name}
+			</a>
+		)},
+		{ headerName: "Building Name", field: "c2rooms_fullname", filter: 'agTextColumnFilter' },
 		{ headerName: "Address", field: "c2rooms_address" },
-		{ headerName: "Seats", field: "c2rooms_seats" },
-		{ headerName: "Type", field: "c2rooms_type" },
-		{ headerName: "Furniture", field: "c2rooms_furniture" },
-		{ headerName: "Link", field: "c2rooms_href" },
+		{ headerName: "Seats", field: "c2rooms_seats", filter: "agNumberColumnFilter"},
+		{ headerName: "Type", field: "c2rooms_type", filter: 'agTextColumnFilter' },
+		{ headerName: "Furniture", field: "c2rooms_furniture", filter: 'agTextColumnFilter' },
 		{
 			headerName: "Actions",
 			field: "actions",
@@ -192,6 +197,7 @@ function SearchPage() {
                         mode: "multiRow",
                     }}
                     ref={gridRef}
+					autoSizeStrategy={{type: "fitCellContents",}}
                 />
 			</div>
 
